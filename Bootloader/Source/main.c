@@ -57,6 +57,8 @@ void ConfigGPIO()
 	
 	//Выходы
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Config(IND_PORT, IND_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(IND_PORT, IND_PIN);
 	
 	//Альтернативные функции портов
 	GPIO_Config(GPIOA, Pin_9, AltFn, PushPull, HighSpeed, NoPull);
