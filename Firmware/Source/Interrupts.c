@@ -51,7 +51,7 @@ void TIM7_IRQHandler()
 
 void EXTI9_5_IRQHandler()
 {
-	LL_SetStateSF_EN(true);
-	EXTI_FlagReset(EXTI_7);
+	//
+	EXTI_FlagReset(EXTI_6);
 }
 //-----------------------------------------

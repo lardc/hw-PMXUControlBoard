@@ -27,11 +27,12 @@
 // ----------------------------------------------
 
 // ADC
-#define ADC_V_CHANNEL					1			// Номер канала оцифровки тока
+#define ADC_V_CHANNEL					1			// Номер канала оцифровки давления
 
 // SPI
 #define SPI1_BAUDRATE_BITS				0x7			// Биты задания битрейта SPI
-#define SPI1_LSB_FIRST					false		// Передача младшим битов вперед
+#define SPI1_LSB_FIRST					false		// Передача младшим битом вперед
+#define SPI2_DATA_LENGTH				3			// Размер массива датчиков положения
 // ----------------------------------------------
 
 #define COMM_MODE_2
