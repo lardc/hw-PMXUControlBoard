@@ -33,6 +33,8 @@
 #define SPI1_BAUDRATE_BITS				0x7			// Биты задания битрейта SPI
 #define SPI1_LSB_FIRST					false		// Передача младшим битом вперед
 #define SPI2_DATA_LENGTH				3			// Размер массива датчиков положения
+#define SPI1_ARRAY_LEN_CONTACTORS		2			// Размер массива контакторов
+#define SPI1_ARRAY_LEN_RELAYS			5			// Размер массива реле
 // ----------------------------------------------
 
 #define COMM_MODE_2
