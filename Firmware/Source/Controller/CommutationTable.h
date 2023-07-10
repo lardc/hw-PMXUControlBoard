@@ -8,7 +8,7 @@
 // Include
 #include "stdinc.h"
 
-
+/*
 // Constants
 //
 #define NUM_HV_BOARD			2
@@ -199,5 +199,5 @@ typedef struct __CommutationTableItem
 //
 extern const CommutationTableItem CommutationTable[COMMUTATION_TABLE_SIZE];
 
-
+*/
 #endif // __COMMTABLE_H

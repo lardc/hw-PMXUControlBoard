@@ -124,28 +124,6 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
 
-		case ACT_SF_DEACTIVATE:
-			LL_SetStateSF_EN(false);
-			break;
-
-		case ACT_COMM_ILEAK_GATE_EMITTER_POS_PULSE:
-		case ACT_COMM_ILEAK_GATE_EMITTER_NEG_PULSE:
-		case ACT_COMM_UTH_GATE_EMITTER:
-		case ACT_COMM_Q_GATE:
-		case ACT_COMM_USAT_COLLECTOR_EMITTER:
-		case ACT_COMM_UFW_CHOPPER_DIODE:
-		case ACT_COMM_ILEAK_COLLECTOR_EMITTER:
-		case ACT_COMM_THERMISTOR:
-		case ACT_COMM_NO_PE:
-		case ACT_COMM_NONE:
-			if (CONTROL_State == DS_Fault)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			else if(CONTROL_State == DS_None)
-				*pUserError = ERR_DEVICE_NOT_READY;
-			else
-				COMM_Commutate(ActionID);
-			break;
-
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
 	}
@@ -155,8 +133,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 void CONTROL_LogicProcess()
 {
-	if(CONTROL_State == DS_InProcess)
-		SELFTEST_Process();
+
 }
 //-----------------------------------------------
 

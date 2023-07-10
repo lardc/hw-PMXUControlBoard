@@ -10,13 +10,14 @@
 #include "LowLevel.h"
 #include "Delay.h"
 #include "DataTable.h"
-
+/*
 // Variables
 //
 static uint8_t CurrentOutputValues[NUM_REGS_TOTAL] = {0};
 
 // Functions
 //
+
 void ZcRD_RegisterReset()
 {
 	// Set values to zero
@@ -61,3 +62,4 @@ void ZcRD_RegisterFlushWrite()
 	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
+*/

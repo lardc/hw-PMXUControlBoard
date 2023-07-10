@@ -27,8 +27,8 @@ GPIO_PortPinSettingMacro GPIO_SPI2_LD			= {GPIOB, Pin_15};
 GPIO_PortPinSettingMacro GPIO_SPI2_OE			= {GPIOB, Pin_12};
 
 // Определения для входных портов
-GPIO_PortPinSettingMacro GPIO_SF_TRIG			= {GPIOA, Pin_6};
-GPIO_PortPinSettingMacro GPIO_ST_IN				= {GPIOA, Pin_1};
+GPIO_PortPinSettingMacro GPIO_SAFETY			= {GPIOA, Pin_6};
+GPIO_PortPinSettingMacro GPIO_SELFTEST			= {GPIOA, Pin_1};
 
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_UART1_TX		= {GPIOA, Pin_9};

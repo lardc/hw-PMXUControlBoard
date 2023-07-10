@@ -20,8 +20,20 @@ void LL_SetStateIndication(bool State)
 }
 //-----------------------------
 
-void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSettingMacro GPIO_OE,
-		GPIO_PortPinSettingMacro GPIO_SS)
+bool LL_GetStateSafety()
+{
+	return GPIO_GetState(GPIO_SAFETY);
+}
+//-----------------------------
+
+bool LL_GetStateSelftest()
+{
+	return GPIO_GetState(GPIO_SELFTEST);
+}
+//-----------------------------
+
+void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting GPIO_OE,
+		GPIO_PortPinSetting GPIO_SS)
 {
 	// Turn outputs OFF
 	GPIO_SetState(GPIO_OE, true);
@@ -40,17 +52,17 @@ void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSettingMa
 
 void LL_WriteSPI1Contactors(uint16_t SPI_Data_Hex)
 {
-	uint8_t SPI_Data_Array[];
-	LL_SPIHexToArray(&SPI_Data_Array, SPI1_ARRAY_LEN_CONTACTORS, (uint64_t)SPI_Data_Hex);
-	LL_WriteSPI1(SPI_Data_Array, Data_Length, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
+	uint8_t SPI_Data_Array[SPI1_ARRAY_LEN_CONTACTORS];
+	LL_SPIHexToArray(&SPI_Data_Array[0], SPI1_ARRAY_LEN_CONTACTORS, (uint64_t)SPI_Data_Hex);
+	LL_WriteSPI1(SPI_Data_Array, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
 }
 //-----------------------------
 
 void LL_WriteSPI1Relays(uint64_t SPI_Data_Hex)
 {
-	uint8_t SPI_Data_Array[];
-	LL_SPIHexToArray(&SPI_Data_Array, SPI1_ARRAY_LEN_RELAYS, SPI_Data_Hex);
-	LL_WriteSPI1(SPI_Data, Data_Length, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
+	uint8_t SPI_Data_Array[SPI1_ARRAY_LEN_RELAYS];
+	LL_SPIHexToArray(&SPI_Data_Array[0], SPI1_ARRAY_LEN_RELAYS, SPI_Data_Hex);
+	LL_WriteSPI1(SPI_Data_Array, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
 }
 //-----------------------------
 
@@ -62,10 +74,11 @@ uint64_t LL_SPIArrayToHex(uint8_t SPI_Data[], uint8_t Data_Length)
 		HexData = HexData << 8;
 		HexData |= SPI_Data[i];
 	}
+	return HexData;
 }
 //-----------------------------
 
-void LL_SPIHexToArray(uint8_t *SPI_Data[], uint8_t Data_Length, uint64_t HexData)
+void LL_SPIHexToArray(volatile uint8_t* SPI_Data, uint8_t Data_Length, uint64_t HexData)
 {
 	for(int i = 0; i <= Data_Length; i++)
 	{
@@ -77,7 +90,7 @@ void LL_SPIHexToArray(uint8_t *SPI_Data[], uint8_t Data_Length, uint64_t HexData
 
 uint32_t LL_ReadSPI2()
 {
-	uint8_t SPI_Data[];
+	uint8_t SPI_Data[SPI2_DATA_LENGTH];
 	// Latch
 	GPIO_SetState(GPIO_SPI2_LD, false);
 	DELAY_US(1);
@@ -86,27 +99,19 @@ uint32_t LL_ReadSPI2()
 	GPIO_SetState(GPIO_SPI2_OE, false);
 	for(int i = 0; i <= SPI2_DATA_LENGTH; i++)
 	{
-		SPI_Data[i] = SPI_ReadByte();
+		SPI_Data[i] = SPI_ReadByte(SPI2);
 	}
 	// End of transmit
-	GPIO_SetState(GPIO_OE, true);
+	GPIO_SetState(GPIO_SPI2_OE, true);
 
 	return (uint32_t)LL_SPIArrayToHex(SPI_Data, SPI2_DATA_LENGTH);
 }
 //-----------------------------
 
-float LL_SelfTestMeasure()
+float LL_MeasurePressureADCVoltage()
 {
-	float MeasuredTestVoltage;
-
-	// Enable self-test current
-	LL_SetStateSD_EN(true);
-	DELAY_MS(5);
-	// Measure test-point and convert value to voltage
-	MeasuredTestVoltage = (float)ADC_Measure(ADC1, ADC_V_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
-	// Disable self-test current
-	LL_SetStateSD_EN(false);
-
-	return MeasuredTestVoltage;
+	float MeasuredPressureVoltage;
+	MeasuredPressureVoltage = (float)ADC_Measure(ADC1, ADC_P_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
+	return MeasuredPressureVoltage;
 }
 //-----------------------------

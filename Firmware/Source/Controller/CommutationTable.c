@@ -4,7 +4,7 @@
 
 // Header
 #include "CommutationTable.h"
-
+/*
 // Output pins bindings
 // PIN_XY -> where X = number of shift-register, Y = number of pin
 #define PIN_A1	BIT0
@@ -267,4 +267,8 @@ const CommutationTableItem CommutationTable[COMMUTATION_TABLE_SIZE] =
 						{BOARD4, PIN_C1, REG20},		// 158	//
 						{BOARD4, PIN_C1, REG20}			// 159	//
 				};
+
+
 // No more
+
+ */

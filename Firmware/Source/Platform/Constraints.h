@@ -8,14 +8,6 @@
 
 //Definitions
 //
-// в мВ
-#define SFTST_ALLOWED_VOLTAGE_MIN		0
-#define SFTST_ALLOWED_VOLTAGE_MAX		200
-#define SFTST_ALLOWED_VOLTAGE_DEF		50
-//
-#define POS1							1
-#define POS2							2
-
 // Types
 typedef struct __TableItemConstraint
 {

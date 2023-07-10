@@ -7,11 +7,12 @@
 
 // Functions
 //
-void DBACT_ToggleFPLed();
-void DBACT_ToggleSFRedLed();
-void DBACT_ToggleSFGreenLed();
-void DBACT_WriteSPI();
-void DBACT_ToggleSF_EN();
-void DBACT_SelfTestMeasure();
+void DBACT_PulseIndication();
+void DBACT_IsSafetyOk();
+void DBACT_IsSelftestOk();
+void DBACT_WriteSPI1ContactorsRaw();
+void DBACT_WriteSPI1RelaysRaw();
+void DBACT_ReadSPI2Raw();
+void DBACT_GetPressureADCVoltage();
 
 #endif //__DEBUGACTIONS_H

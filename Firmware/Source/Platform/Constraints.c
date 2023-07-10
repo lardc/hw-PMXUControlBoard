@@ -8,7 +8,7 @@
 // Constants
 //
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
-		{SFTST_ALLOWED_VOLTAGE_MIN, SFTST_ALLOWED_VOLTAGE_MAX, SFTST_ALLOWED_VOLTAGE_DEF},	// 0
+		{0, 0, 0},																	// 0
 		{0, 0, 0},																	// 1
 		{0, 0, 0},																	// 2
 		{0, 0, 0},																	// 3
@@ -136,7 +136,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
-		{POS1, POS2, POS1},															// 128
+		{0, 0, 0},																	// 128
 		{0, 0, 0},																	// 129
 		{0, 0, 0},																	// 130
 		{0, 0, 0},																	// 131

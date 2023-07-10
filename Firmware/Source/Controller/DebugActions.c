@@ -13,54 +13,54 @@
 
 // Functions
 //
-// Send pulse to Front Panel LED
-void DBACT_ToggleFPLed()
+// Send pulse to Indicator
+void DBACT_PulseIndication()
 {
-	LL_SetStateFPLed(true);
+	LL_SetStateIndication(true);
 	DELAY_MS(1000);
-	LL_SetStateFPLed(false);
+	LL_SetStateIndication(false);
 }
 //-----------------------
 
-// Send pulse to Safety Subsystem Red LED
-void DBACT_ToggleSFRedLed()
+// Safety circuit checking
+void DBACT_IsSafetyOk()
 {
-	LL_SetStateSFRedLed(true);
-	DELAY_MS(1000);
-	LL_SetStateSFRedLed(false);
+	DataTable[REG_DBG] = !LL_GetStateSafety(); // 1 - Ok, 0 - Error
 }
 //-----------------------
 
-// Send pulse to Safety Subsystem Green LED
-void DBACT_ToggleSFGreenLed()
+// Selftest circuit checking
+void DBACT_IsSelftestOk()
 {
-	LL_SetStateSFGreenLed(true);
-	DELAY_MS(1000);
-	LL_SetStateSFGreenLed(false);
+	DataTable[REG_DBG] = LL_GetStateSelftest(); // 1 - Ok, 0 - Error
 }
 //-----------------------
 
-void DBACT_WriteSPI()
+// Write raw data to SPI1 for Contactors
+void DBACT_WriteSPI1ContactorsRaw()
 {
-	// Чтение номера таблицы коммутации из отладочного регистра
-	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
-	// Коммутация выбранной комбинации
-	ZcRD_RegisterFlushWrite();
+	LL_WriteSPI1Contactors((uint16_t)DataTable[REG_DBG]);
 }
 //-----------------------
 
-// Safety EN check
-void DBACT_ToggleSF_EN()
+// Write raw data to SPI1 for Relays
+void DBACT_WriteSPI1RelaysRaw()
 {
-	LL_SetStateSF_EN(true);
-	DELAY_MS(1000);
-	LL_SetStateSF_EN(true);
+	LL_WriteSPI1Relays((uint64_t)DataTable[REG_DBG]);
 }
 //-----------------------
 
-// Turn self-test current ON, measure voltage with ADC, compare result with DataTable constant
-void DBACT_SelfTestMeasure()
+// Read raw data from SPI2
+void DBACT_ReadSPI2Raw()
 {
-	DataTable[REG_SELF_TEST_OP_RESULT] = LL_ClosedRelayFailed() ? OPRESULT_FAIL : OPRESULT_OK;
+	DataTable[REG_DBG] = LL_ReadSPI2();
 }
 //-----------------------
+
+// Read raw voltage from ADC input
+void DBACT_GetPressureADCVoltage()
+{
+	DataTable[REG_DBG] = LL_MeasurePressureADCVoltage();
+}
+//-----------------------
+

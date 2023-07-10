@@ -7,10 +7,10 @@
 
 // Include
 #include "stdinc.h"
-
+/*
 // Functions
 //
 void COMM_DisconnectPE();
 void COMM_Commutate(Int16U ActionID);
-
+*/
 #endif // __COMMUTATOR_H

@@ -7,7 +7,7 @@
 
 // Include
 #include "stdinc.h"
-
+/*
 // Functions
 //
 // Reset output register to zero
@@ -18,5 +18,5 @@ void ZcRD_RegisterFlushWrite();
 void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn);
 // Reset cached values to zero
 void ZcRD_OutputValuesReset();
-
+*/
 #endif // __ZBIOEXPANSION_H

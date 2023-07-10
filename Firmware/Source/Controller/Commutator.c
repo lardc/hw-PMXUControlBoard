@@ -11,7 +11,7 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "Delay.h"
-
+/*
 // Variables
 //
 static Int16U OldActionID = ACT_COMM_NONE;
@@ -593,3 +593,4 @@ void COMM_Commutate(Int16U ActionID)
 	OldActionID = ActionID;
 }
 // ----------------------------------------
+*/

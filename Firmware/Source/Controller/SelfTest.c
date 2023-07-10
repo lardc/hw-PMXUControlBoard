@@ -12,6 +12,7 @@
 #include "CommutationTable.h"
 #include "ZcRegistersDriver.h"
 
+/*
 // Variables
 //
 static const uint8_t TestCommutation_IR1[] = {IL_GT_G_COMM, IL_GT_GE_COMM, IL_GT_G_GE, ST_TI_GT_G, ST_TO_GT_GE};
@@ -361,3 +362,4 @@ void SELFTEST_Process()
 	}
 }
 //-----------------------------------------------
+*/
