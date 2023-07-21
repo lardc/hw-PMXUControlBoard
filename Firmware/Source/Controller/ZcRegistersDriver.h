@@ -7,16 +7,11 @@
 
 // Include
 #include "stdinc.h"
-/*
+
 // Functions
 //
-// Reset output register to zero
-void ZcRD_RegisterReset();
-// Write cache to physical register
-void ZcRD_RegisterFlushWrite();
-// Compose cached values
-void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn);
-// Reset cached values to zero
-void ZcRD_OutputValuesReset();
-*/
+void ZcRD_WriteSPI1Contactors(uint16_t SPI_Data_Hex);
+void ZcRD_WriteSPI1Relays(uint64_t SPI_Data_Hex);
+uint32_t ZcRD_ReadSPI2();
+
 #endif // __ZBIOEXPANSION_H

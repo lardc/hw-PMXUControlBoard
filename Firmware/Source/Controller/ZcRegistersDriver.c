@@ -10,25 +10,38 @@
 #include "LowLevel.h"
 #include "Delay.h"
 #include "DataTable.h"
-/*
+#include "Converter.h"
+
 // Variables
 //
-static uint8_t CurrentOutputValues[NUM_REGS_TOTAL] = {0};
 
 // Functions
 //
 
-void ZcRD_RegisterReset()
+void ZcRD_WriteSPI1Contactors(uint16_t SPI_Data_Hex)
 {
-	// Set values to zero
-	ZcRD_OutputValuesReset();
-	// Reset physical register
-	LL_SPIReset();
-
-	DELAY_US(COMM_DELAY_MS * 1000L);
+	uint8_t SPI_Data_Array[SPI1_ARRAY_LEN_CONTACTORS];
+	Conv_SPIHexToArray(&SPI_Data_Array[0], SPI1_ARRAY_LEN_CONTACTORS, (uint64_t)SPI_Data_Hex);
+	LL_WriteSPI1(SPI_Data_Array, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
 }
-// ----------------------------------------
+//-----------------------------
 
+void ZcRD_WriteSPI1Relays(uint64_t SPI_Data_Hex)
+{
+	uint8_t SPI_Data_Array[SPI1_ARRAY_LEN_RELAYS];
+	Conv_SPIHexToArray(&SPI_Data_Array[0], SPI1_ARRAY_LEN_RELAYS, SPI_Data_Hex);
+	LL_WriteSPI1(SPI_Data_Array, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
+}
+//-----------------------------
+
+uint32_t ZcRD_ReadSPI2()
+{
+	uint8_t SPI_Data[SPI2_DATA_LENGTH];
+	LL_ReadSPI2(&SPI_Data[0]);
+	return (uint32_t)Conv_SPIArrayToHex(SPI_Data, SPI2_DATA_LENGTH);
+}
+
+/*
 void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn)
 {
 	if (TurnOn)
