@@ -108,52 +108,42 @@
 #define BUS2_LCTUN_4			43
 //
 //
-
-
-
-
+// Main Commutations
+#define PE						0
+#define Ices_UP					1
+#define Ices_DOWN				2
+#define Idds_UP					3
+#define Idds_DOWN				4
+#define Ir_UP					5
+#define Ir_DOWN					6
+#define Qg_UP					7
+#define Qg_UP_REV				8
+#define Qg_DOWN					9
+#define Qg_DOWN_REV				10
+#define Vcesat_UP				11
+#define Vcesat_UP_REV			12
+#define Vcesat_DOWN				13
+#define Vcesat_DOWN_REV			14
+#define Vsd_UP					15
+#define Vsd_UP_REV				16
+#define Vsd_DOWN				17
+#define Vsd_DOWN_REV			18
+#define Rdson_UP				19
+#define Rdson_UP_REV			20
+#define Rdson_DOWN				21
+#define Rdson_DOWN_REV			22
+#define Vf_UP					23
+#define Vf_UP_REV				24
+#define Vf_DOWN					25
+#define Vf_DOWN_REV				26
 //
+//
+// Selftest Commutations
 /*
-// Main Commutation
-#define MC_C_POT_LSL_POTN		12
-#define MC_G_C_POT1				8
-#define MC_G_C_POT2				9
-#define MC_G_C_POT3				10
-#define MC_G_C_POT4				11
-#define MC_C_POT_LSL_POTP		24
-#define MC_G_GT_G_POT			23
-#define MC_G_GT_G				22
-#define MC_G_GT_GE				21
-#define MC_G_LSL_G				36
-#define MC_GE_GT_G				35
-#define MC_GE_GT_GE				34
-#define MC_G_GE					29
-#define MC_GE_LSL_GE			48
-#define MC_E_POT_GT_GE_POT		47
-#define MC_E_POT_LSL_POTP		46
-#define MC_E_POT_LSL_POTN		45
-#define MC_C_POT_2_LSL_POTN		68
-#define MC_G_2_C_POT1			64
-#define MC_G_2_C_POT2			65
-#define MC_G_2_C_POT3			66
-#define MC_G_2_C_POT4			67
-#define MC_C_POT_2_LSL_POTP		80
-#define MC_G_2_GT_G_POT			79
-#define MC_G_2_GT_G				78
-#define MC_G_2_GT_GE			77
-#define MC_G_2_LSL_G			92
-#define MC_GE_2_GT_G			91
-#define MC_GE_2_GT_GE			90
-#define MC_G_2_GE				85
-#define MC_GE_2_LSL_GE			104
-#define MC_E_POT_2_GT_GE_POT	103
-#define MC_E_POT_2_LSL_POTP		102
-#define MC_E_POT_2_LSL_POTN		101
-#define MC_T2_GT_G_POT			145
-#define MC_T2_GT_G				144
-#define MC_T1_GT_GE_POT			154
-#define MC_T1_GT_GE				155
+#define PE						0
+#define Ices_UP					1
 */
+
 // Types
 //
 typedef struct __InnerCommutationTableItem
@@ -161,7 +151,7 @@ typedef struct __InnerCommutationTableItem
 	Int8U Type;
 	Int8U Bit;
 	Int8U RegNum;
-} CommutationTableItem;
+} InnerCommutationTableItem;
 
 typedef struct __CommutationTableItem
 {
@@ -172,7 +162,7 @@ typedef struct __CommutationTableItem
 
 // Variables
 //
-extern const CommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] =
+extern const InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] =
 				{
 						{CONTACTOR, PIN_6, REG1},			// 0	// BUS1 to TOCU+
 						{CONTACTOR, PIN_5, REG1},			// 1	// BUS1 to TOCU-
