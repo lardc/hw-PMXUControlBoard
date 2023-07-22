@@ -8,6 +8,16 @@
 // Include
 #include "stdinc.h"
 
+// Types
+//
+typedef struct __InnerCommutationTableItem
+{
+	Int8U Type;
+	Int8U Bit;
+	Int8U RegNum;
+} InnerCommutationTableItem;
+
+
 // Constants
 //
 // Shift registers pins and data bits
@@ -30,6 +40,8 @@
 #define REG3	2
 #define REG4	3
 #define REG5	4
+//
+#define BITS_PER_REG	8
 //
 #define NUM_RELAYS_PER_COMMUTATION	4
 #define NUM_CONTACTOR_COMMUTATIONS	12
@@ -108,61 +120,7 @@
 #define BUS2_LCTUN_4			43
 //
 //
-// Main Commutations
-#define PE						0
-#define Ices_UP					1
-#define Ices_DOWN				2
-#define Idds_UP					3
-#define Idds_DOWN				4
-#define Ir_UP					5
-#define Ir_DOWN					6
-#define Qg_UP					7
-#define Qg_UP_REV				8
-#define Qg_DOWN					9
-#define Qg_DOWN_REV				10
-#define Vcesat_UP				11
-#define Vcesat_UP_REV			12
-#define Vcesat_DOWN				13
-#define Vcesat_DOWN_REV			14
-#define Vsd_UP					15
-#define Vsd_UP_REV				16
-#define Vsd_DOWN				17
-#define Vsd_DOWN_REV			18
-#define Rdson_UP				19
-#define Rdson_UP_REV			20
-#define Rdson_DOWN				21
-#define Rdson_DOWN_REV			22
-#define Vf_UP					23
-#define Vf_UP_REV				24
-#define Vf_DOWN					25
-#define Vf_DOWN_REV				26
-//
-//
-// Selftest Commutations
-/*
-#define PE						0
-#define Ices_UP					1
-*/
-
-// Types
-//
-typedef struct __InnerCommutationTableItem
-{
-	Int8U Type;
-	Int8U Bit;
-	Int8U RegNum;
-} InnerCommutationTableItem;
-
-typedef struct __CommutationTableItem
-{
-	Int8U BoardNum;
-	Int8U Bit;
-	Int8U RegNum;
-} CommutationTableItem;
-
-// Variables
-//
-extern const InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] =
+const InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] =
 				{
 						{CONTACTOR, PIN_6, REG1},			// 0	// BUS1 to TOCU+
 						{CONTACTOR, PIN_5, REG1},			// 1	// BUS1 to TOCU-
@@ -218,5 +176,61 @@ extern const InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_T
 						{RELAY, PIN_7, REG1},			// 50	// BUS3 to LCTU+_3
 						{RELAY, PIN_8, REG1}			// 51	// BUS3 to LCTU+_4
 				};
+
+// Main Commutations
+#define CT_PE						{12,13,14,15,16,17,18,19,20,21,22,23}
+#define CT_Ices_UP					{48,49,50,51,36,37,38,39}
+#define CT_Ices_DOWN				{44,45,46,47,40,41,42,43}
+#define CT_Idds_UP					{48,49,50,51,36,37,38,39}
+#define CT_Idds_DOWN				{44,45,46,47,40,41,42,43}
+#define CT_Ir_UP					{48,49,50,51,36,37,38,39}
+#define CT_Ir_DOWN					{44,45,46,47,40,41,42,43}
+#define CT_Qg_UP					{8,1}
+#define CT_Qg_UP_REV				{0,9}
+#define CT_Qg_DOWN					{0,5}
+#define CT_Qg_DOWN_REV				{4,1}
+#define CT_Vcesat_UP				{10,3}
+#define CT_Vcesat_UP_REV			{2,11}
+#define CT_Vcesat_DOWN				{2,7}
+#define CT_Vcesat_DOWN_REV			{6,3}
+#define CT_Vsd_UP					{10,3}
+#define CT_Vsd_UP_REV				{2,11}
+#define CT_Vsd_DOWN					{2,7}
+#define CT_Vsd_DOWN_REV				{6,3}
+#define CT_Rdson_UP					{10,3}
+#define CT_Rdson_UP_REV				{2,11}
+#define CT_Rdson_DOWN				{2,7}
+#define CT_Rdson_DOWN_REV			{6,3}
+#define CT_Vf_UP					{10,3}
+#define CT_Vf_UP_REV				{2,11}
+#define CT_Vf_DOWN					{2,7}
+#define CT_Vf_DOWN_REV				{6,3}
+//
+//
+// Continuity Selftest Commutations
+#define CT_ST_PE1					{24,25,26,27,28,29,30,31, 12,13,14,15,16,17,18,19,20,21,22,23}
+#define CT_ST_PE2					{24,25,26,27,32,33,34,35, 12,13,14,15,16,17,18,19,20,21,22,23}
+//
+#define CT_ST_LCTU1					{24,25,26,27,28,29,30,31, 20,21,22,23, 36,37,38,39,40,41,42,43}
+#define CT_ST_LCTU2					{24,25,26,27,32,33,34,35, 16,17,18,19, 44,45,46,47,48,49,50,51}
+//
+#define CT_ST_TOCU1					{24,25,26,27,28,29,30,31, 0,4, 16,17,18,19,20,21,22,23}
+#define CT_ST_TOCU2					{24,25,26,27,32,33,34,35, 0,8, 16,17,18,19,20,21,22,23}
+#define CT_ST_TOCU3					{24,25,26,27,28,29,30,31, 1,5, 20,21,22,23}
+#define CT_ST_TOCU4					{24,25,26,27,32,33,34,35, 1,9, 16,17,18,19}
+//
+#define CT_ST_LCSU1					{24,25,26,27,28,29,30,31, 2,6, 16,17,18,19,20,21,22,23}
+#define CT_ST_LCSU2					{24,25,26,27,32,33,34,35, 2,10, 16,17,18,19,20,21,22,23}
+#define CT_ST_LCSU3					{24,25,26,27,28,29,30,31, 3,7, 20,21,22,23}
+#define CT_ST_LCSU4					{24,25,26,27,32,33,34,35, 3,11, 16,17,18,19}
+//
+// Relay opening Self Test - relay numbers for checking
+#define CT_ST_RO_PE1				{12,13,14,15,16,17,18,19}
+#define CT_ST_RO_PE2				{20,21,22,23}
+#define CT_ST_RO_LCTU1				{36,37,38,39,40,41,42,43}
+#define CT_ST_RO_LCTU2				{44,45,46,47,48,49,50,51}
+
+// Variables
+//
 
 #endif // __COMMTABLE_H

@@ -19,57 +19,10 @@ static Int16U OldPostion = 0;
 
 // Functions
 //
-void COMM_DisconnectPE()
+void COMM_DisconnectAll()
 {
-	ZcRD_OutputValuesCompose(C_POT_PE1, TRUE);
-	ZcRD_OutputValuesCompose(C_POT_PE2, TRUE);
-	ZcRD_OutputValuesCompose(C_POT_PE3, TRUE);
-	ZcRD_OutputValuesCompose(C_POT_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(G_PE1, TRUE);
-	ZcRD_OutputValuesCompose(G_PE2, TRUE);
-	ZcRD_OutputValuesCompose(G_PE3, TRUE);
-	ZcRD_OutputValuesCompose(G_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(GE_PE1, TRUE);
-	ZcRD_OutputValuesCompose(GE_PE2, TRUE);
-	ZcRD_OutputValuesCompose(GE_PE3, TRUE);
-	ZcRD_OutputValuesCompose(GE_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(E_POT_PE1, TRUE);
-	ZcRD_OutputValuesCompose(E_POT_PE2, TRUE);
-	ZcRD_OutputValuesCompose(E_POT_PE3, TRUE);
-	ZcRD_OutputValuesCompose(E_POT_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(C_POT_2_PE1, TRUE);
-	ZcRD_OutputValuesCompose(C_POT_2_PE2, TRUE);
-	ZcRD_OutputValuesCompose(C_POT_2_PE3, TRUE);
-	ZcRD_OutputValuesCompose(C_POT_2_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(G_2_PE1, TRUE);
-	ZcRD_OutputValuesCompose(G_2_PE2, TRUE);
-	ZcRD_OutputValuesCompose(G_2_PE3, TRUE);
-	ZcRD_OutputValuesCompose(G_2_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(GE_2_PE1, TRUE);
-	ZcRD_OutputValuesCompose(GE_2_PE2, TRUE);
-	ZcRD_OutputValuesCompose(GE_2_PE3, TRUE);
-	ZcRD_OutputValuesCompose(GE_2_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(E_POT_2_PE1, TRUE);
-	ZcRD_OutputValuesCompose(E_POT_2_PE2, TRUE);
-	ZcRD_OutputValuesCompose(E_POT_2_PE3, TRUE);
-	ZcRD_OutputValuesCompose(E_POT_2_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(T1_PE1, TRUE);
-	ZcRD_OutputValuesCompose(T1_PE2, TRUE);
-	ZcRD_OutputValuesCompose(T1_PE3, TRUE);
-	ZcRD_OutputValuesCompose(T1_PE4, TRUE);
-
-	ZcRD_OutputValuesCompose(T2_PE1, TRUE);
-	ZcRD_OutputValuesCompose(T2_PE2, TRUE);
-	ZcRD_OutputValuesCompose(T2_PE3, TRUE);
-	ZcRD_OutputValuesCompose(T2_PE4, TRUE);
+	ZcRD_WriteSPI1Contactors(0);
+	ZcRD_WriteSPI1Relays(0);
 }
 // ----------------------------------------
 
