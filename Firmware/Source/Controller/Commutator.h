@@ -7,6 +7,7 @@
 
 // Include
 #include "stdinc.h"
+#include "stdio.h"
 
 // Constants
 //
@@ -14,7 +15,7 @@
 
 // Functions
 //
-void COMM_DisconnectPE();
-void COMM_Commutate(Int16U ActionID);
+void COMM_DisconnectAll();
+void COMM_CommutateConfig(Int8U ConnArray[]);
 
 #endif // __COMMUTATOR_H
