@@ -18,19 +18,15 @@
 // Functions
 //
 
-void ZcRD_WriteSPI1Contactors(uint16_t BitData)
+void ZcRD_WriteSPI1Contactors(uint8_t BitDataArray[])
 {
-	uint8_t SPI_Data_Array[SPI1_ARRAY_LEN_CONTACTORS];
-	Conv_SPIHexToArray(&SPI_Data_Array[0], SPI1_ARRAY_LEN_CONTACTORS, (uint64_t)BitData);
-	LL_WriteSPI1(SPI_Data_Array, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
+	LL_WriteSPI1(BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
 }
 //-----------------------------
 
-void ZcRD_WriteSPI1Relays(uint64_t BitData)
+void ZcRD_WriteSPI1Relays(uint8_t BitDataArray[])
 {
-	uint8_t SPI_Data_Array[SPI1_ARRAY_LEN_RELAYS];
-	Conv_SPIHexToArray(&SPI_Data_Array[0], SPI1_ARRAY_LEN_RELAYS, BitData);
-	LL_WriteSPI1(SPI_Data_Array, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
+	LL_WriteSPI1(BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
 }
 //-----------------------------
 
@@ -42,12 +38,32 @@ uint32_t ZcRD_ReadSPI2()
 }
 //-----------------------------
 
-void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int64U* BitData)
+void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int8U* BitDataArray)
 {
-	Int64U BitMask = 0x1 << ((InnerCommutationTable[TableID].RegNum * BITS_PER_REG) + InnerCommutationTable[TableID].Bit);
-	if (TurnOn)
-		*BitData |= BitMask;
+	if(TurnOn)
+		BitDataArray[InnerCommutationTable[TableID].RegNum] |= InnerCommutationTable[TableID].Bit;
 	else
-		*BitData &= ~(BitMask);
+		BitDataArray[InnerCommutationTable[TableID].RegNum] &= ~InnerCommutationTable[TableID].Bit;
+}
+// ----------------------------------------
+
+void ZcRD_CommutateConfig(Int8U ConnArray[])
+{
+	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
+		RelayArray[i] = CT_DFLT_Contactors[i];
+	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS];
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+		ContactorArray[i] = CT_DFLT_Contactors[i];
+	Int8U n = sizeof(*ConnArray);
+	for(uint8_t i = 0; i < n; i++)
+	{
+		if(InnerCommutationTable[ConnArray[i]].Type == RELAY)
+			ZcRD_OutputValuesCompose(ConnArray[i], TRUE, &RelayArray[0]);
+		else
+			ZcRD_OutputValuesCompose(ConnArray[i], TRUE, &ContactorArray[0]);
+	}
+	ZcRD_WriteSPI1Relays(RelayArray);
+	ZcRD_WriteSPI1Contactors(ContactorArray);
 }
 // ----------------------------------------

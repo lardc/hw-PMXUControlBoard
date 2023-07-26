@@ -74,6 +74,7 @@
 #define REG_OP_RESULT							197	// Регистр результата операции
 #define REG_SELF_TEST_OP_RESULT					198	// Регистр результата самотестирования
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
+#define REG_ST_STATE							199	// Регистр состояния самотестирования
 
 #define REG_SELF_TEST_FAILED_SS					201	// Вспомогательное состояние на котором обнаружен отказ
 #define REG_SELF_TEST_FAILED_RELAY				202	// Номер коммутации на котором обнаружен отказ

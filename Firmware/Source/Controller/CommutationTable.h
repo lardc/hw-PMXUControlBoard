@@ -81,7 +81,7 @@ typedef struct __InnerCommutationTableItem
 #define BUS3_PE_3				22
 #define BUS3_PE_4				23
 //
-// Selftest commutations
+// Selftest source commutations
 #define BUS1_STN_1				24
 #define BUS1_STN_2				25
 #define BUS1_STN_3				26
@@ -173,6 +173,10 @@ InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = 
 		{RELAY, PIN_7, REG1},			// 50	// BUS3 to LCTU+_3
 		{RELAY, PIN_8, REG1}			// 51	// BUS3 to LCTU+_4
 };
+//
+// Default DataArrays
+Int8U CT_DFLT_Relays[] = {0,0,0,0,0};
+Int8U CT_DFLT_Contactors[] = {0,0};
 
 // Main Commutations
 Int8U CT_PE[] = {12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};

@@ -23,7 +23,8 @@ typedef void (*FUNC_AsyncDelegate)();
 // Variables
 //
 volatile DeviceState CONTROL_State = DS_None;
-volatile DeviceSelfTestState CONTROL_SubState = STS_None;
+volatile DeviceSubState CONTROL_SubState = DSS_None;
+volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 
@@ -68,13 +69,20 @@ void CONTROL_SwitchToFault(Int16U Reason)
 }
 //------------------------------------------
 
-void CONTROL_SetDeviceState(DeviceState NewState, DeviceSelfTestState NewSubState)
+void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState)
 {
 	CONTROL_State = NewState;
 	DataTable[REG_DEV_STATE] = NewState;
 
 	CONTROL_SubState = NewSubState;
 	DataTable[REG_SUB_STATE] = NewSubState;
+}
+//------------------------------------------
+
+void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState)
+{
+	CONTROL_STState = NewSTState;
+	DataTable[REG_ST_STATE] = NewSTState;
 }
 //------------------------------------------
 
@@ -97,7 +105,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				DataTable[REG_SELF_TEST_FAILED_SS] = STS_None;
 				DataTable[REG_SELF_TEST_FAILED_RELAY] = 0;
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayCheck_1);
+				//CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayCheck_1);
 			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
