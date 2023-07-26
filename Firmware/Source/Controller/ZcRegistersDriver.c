@@ -47,7 +47,7 @@ void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int8U* BitDataArra
 }
 // ----------------------------------------
 
-void ZcRD_CommutateConfig(Int8U ConnArray[])
+void ZcRD_CommutateConfig(Int8U ConnArray[], Int8U Length)
 {
 	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
@@ -55,8 +55,7 @@ void ZcRD_CommutateConfig(Int8U ConnArray[])
 	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS];
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 		ContactorArray[i] = CT_DFLT_Contactors[i];
-	Int8U n = sizeof(*ConnArray);
-	for(uint8_t i = 0; i < n; i++)
+	for(uint8_t i = 0; i < Length; i++)
 	{
 		if(InnerCommutationTable[ConnArray[i]].Type == RELAY)
 			ZcRD_OutputValuesCompose(ConnArray[i], TRUE, &RelayArray[0]);
