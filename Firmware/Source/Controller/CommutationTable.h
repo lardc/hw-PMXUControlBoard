@@ -16,6 +16,12 @@ typedef struct __InnerCommutationTableItem
 	Int8U Bit;
 	Int8U RegNum;
 } InnerCommutationTableItem;
+//
+typedef struct __ContactorsCommutationFBTableItem
+{
+	Int8U Bit;
+	Int8U RegNum;
+} ContactorsCommutationFBTableItem;
 
 //
 // Shift registers pins and data bits
@@ -41,10 +47,11 @@ typedef struct __InnerCommutationTableItem
 //
 #define BITS_PER_REG	8
 //
-#define NUM_RELAYS_PER_COMMUTATION		4
-#define NUM_CONTACTOR_COMMUTATIONS		12
-#define NUM_RELAY_COMMUTATIONS			10
-#define INNER_COMMUTATION_TABLE_SIZE 	((NUM_RELAY_COMMUTATIONS * NUM_RELAYS_PER_COMMUTATION) + NUM_CONTACTOR_COMMUTATIONS)
+#define NUM_RELAYS_PER_COMMUTATION				4
+#define NUM_CONTACTOR_COMMUTATIONS				12
+#define CONTACTOR_COMMUTATIONS_FB_TABLE_SIZE	(2 * NUM_CONTACTOR_COMMUTATIONS)
+#define NUM_RELAY_COMMUTATIONS					10
+#define INNER_COMMUTATION_TABLE_SIZE 			((NUM_RELAY_COMMUTATIONS * NUM_RELAYS_PER_COMMUTATION) + NUM_CONTACTOR_COMMUTATIONS)
 //
 // Inner Contactors commutations (Side1_Side2)
 // TOCU HP
@@ -118,7 +125,9 @@ typedef struct __InnerCommutationTableItem
 #define BUS2_LCTUN_4			43
 //
 //
-InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {{CONTACTOR, PIN_6, REG1}, // 0	// BUS1 to TOCU+
+InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] =
+{
+		{CONTACTOR, PIN_6, REG1}, 		// 0	// BUS1 to TOCU+
 		{CONTACTOR, PIN_5, REG1},		// 1	// BUS1 to TOCU-
 		{CONTACTOR, PIN_4, REG2},		// 2	// BUS1 to LCSU+
 		{CONTACTOR, PIN_3, REG2},		// 3	// BUS1 to LCSU-
@@ -139,7 +148,7 @@ InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = 
 		{RELAY, PIN_2, REG5},			// 17	// BUS2 to PE_2
 		{RELAY, PIN_3, REG5},			// 18	// BUS2 to PE_3
 		{RELAY, PIN_4, REG5},			// 19	// BUS2 to PE_4
-		{RELAY, PIN_5, REG5},			// 20	// BUS3 to PE_1
+		{RELAY, PIN_5, REG5},			// 20	// BUS3 toPE_1
 		{RELAY, PIN_6, REG5},			// 21	// BUS3 to PE_2
 		{RELAY, PIN_7, REG5},			// 22	// BUS3 to PE_3
 		{RELAY, PIN_8, REG5},			// 23	// BUS3 to PE_4
@@ -176,6 +185,7 @@ InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = 
 // Default DataArrays
 Int8U CT_DFLT_Relays[] = {0, 0, 0, 0, 0};
 Int8U CT_DFLT_Contactors[] = {0, 0};
+Int8U CT_DFLT_ContactorsFB[] = {0, 0, 0};
 
 // Main Commutations
 Int8U CT_PE[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1,
@@ -254,5 +264,66 @@ Int8U CT_ST_RO_LCTU1[] = {BUS1_LCTUN_1, BUS1_LCTUN_2, BUS1_LCTUN_3, BUS1_LCTUN_4
 		BUS2_LCTUN_3, BUS2_LCTUN_4};
 Int8U CT_ST_RO_LCTU2[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS3_LCTUP_1, BUS3_LCTUP_2,
 		BUS3_LCTUP_3, BUS3_LCTUP_4};
+//
+//
+// Proximity sensors table (Side1_Side2_Position)
+//
+// TOCU HP
+#define BUS1_TOCUN_CLOSE	12
+#define BUS1_TOCUP_CLOSE	14
+#define BUS2_TOCUN_CLOSE	16
+#define BUS2_TOCUP_CLOSE	18
+#define BUS3_TOCUN_CLOSE	20
+#define BUS3_TOCUP_CLOSE	22
+#define BUS1_TOCUN_OPEN		13
+#define BUS1_TOCUP_OPEN		15
+#define BUS2_TOCUN_OPEN		17
+#define BUS2_TOCUP_OPEN		19
+#define BUS3_TOCUN_OPEN		21
+#define BUS3_TOCUP_OPEN		23
+// LCSU
+#define BUS1_LCSUN_CLOSE	0
+#define BUS1_LCSUP_CLOSE	2
+#define BUS2_LCSUN_CLOSE	4
+#define BUS2_LCSUP_CLOSE	6
+#define BUS3_LCSUN_CLOSE	8
+#define BUS3_LCSUP_CLOSE	10
+#define BUS1_LCSUN_OPEN		1
+#define BUS1_LCSUP_OPEN		3
+#define BUS2_LCSUN_OPEN		5
+#define BUS2_LCSUP_OPEN		7
+#define BUS3_LCSUN_OPEN		9
+#define BUS3_LCSUP_OPEN		11
+//
+ContactorsCommutationFBTableItem ContactorsCommutationFBTable[CONTACTOR_COMMUTATIONS_FB_TABLE_SIZE] =
+{
+		{PIN_5, REG3}, 			// 0	// BUS1 to LCSU- CLOSE
+		{PIN_6, REG3},			// 1	// BUS1 to LCSU- OPEN
+		{PIN_7, REG3},			// 2	// BUS1 to LCSU+ CLOSE
+		{PIN_8, REG3},			// 3	// BUS1 to LCSU+ OPEN
+		{PIN_1, REG3},			// 4	// BUS2 to LCSU- CLOSE
+		{PIN_2, REG3},			// 5	// BUS2 to LCSU- OPEN
+		{PIN_3, REG3},			// 6	// BUS2 to LCSU+ CLOSE
+		{PIN_4, REG3},			// 7	// BUS2 to LCSU+ OPEN
+		{PIN_5, REG2},			// 8	// BUS3 to LCSU- CLOSE
+		{PIN_6, REG2},			// 9	// BUS3 to LCSU- OPEN
+		{PIN_7, REG2},			// 10	// BUS3 to LCSU+ CLOSE
+		{PIN_8, REG2},			// 11	// BUS3 to LCSU+ OPEN
+		//
+		{PIN_1, REG2},			// 12	// BUS1 to TOCU- CLOSE
+		{PIN_2, REG2},			// 13	// BUS1 to TOCU- OPEN
+		{PIN_3, REG2},			// 14	// BUS1 to TOCU+ CLOSE
+		{PIN_4, REG2},			// 15	// BUS1 to TOCU+ OPEN
+		{PIN_5, REG1},			// 16	// BUS2 to TOCU- CLOSE
+		{PIN_6, REG1},			// 17	// BUS2 to TOCU- OPEN
+		{PIN_7, REG1},			// 18	// BUS2 to TOCU+ CLOSE
+		{PIN_8, REG1},			// 19	// BUS2 to TOCU+ OPEN
+		{PIN_1, REG1},			// 20	// BUS3 to TOCU- CLOSE
+		{PIN_2, REG1},			// 21	// BUS3 to TOCU- OPEN
+		{PIN_3, REG1},			// 22	// BUS3 to TOCU+ CLOSE
+		{PIN_4, REG1}			// 23	// BUS3 to TOCU+ OPEN
+};
+//
 
+//
 #endif // __COMMTABLE_H
