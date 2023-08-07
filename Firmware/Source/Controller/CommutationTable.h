@@ -17,13 +17,13 @@ typedef struct __InnerCommutationTableItem
 	Int8U RegNum;
 } InnerCommutationTableItem;
 //
-typedef struct __ContactorsCommutationFBTableItem
+typedef struct __ContactorsStateTableItem
 {
 	Int8U BitClose;
 	Int8U RegNumClose;
 	Int8U BitOpen;
 	Int8U RegNumOpen;
-} ContactorsCommutationFBTableItem;
+} ContactorsStateTableItem;
 
 //
 // Shift registers pins and data bits
@@ -51,7 +51,7 @@ typedef struct __ContactorsCommutationFBTableItem
 //
 #define NUM_RELAYS_PER_COMMUTATION				4
 #define NUM_CONTACTOR_COMMUTATIONS				12
-#define CONTACTOR_COMMUTATIONS_FB_TABLE_SIZE	(2 * NUM_CONTACTOR_COMMUTATIONS)
+#define CONTACTORS_STATE_TABLE_SIZE				(2 * NUM_CONTACTOR_COMMUTATIONS)
 #define NUM_RELAY_COMMUTATIONS					10
 #define INNER_COMMUTATION_TABLE_SIZE 			((NUM_RELAY_COMMUTATIONS * NUM_RELAYS_PER_COMMUTATION) + NUM_CONTACTOR_COMMUTATIONS)
 //
@@ -187,7 +187,6 @@ InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] =
 // Default DataArrays
 Int8U CT_DFLT_Relays[] = {0, 0, 0, 0, 0};
 Int8U CT_DFLT_Contactors[] = {0, 0};
-Int8U CT_DFLT_ContactorsFB[] = {0, 0, 0};
 
 // Main Commutations
 Int8U CT_PE[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1,
@@ -267,7 +266,7 @@ Int8U CT_ST_RO_LCTU1[] = {BUS1_LCTUN_1, BUS1_LCTUN_2, BUS1_LCTUN_3, BUS1_LCTUN_4
 Int8U CT_ST_RO_LCTU2[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS3_LCTUP_1, BUS3_LCTUP_2,
 		BUS3_LCTUP_3, BUS3_LCTUP_4};
 //
-ContactorsCommutationFBTableItem ContactorsCommutationFBTable[CONTACTOR_COMMUTATIONS_FB_TABLE_SIZE] =
+ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] =
 {
 		{PIN_3, REG2, PIN_4, REG2},			// 0	// BUS1 to TOCU+
 		{PIN_1, REG2, PIN_2, REG2},			// 1	// BUS1 to TOCU-

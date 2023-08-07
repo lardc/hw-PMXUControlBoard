@@ -59,7 +59,7 @@ void LL_ReadSPI2(volatile uint8_t* SPI_Data)
 	GPIO_SetState(GPIO_SPI2_LD, true);
 	// Read data
 	GPIO_SetState(GPIO_SPI2_OE, false);
-	for(int i = 0; i <= SPI2_DATA_LENGTH; i++)
+	for(int i = 0; i <= SPI2_ARRAY_LEN; i++)
 	{
 		SPI_Data[i] = SPI_ReadByte(SPI2);
 	}

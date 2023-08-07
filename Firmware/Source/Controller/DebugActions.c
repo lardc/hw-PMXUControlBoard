@@ -69,10 +69,10 @@ void DBACT_ResetSPI1Commutations()
 // Read raw data from SPI2
 void DBACT_ReadSPI2Raw()
 {
-	Int8U SPI_Data[SPI2_DATA_LENGTH];
+	Int8U SPI_Data[SPI2_ARRAY_LEN];
 	Int32U RawData = 0;
 	ZcRD_ReadSPI2(SPI_Data);
-	RawData = (Int32U)Conv_SPIArrayToHex(SPI_Data, SPI2_DATA_LENGTH);
+	RawData = (Int32U)Conv_SPIArrayToHex(SPI_Data, SPI2_ARRAY_LEN);
 	//RawData = SPI_Data[0] || (SPI_Data[1] << 8) || (SPI_Data[2] << 16);
 	DataTable[REG_DBG] = RawData;
 }
