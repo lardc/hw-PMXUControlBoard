@@ -30,11 +30,9 @@ void ZcRD_WriteSPI1Relays(uint8_t BitDataArray[])
 }
 //-----------------------------
 
-uint32_t ZcRD_ReadSPI2()
+void ZcRD_ReadSPI2(volatile uint8_t* SPI_Data)
 {
-	uint8_t SPI_Data[SPI2_DATA_LENGTH];
 	LL_ReadSPI2(&SPI_Data[0]);
-	return (uint32_t)Conv_SPIArrayToHex(SPI_Data, SPI2_DATA_LENGTH);
 }
 //-----------------------------
 

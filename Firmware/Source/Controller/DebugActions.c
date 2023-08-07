@@ -7,6 +7,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "Controller.h"
+#include "Converter.h"
 #include "DataTable.h"
 #include "ZcRegistersDriver.h"
 #include "CommutationTable.h"
@@ -68,7 +69,12 @@ void DBACT_ResetSPI1Commutations()
 // Read raw data from SPI2
 void DBACT_ReadSPI2Raw()
 {
-	DataTable[REG_DBG] = ZcRD_ReadSPI2();
+	Int8U SPI_Data[SPI2_DATA_LENGTH];
+	Int32U RawData = 0;
+	ZcRD_ReadSPI2(SPI_Data);
+	RawData = (Int32U)Conv_SPIArrayToHex(SPI_Data, SPI2_DATA_LENGTH);
+	//RawData = SPI_Data[0] || (SPI_Data[1] << 8) || (SPI_Data[2] << 16);
+	DataTable[REG_DBG] = RawData;
 }
 //-----------------------
 
