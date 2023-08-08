@@ -96,6 +96,7 @@
 #define DF_NONE									0
 #define DF_RELAY_SHORT							1	// Обнаружено залипшее реле
 #define DF_CHAIN_BREAK							2	// Обнаружен разрыв при прозвонке
+#define DF_CONTACTOR_COMMUTATION_FAULT			3	// Ошибка коммутации контакторов, номер неисправного контактора в Регистре Problem
 
 // Problem
 #define PROBLEM_NONE							0

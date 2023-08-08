@@ -26,7 +26,6 @@ volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = DSS_None;
 volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
-static Int16U CONTROL_Commutation = 0;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CONTROL_CommutationStartTime = 0;
 
@@ -171,11 +170,70 @@ void CONTROL_LogicProcess()
 				switch (CONTROL_SubState)
 				{
 					case DSS_AwaitingContactorsQgUP:
-						if (ZcRD_CommutationCheck_macro(CT_Qg_UP) != COMM_CHECK_NO_ERROR)
-						{
-							CONTROL_SetDeviceState(DS_Fault, DSS_None);
-							// Set error code to register
-						}
+						CONTROL_CheckContactorsStates_macro(CT_Qg_UP);
+						break;
+					case DSS_AwaitingContactorsQgUPRev:
+						CONTROL_CheckContactorsStates_macro(CT_Qg_UP_REV);
+						break;
+					case DSS_AwaitingContactorsQgDOWN:
+						CONTROL_CheckContactorsStates_macro(CT_Qg_DOWN);
+						break;
+					case DSS_AwaitingContactorsQgDOWNRev:
+						CONTROL_CheckContactorsStates_macro(CT_Qg_DOWN_REV);
+						break;
+					//
+					case DSS_AwaitingContactorsVcesatUP:
+						CONTROL_CheckContactorsStates_macro(CT_Vcesat_UP);
+						break;
+					case DSS_AwaitingContactorsVcesatUPRev:
+						CONTROL_CheckContactorsStates_macro(CT_Vcesat_UP_REV);
+						break;
+					case DSS_AwaitingContactorsVcesatDOWN:
+						CONTROL_CheckContactorsStates_macro(CT_Vcesat_DOWN);
+						break;
+					case DSS_AwaitingContactorsVcesatDOWNRev:
+						CONTROL_CheckContactorsStates_macro(CT_Vcesat_DOWN_REV);
+						break;
+					//
+					case DSS_AwaitingContactorsVsdUP:
+						CONTROL_CheckContactorsStates_macro(CT_Vsd_UP);
+						break;
+					case DSS_AwaitingContactorsVsdUPRev:
+						CONTROL_CheckContactorsStates_macro(CT_Vsd_UP_REV);
+						break;
+					case DSS_AwaitingContactorsVsdDOWN:
+						CONTROL_CheckContactorsStates_macro(CT_Vsd_DOWN);
+						break;
+					case DSS_AwaitingContactorsVsdDOWNRev:
+						CONTROL_CheckContactorsStates_macro(CT_Vsd_DOWN_REV);
+						break;
+					//
+					case DSS_AwaitingContactorsRdsonUP:
+						CONTROL_CheckContactorsStates_macro(CT_Rdson_UP);
+						break;
+					case DSS_AwaitingContactorsRdsonUPRev:
+						CONTROL_CheckContactorsStates_macro(CT_Rdson_UP_REV);
+						break;
+					case DSS_AwaitingContactorsRdsonDOWN:
+						CONTROL_CheckContactorsStates_macro(CT_Rdson_DOWN);
+						break;
+					case DSS_AwaitingContactorsRdsonDOWNRev:
+						CONTROL_CheckContactorsStates_macro(CT_Rdson_DOWN_REV);
+						break;
+					//
+					case DSS_AwaitingContactorsVfUP:
+						CONTROL_CheckContactorsStates_macro(CT_Vf_UP);
+						break;
+					case DSS_AwaitingContactorsVfUPRev:
+						CONTROL_CheckContactorsStates_macro(CT_Vf_UP_REV);
+						break;
+					case DSS_AwaitingContactorsVfDOWN:
+						CONTROL_CheckContactorsStates_macro(CT_Vf_DOWN);
+						break;
+					case DSS_AwaitingContactorsVfDOWNRev:
+						CONTROL_CheckContactorsStates_macro(CT_Vf_DOWN_REV);
+						break;
+					default:
 						break;
 				}
 			}
@@ -187,6 +245,24 @@ void CONTROL_LogicProcess()
 	// Safety circuit processor
 
 	// Indication processor
+}
+//-----------------------------------------------
+
+void CONTROL_CheckContactorsStates(Int8U CommArray[], Int8U Length)
+{
+	Int8U ErrorCode = ZcRD_CommutationCheck(CommArray, Length);
+	if (ErrorCode != COMM_CHECK_NO_ERROR)
+	{
+		CONTROL_SetDeviceState(DS_Fault, DSS_None);
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_FAULT_REASON] = DF_CONTACTOR_COMMUTATION_FAULT;
+		DataTable[REG_PROBLEM] = ErrorCode;
+	}
+	else
+	{
+		CONTROL_SetDeviceState(DS_Ready, DSS_None);
+		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+	}
 }
 //-----------------------------------------------
 

@@ -4,8 +4,10 @@
 // Include
 //
 #include "stdinc.h"
+#include "stdio.h"
 #include "Global.h"
-
+//
+#define CONTROL_CheckContactorsStates_macro(arr)	(CONTROL_CheckContactorsStates(arr, sizeof(arr) / sizeof(arr[0])))
 // Types
 //
 typedef enum __DeviceState
@@ -23,7 +25,7 @@ typedef enum __DeviceSubState
 	DSS_SelfTestProgress = 1,
 	DSS_AwaitingRelayCommutation = 2,
 	DSS_AwaitingContactorsQgUP,
-	DSS_AwaitingContactorsQhUPRev,
+	DSS_AwaitingContactorsQgUPRev,
 	DSS_AwaitingContactorsQgDOWN,
 	DSS_AwaitingContactorsQgDOWNRev,
 	DSS_AwaitingContactorsVcesatUP,
@@ -65,7 +67,6 @@ typedef enum __DeviceSelfTestState
 	STS_LCSU4Check = 12,
 } DeviceSelfTestState;
 
-
 // Variables
 //
 extern volatile Int64U CONTROL_TimeCounter;
@@ -84,6 +85,7 @@ void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_ResetToDefaultState();
 bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_LogicProcess();
+void CONTROL_CheckContactorsStates(Int8U CommArray[], Int8U Length);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetOutputRegisters();
 

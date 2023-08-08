@@ -46,7 +46,7 @@ void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn,
 }
 // ----------------------------------------
 
-void ZcRD_CommutateConfig(Int8U ConnArray[], Int8U Length) {
+void ZcRD_CommutateConfig(Int8U CommArray[], Int8U Length) {
 	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
 	for (Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
 		RelayArray[i] = CT_DFLT_Contactors[i];
@@ -54,17 +54,17 @@ void ZcRD_CommutateConfig(Int8U ConnArray[], Int8U Length) {
 	for (Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 		ContactorArray[i] = CT_DFLT_Contactors[i];
 	for (uint8_t i = 0; i < Length; i++) {
-		if (InnerCommutationTable[ConnArray[i]].Type == RELAY)
-			ZcRD_OutputValuesCompose(ConnArray[i], TRUE, &RelayArray[0]);
+		if (InnerCommutationTable[CommArray[i]].Type == RELAY)
+			ZcRD_OutputValuesCompose(CommArray[i], TRUE, &RelayArray[0]);
 		else
-			ZcRD_OutputValuesCompose(ConnArray[i], TRUE, &ContactorArray[0]);
+			ZcRD_OutputValuesCompose(CommArray[i], TRUE, &ContactorArray[0]);
 	}
 	ZcRD_WriteSPI1Relays(RelayArray);
 	ZcRD_WriteSPI1Contactors(ContactorArray);
 }
 // ----------------------------------------
 
-Int8U ZcRD_CommutationCheck(Int8U ConnArray[], Int8U Length) {
+Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length) {
 	Int8U SPI2Data[SPI2_ARRAY_LEN];
 	Int8U ContactorsStateArray[SPI2_ARRAY_LEN];
 	Int8U ErrorNum = COMM_CHECK_NO_ERROR;
@@ -77,10 +77,10 @@ Int8U ZcRD_CommutationCheck(Int8U ConnArray[], Int8U Length) {
 	}
 	// Generate destination contactors state
 	for (uint8_t i = 0; i < Length; i++) {
-		ContactorsStateArray[ContactorsStateTable[ConnArray[i]].RegNumClose] |=
-				ContactorsStateTable[ConnArray[i]].BitClose;
-		ContactorsStateArray[ContactorsStateTable[ConnArray[i]].RegNumOpen] &=
-				~ContactorsStateTable[ConnArray[i]].BitOpen;
+		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |=
+				ContactorsStateTable[CommArray[i]].BitClose;
+		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &=
+				~ContactorsStateTable[CommArray[i]].BitOpen;
 	}
 	// Read current state
 	LL_ReadSPI2(&SPI2Data[0]);
