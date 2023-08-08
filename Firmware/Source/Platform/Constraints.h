@@ -8,6 +8,8 @@
 
 //Definitions
 //
+#define CONTACTORS_COMM_DELAY_MS_MAX	3000
+#define CONTACTORS_COMM_DELAY_MS_DFLT	1000
 // Types
 typedef struct __TableItemConstraint
 {

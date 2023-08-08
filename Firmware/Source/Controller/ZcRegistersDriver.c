@@ -64,10 +64,10 @@ void ZcRD_CommutateConfig(Int8U ConnArray[], Int8U Length) {
 }
 // ----------------------------------------
 
-Int8U ZcRD_CommutateCheck(Int8U ConnArray[], Int8U Length) {
+Int8U ZcRD_CommutationCheck(Int8U ConnArray[], Int8U Length) {
 	Int8U SPI2Data[SPI2_ARRAY_LEN];
 	Int8U ContactorsStateArray[SPI2_ARRAY_LEN];
-	Int8U ErrorNum = 0xff;
+	Int8U ErrorNum = COMM_CHECK_NO_ERROR;
 	// Generate default contactors state
 	for (Int8U i = 0; i < CONTACTORS_STATE_TABLE_SIZE; i++) {
 		ContactorsStateArray[ContactorsStateTable[i].RegNumClose] &=

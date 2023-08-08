@@ -26,7 +26,9 @@ volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = DSS_None;
 volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
+static Int16U CONTROL_Commutation = 0;
 volatile Int64U CONTROL_TimeCounter = 0;
+static Int64U CONTROL_CommutationStartTime = 0;
 
 // Forward functions
 //
@@ -96,7 +98,7 @@ void CONTROL_ResetToDefaultState()
 bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 {
 	*pUserError = ERR_NONE;
-	
+
 	switch (ActionID)
 	{
 		case ACT_ENABLE_POWER:
@@ -114,7 +116,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_DISABLE_POWER:
 			if(CONTROL_State == DS_Ready)
 			{
-				CONTROL_SetDeviceState(DS_None, STS_None);
+				CONTROL_SetDeviceState(DS_None, DSS_None);
 			}
 			else if(CONTROL_State != DS_None)
 					*pUserError = ERR_OPERATION_BLOCKED;
@@ -123,13 +125,24 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_CLR_FAULT:
 			if (CONTROL_State == DS_Fault)
 			{
-				CONTROL_SetDeviceState(DS_None, STS_None);
+				CONTROL_SetDeviceState(DS_None, DSS_None);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
 			break;
 
 		case ACT_CLR_WARNING:
 			DataTable[REG_WARNING] = WARNING_NONE;
+			break;
+		// Commutations
+		case ACT_COMM_PE:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_PE);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+					*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		default:
@@ -141,7 +154,39 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 void CONTROL_LogicProcess()
 {
+	// Commutation processor
+	if (CONTROL_State == DS_InProcess)
+	{
+		// Relays commutation (without feedback from proximity sensors)
+		if (CONTROL_SubState == DSS_AwaitingRelayCommutation)
+		{
+			if (CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + COMM_RELAYS_DELAY_MS))
+				CONTROL_SetDeviceState(DS_Ready, DSS_None);
+		}
+		// Contactors commutation
+		else
+		{
+			if (CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_CONTACTORS_COMM_DELAY_MS]))
+			{
+				switch (CONTROL_SubState)
+				{
+					case DSS_AwaitingContactorsQgUP:
+						if (ZcRD_CommutationCheck_macro(CT_Qg_UP) != COMM_CHECK_NO_ERROR)
+						{
+							CONTROL_SetDeviceState(DS_Fault, DSS_None);
+							// Set error code to register
+						}
+						break;
+				}
+			}
+		}
+	}
+	//
+	// Pressure sensing processor
 
+	// Safety circuit processor
+
+	// Indication processor
 }
 //-----------------------------------------------
 

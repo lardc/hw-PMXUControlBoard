@@ -47,7 +47,8 @@ typedef struct __ContactorsStateTableItem
 #define REG4		3
 #define REG5		4
 //
-#define BITS_PER_REG	8
+#define BITS_PER_REG			8
+#define COMM_CHECK_NO_ERROR		0xff
 //
 #define NUM_RELAYS_PER_COMMUTATION				4
 #define NUM_CONTACTOR_COMMUTATIONS				12

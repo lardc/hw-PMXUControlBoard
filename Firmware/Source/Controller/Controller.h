@@ -20,8 +20,28 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	DSS_None = 0,
-	DSS_AwaitingCommutation = 1,
-	DSS_SelfTestProgress = 2
+	DSS_SelfTestProgress = 1,
+	DSS_AwaitingRelayCommutation = 2,
+	DSS_AwaitingContactorsQgUP,
+	DSS_AwaitingContactorsQhUPRev,
+	DSS_AwaitingContactorsQgDOWN,
+	DSS_AwaitingContactorsQgDOWNRev,
+	DSS_AwaitingContactorsVcesatUP,
+	DSS_AwaitingContactorsVcesatUPRev,
+	DSS_AwaitingContactorsVcesatDOWN,
+	DSS_AwaitingContactorsVcesatDOWNRev,
+	DSS_AwaitingContactorsVsdUP,
+	DSS_AwaitingContactorsVsdUPRev,
+	DSS_AwaitingContactorsVsdDOWN,
+	DSS_AwaitingContactorsVsdDOWNRev,
+	DSS_AwaitingContactorsRdsonUP,
+	DSS_AwaitingContactorsRdsonUPRev,
+	DSS_AwaitingContactorsRdsonDOWN,
+	DSS_AwaitingContactorsRdsonDOWNRev,
+	DSS_AwaitingContactorsVfUP,
+	DSS_AwaitingContactorsVfUPRev,
+	DSS_AwaitingContactorsVfDOWN,
+	DSS_AwaitingContactorsVfDOWNRev = 22
 } DeviceSubState;
 
 typedef enum __DeviceSelfTestState

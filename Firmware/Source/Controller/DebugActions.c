@@ -73,7 +73,6 @@ void DBACT_ReadSPI2Raw()
 	Int32U RawData = 0;
 	ZcRD_ReadSPI2(SPI_Data);
 	RawData = (Int32U)Conv_SPIArrayToHex(SPI_Data, SPI2_ARRAY_LEN);
-	//RawData = SPI_Data[0] || (SPI_Data[1] << 8) || (SPI_Data[2] << 16);
 	DataTable[REG_DBG] = RawData;
 }
 //-----------------------
