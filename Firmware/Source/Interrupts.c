@@ -43,7 +43,6 @@ void TIM7_IRQHandler()
 			LL_ToggleBoardLed();
 			LED_BlinkTimeCounter = 0;
 		}
-
 		TIM_StatusClear(TIM7);
 	}
 }

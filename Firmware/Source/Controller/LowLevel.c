@@ -21,6 +21,12 @@ void LL_SetStateIndication(bool State)
 }
 //-----------------------------
 
+void LL_ToggleIndication()
+{
+	GPIO_Toggle(GPIO_IND);
+}
+//-----------------------------
+
 bool LL_IsSafetyPinOk()
 {
 	return !GPIO_GetState(GPIO_SAFETY);
@@ -33,8 +39,7 @@ bool LL_IsSelftestPinOk()
 }
 //-----------------------------
 
-void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting GPIO_OE,
-		GPIO_PortPinSetting GPIO_SS)
+void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting GPIO_OE, GPIO_PortPinSetting GPIO_SS)
 {
 	// Turn outputs OFF
 	GPIO_SetState(GPIO_OE, true);
@@ -70,8 +75,6 @@ void LL_ReadSPI2(volatile uint8_t* SPI_Data)
 
 float LL_MeasurePressureADCVoltage()
 {
-	float MeasuredPressureVoltage;
-	MeasuredPressureVoltage = (float)ADC_Measure(ADC1, ADC_P_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
-	return MeasuredPressureVoltage;
+	return (float)ADC_Measure(ADC1, ADC_P_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
 }
 //-----------------------------

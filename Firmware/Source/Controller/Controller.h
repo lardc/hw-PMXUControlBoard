@@ -43,7 +43,8 @@ typedef enum __DeviceSubState
 	DSS_AwaitingContactorsVfUP,
 	DSS_AwaitingContactorsVfUPRev,
 	DSS_AwaitingContactorsVfDOWN,
-	DSS_AwaitingContactorsVfDOWNRev = 22
+	DSS_AwaitingContactorsVfDOWNRev = 22,
+	DSS_AwaitingResetToDefault = 23
 } DeviceSubState;
 
 typedef enum __DeviceSelfTestState
@@ -82,6 +83,8 @@ void CONTROL_Idle();
 void CONTROL_SaveTestResult();
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
+void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
+void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState);
 void CONTROL_ResetToDefaultState();
 bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_LogicProcess();

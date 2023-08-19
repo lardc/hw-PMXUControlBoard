@@ -41,7 +41,7 @@ void DBACT_IsSelftestOk()
 void DBACT_WriteSPI1ContactorsRaw()
 {
 	Int8U BitDataArray[SPI1_ARRAY_LEN_CONTACTORS];
-	for (Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 		BitDataArray[i] = CT_DFLT_Contactors[i];
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE, &BitDataArray[0]);
 	ZcRD_WriteSPI1Contactors(BitDataArray);
@@ -52,8 +52,8 @@ void DBACT_WriteSPI1ContactorsRaw()
 void DBACT_WriteSPI1RelaysRaw()
 {
 	Int8U BitDataArray[SPI1_ARRAY_LEN_RELAYS];
-	for (Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
-			BitDataArray[i] = CT_DFLT_Contactors[i];
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
+		BitDataArray[i] = CT_DFLT_Contactors[i];
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE, &BitDataArray[0]);
 	ZcRD_WriteSPI1Relays(BitDataArray);
 }

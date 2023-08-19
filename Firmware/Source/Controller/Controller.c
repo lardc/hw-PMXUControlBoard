@@ -15,6 +15,7 @@
 #include "CommutationTable.h"
 #include "Commutator.h"
 #include "ZcRegistersDriver.h"
+#include "Converter.h"
 
 // Types
 //
@@ -28,6 +29,7 @@ volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CONTROL_CommutationStartTime = 0;
+static Int64U CONTROL_IndBlinkStartTime = 0;
 
 // Forward functions
 //
@@ -47,7 +49,6 @@ void CONTROL_Init()
 	DT_SaveFirmwareInfo(CAN_NID, 0);
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
-
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
@@ -80,6 +81,13 @@ void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState)
 }
 //------------------------------------------
 
+void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
+{
+	CONTROL_SubState = NewSubState;
+	DataTable[REG_SUB_STATE] = NewSubState;
+}
+//------------------------------------------
+
 void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState)
 {
 	CONTROL_STState = NewSTState;
@@ -90,7 +98,7 @@ void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState)
 void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
-	CONTROL_SetDeviceState(DS_None, STS_None);
+	CONTROL_SetDeviceState(DS_None, DSS_None);
 }
 //------------------------------------------
 
@@ -98,7 +106,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 {
 	*pUserError = ERR_NONE;
 
-	switch (ActionID)
+	switch(ActionID)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
@@ -106,7 +114,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				DataTable[REG_SELF_TEST_FAILED_SS] = STS_None;
 				DataTable[REG_SELF_TEST_FAILED_RELAY] = 0;
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				//CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayCheck_1);
+				CONTROL_SetDeviceState(DS_Ready, DSS_None);
 			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -118,11 +126,11 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_SetDeviceState(DS_None, DSS_None);
 			}
 			else if(CONTROL_State != DS_None)
-					*pUserError = ERR_OPERATION_BLOCKED;
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_CLR_FAULT:
-			if (CONTROL_State == DS_Fault)
+			if(CONTROL_State == DS_Fault)
 			{
 				CONTROL_SetDeviceState(DS_None, DSS_None);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
@@ -132,7 +140,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_CLR_WARNING:
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
-		// Commutations
+			// Commutations
 		case ACT_COMM_PE:
 			if(CONTROL_State == DS_Ready)
 			{
@@ -141,7 +149,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
 			else if(CONTROL_State != DS_None)
-					*pUserError = ERR_OPERATION_BLOCKED;
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		default:
@@ -154,20 +162,20 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 void CONTROL_LogicProcess()
 {
 	// Commutation processor
-	if (CONTROL_State == DS_InProcess)
+	if(CONTROL_State == DS_InProcess)
 	{
 		// Relays commutation (without feedback from proximity sensors)
-		if (CONTROL_SubState == DSS_AwaitingRelayCommutation)
+		if(CONTROL_SubState == DSS_AwaitingRelayCommutation)
 		{
-			if (CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + COMM_RELAYS_DELAY_MS))
+			if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + COMM_RELAYS_DELAY_MS))
 				CONTROL_SetDeviceState(DS_Ready, DSS_None);
 		}
 		// Contactors commutation
 		else
 		{
-			if (CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_CONTACTORS_COMM_DELAY_MS]))
+			if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_CONTACTORS_COMM_DELAY_MS]))
 			{
-				switch (CONTROL_SubState)
+				switch(CONTROL_SubState)
 				{
 					case DSS_AwaitingContactorsQgUP:
 						CONTROL_CheckContactorsStates_macro(CT_Qg_UP);
@@ -181,7 +189,7 @@ void CONTROL_LogicProcess()
 					case DSS_AwaitingContactorsQgDOWNRev:
 						CONTROL_CheckContactorsStates_macro(CT_Qg_DOWN_REV);
 						break;
-					//
+						//
 					case DSS_AwaitingContactorsVcesatUP:
 						CONTROL_CheckContactorsStates_macro(CT_Vcesat_UP);
 						break;
@@ -194,7 +202,7 @@ void CONTROL_LogicProcess()
 					case DSS_AwaitingContactorsVcesatDOWNRev:
 						CONTROL_CheckContactorsStates_macro(CT_Vcesat_DOWN_REV);
 						break;
-					//
+						//
 					case DSS_AwaitingContactorsVsdUP:
 						CONTROL_CheckContactorsStates_macro(CT_Vsd_UP);
 						break;
@@ -207,7 +215,7 @@ void CONTROL_LogicProcess()
 					case DSS_AwaitingContactorsVsdDOWNRev:
 						CONTROL_CheckContactorsStates_macro(CT_Vsd_DOWN_REV);
 						break;
-					//
+						//
 					case DSS_AwaitingContactorsRdsonUP:
 						CONTROL_CheckContactorsStates_macro(CT_Rdson_UP);
 						break;
@@ -220,7 +228,7 @@ void CONTROL_LogicProcess()
 					case DSS_AwaitingContactorsRdsonDOWNRev:
 						CONTROL_CheckContactorsStates_macro(CT_Rdson_DOWN_REV);
 						break;
-					//
+						//
 					case DSS_AwaitingContactorsVfUP:
 						CONTROL_CheckContactorsStates_macro(CT_Vf_UP);
 						break;
@@ -240,18 +248,57 @@ void CONTROL_LogicProcess()
 		}
 	}
 	//
-	// Pressure sensing processor
-
-	// Safety circuit processor
-
+	// Pressure sensing & Safety circuit processor
+	if((CONTROL_State == DS_InProcess) || (CONTROL_State == DS_Ready))
+	{
+		if((Conv_PressureADCVtoBar() < DataTable[REG_PRESSURE_THRESHOLD]) || (!LL_IsSelftestPinOk()))
+		{
+			CONTROL_SetDeviceState(DS_Fault, DSS_AwaitingResetToDefault);
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			DataTable[REG_FAULT_REASON] = LL_IsSelftestPinOk() ? DF_LOW_PRESSURE : DF_SAFETY_ERROR;
+		}
+	}
+	//
+	// Reset to default commutation processor
+	if(CONTROL_SubState == DSS_AwaitingResetToDefault)
+	{
+		if(CONTROL_CommutationStartTime == 0)
+		CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+		// При штатной работе отключаем силовые блоки и подключаем PE без задержки
+		if((CONTROL_State != DS_Fault) && (CONTROL_State != DS_Disabled))
+		{
+			COMM_DisconnectAll();
+			CONTROL_SetDeviceSubState(DSS_None);
+		}
+		// При Fault ожидаем задержку до отключения силовых блоков и подключения PE
+		else if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_DFLT_COMM_DELAY_MS]))
+		{
+			COMM_DisconnectAll();
+			CONTROL_SetDeviceSubState(DSS_None);
+			CONTROL_CommutationStartTime = 0;
+		}
+	}
+	//
 	// Indication processor
+	if((CONTROL_State == DS_Fault)||(CONTROL_State == DS_Disabled))
+	{
+		if(CONTROL_TimeCounter >= (CONTROL_IndBlinkStartTime + TIME_FAULT_LED_BLINK))
+		{
+			LL_ToggleIndication();
+			CONTROL_IndBlinkStartTime = CONTROL_TimeCounter;
+		}
+	}
+	else if(CONTROL_State == DS_InProcess)
+		LL_SetStateIndication(TRUE);
+	else
+		LL_SetStateIndication(FALSE);
 }
 //-----------------------------------------------
 
 void CONTROL_CheckContactorsStates(Int8U CommArray[], Int8U Length)
 {
 	Int8U ErrorCode = ZcRD_CommutationCheck(CommArray, Length);
-	if (ErrorCode != COMM_CHECK_NO_ERROR)
+	if(ErrorCode != COMM_CHECK_NO_ERROR)
 	{
 		CONTROL_SetDeviceState(DS_Fault, DSS_None);
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
