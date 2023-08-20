@@ -14,9 +14,59 @@
 
 // Variables
 //
+static volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
+static volatile Int32U ZcRD_RelayGroupsCommCounter[NUM_RELAY_GROUPS_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0};
+static EPROMServiceConfig EPROMServiceCfg;
 
 // Functions
 //
+void ZcRD_IncrementContactors(uint8_t BitDataArray[])
+{
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+	{
+		for(Int8U j = 0; j < 8; j++)
+			ZcRD_ContactorsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
+	}
+}
+//-----------------------------
+
+void ZcRD_IncrementRelays(uint8_t BitDataArray[])
+{
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
+	{
+		for(Int8U j = 0; j < 8; j++)
+			ZcRD_ContactorsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
+	}
+}
+//-----------------------------
+
+void ZcRD_SaveCountersToEPROM()
+{
+	const Int16U TableSizeCont = NUM_CONTACTOR_COMMUTATIONS * 2;
+	const Int16U TableSizeRelGroup = NUM_RELAY_GROUPS_COMMUTATIONS * 2;
+	if(EPROMServiceCfg.WriteService)
+	{
+		EPROMServiceCfg.WriteService(ZcRD_COUNTERS_EPROM_ADDRESS, (pInt16U)&ZcRD_ContactorsCommCounter[0],
+				TableSizeCont);
+		EPROMServiceCfg.WriteService(ZcRD_COUNTERS_EPROM_ADDRESS + TableSizeCont,
+				(pInt16U)&ZcRD_RelayGroupsCommCounter[0], TableSizeRelGroup);
+	}
+}
+//-----------------------------
+
+void ZcRD_RestoreCountersFromEPROM()
+{
+	const Int16U TableSizeCont = NUM_CONTACTOR_COMMUTATIONS * 2;
+	const Int16U TableSizeRelGroup = NUM_RELAY_GROUPS_COMMUTATIONS * 2;
+	if(EPROMServiceCfg.ReadService)
+	{
+		EPROMServiceCfg.ReadService(ZcRD_COUNTERS_EPROM_ADDRESS, (pInt16U)&ZcRD_ContactorsCommCounter[0],
+				TableSizeCont);
+		EPROMServiceCfg.ReadService(ZcRD_COUNTERS_EPROM_ADDRESS + TableSizeCont,
+				(pInt16U)&ZcRD_RelayGroupsCommCounter[0], TableSizeRelGroup);
+	}
+}
+//-----------------------------
 
 void ZcRD_WriteSPI1Contactors(uint8_t BitDataArray[])
 {
@@ -62,6 +112,7 @@ void ZcRD_CommutateConfig(Int8U CommArray[], Int8U Length)
 	}
 	ZcRD_WriteSPI1Relays(RelayArray);
 	ZcRD_WriteSPI1Contactors(ContactorArray);
+
 }
 // ----------------------------------------
 

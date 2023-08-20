@@ -13,8 +13,14 @@
 #define ZcRD_CommutateConfig_macro(arr)		(ZcRD_CommutateConfig(arr, sizeof(arr) / sizeof(arr[0])))
 #define ZcRD_CommutationCheck_macro(arr)	(ZcRD_CommutationCheck(arr, sizeof(arr) / sizeof(arr[0])))
 
+#define ZcRD_COUNTERS_EPROM_ADDRESS		0x0801F800ul
+
 // Functions
 //
+void ZcRD_IncrementContactors(uint8_t BitDataArray[]);
+void ZcRD_IncrementRelays(uint8_t BitDataArray[]);
+void ZcRD_SaveCountersToEPROM();
+void ZcRD_RestoreCountersFromEPROM();
 void ZcRD_WriteSPI1Contactors(uint8_t BitDataArray[]);
 void ZcRD_WriteSPI1Relays(uint8_t BitDataArray[]);
 void ZcRD_ReadSPI2(volatile uint8_t* SPI_Data);

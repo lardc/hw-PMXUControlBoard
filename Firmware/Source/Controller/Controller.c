@@ -98,7 +98,7 @@ void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState)
 void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
-	CONTROL_SetDeviceState(DS_None, DSS_None);
+	CONTROL_SetDeviceState(DS_None, DSS_AwaitingResetToDefault);
 }
 //------------------------------------------
 
@@ -263,7 +263,7 @@ void CONTROL_LogicProcess()
 	if(CONTROL_SubState == DSS_AwaitingResetToDefault)
 	{
 		if(CONTROL_CommutationStartTime == 0)
-		CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 		// При штатной работе отключаем силовые блоки и подключаем PE без задержки
 		if((CONTROL_State != DS_Fault) && (CONTROL_State != DS_Disabled))
 		{
@@ -280,7 +280,7 @@ void CONTROL_LogicProcess()
 	}
 	//
 	// Indication processor
-	if((CONTROL_State == DS_Fault)||(CONTROL_State == DS_Disabled))
+	if((CONTROL_State == DS_Fault) || (CONTROL_State == DS_Disabled))
 	{
 		if(CONTROL_TimeCounter >= (CONTROL_IndBlinkStartTime + TIME_FAULT_LED_BLINK))
 		{
