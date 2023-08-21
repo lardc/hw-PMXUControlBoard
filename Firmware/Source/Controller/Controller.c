@@ -295,9 +295,9 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_CheckContactorsStates(Int8U CommArray[], Int8U Length)
+void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length)
 {
-	Int8U ErrorCode = ZcRD_CommutationCheck(CommArray, Length);
+	Int8U ErrorCode = ZcRD_CommutationCheck((Int8U *)CommArray, Length);
 	if(ErrorCode != COMM_CHECK_NO_ERROR)
 	{
 		CONTROL_SetDeviceState(DS_Fault, DSS_None);

@@ -68,15 +68,15 @@ void ZcRD_RestoreCountersFromEPROM()
 }
 //-----------------------------
 
-void ZcRD_WriteSPI1Contactors(uint8_t BitDataArray[])
+void ZcRD_WriteSPI1Contactors(const uint8_t BitDataArray[])
 {
-	LL_WriteSPI1(BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
+	LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
 }
 //-----------------------------
 
-void ZcRD_WriteSPI1Relays(uint8_t BitDataArray[])
+void ZcRD_WriteSPI1Relays(const uint8_t BitDataArray[])
 {
-	LL_WriteSPI1(BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
+	LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
 }
 //-----------------------------
 
@@ -95,7 +95,7 @@ void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int8U* BitDataArra
 }
 // ----------------------------------------
 
-void ZcRD_CommutateConfig(Int8U CommArray[], Int8U Length)
+void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
 {
 	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
@@ -105,10 +105,10 @@ void ZcRD_CommutateConfig(Int8U CommArray[], Int8U Length)
 		ContactorArray[i] = CT_DFLT_Contactors[i];
 	for(uint8_t i = 0; i < Length; i++)
 	{
-		if(InnerCommutationTable[CommArray[i]].Type == RELAY)
-			ZcRD_OutputValuesCompose(CommArray[i], TRUE, &RelayArray[0]);
+		if(InnerCommutationTable[(uint8_t)CommArray[i]].Type == RELAY)
+			ZcRD_OutputValuesCompose((uint8_t)CommArray[i], TRUE, &RelayArray[0]);
 		else
-			ZcRD_OutputValuesCompose(CommArray[i], TRUE, &ContactorArray[0]);
+			ZcRD_OutputValuesCompose((uint8_t)CommArray[i], TRUE, &ContactorArray[0]);
 	}
 	ZcRD_WriteSPI1Relays(RelayArray);
 	ZcRD_WriteSPI1Contactors(ContactorArray);

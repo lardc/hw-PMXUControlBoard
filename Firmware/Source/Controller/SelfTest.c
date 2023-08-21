@@ -19,7 +19,7 @@ static bool IsTestOk = TRUE;
 static Int8U FailReason = DF_NONE;
 // Functions
 //
-bool SELFTEST_RelayTest(Int8U BitDataArray[], Int8U CheckedRelaysArray[], Int8U CheckedRelaysLength)
+bool SELFTEST_RelayTest(Int8U BitDataArray[], const Int8U CheckedRelaysArray[], Int8U CheckedRelaysLength)
 {
 	FailedRelayNumber = SELFTEST_NO_BROKEN_RELAY;
 	IsTestOk = TRUE;
@@ -28,17 +28,17 @@ bool SELFTEST_RelayTest(Int8U BitDataArray[], Int8U CheckedRelaysArray[], Int8U 
 		if(LL_IsSelftestPinOk())
 		{
 			// Start relay opening test
-			ZcRD_OutputValuesCompose(CheckedRelaysArray[i], FALSE, &BitDataArray[0]);
+			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], FALSE, &BitDataArray[0]);
 			DELAY_MS(COMM_RELAYS_DELAY_MS);
 			if(LL_IsSelftestPinOk())
 			{
-				ZcRD_OutputValuesCompose(CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
-				FailedRelayNumber = CheckedRelaysArray[i];
+				ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
+				FailedRelayNumber = (Int8U)CheckedRelaysArray[i];
 				IsTestOk = FALSE;
 				FailReason = DF_RELAY_SHORT;
 				break;
 			}
-			ZcRD_OutputValuesCompose(CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
+			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
 		}
 		else
 		{
@@ -60,7 +60,7 @@ void SELFTEST_Process()
 		{
 			case STS_PE1Check:
 				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro(CT_ST_PE1, CT_ST_RO_PE1))
+				if(!SELFTEST_RelayTest_macro((Int8U *)CT_ST_PE1, CT_ST_RO_PE1))
 				{
 					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
 					CONTROL_SwitchToFault(FailReason);
