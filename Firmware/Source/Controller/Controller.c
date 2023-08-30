@@ -30,6 +30,7 @@ static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CONTROL_CommutationStartTime = 0;
 static Int64U CONTROL_IndBlinkStartTime = 0;
+static Boolean CONTROL_ContactorsCheck;
 
 // Forward functions
 //
@@ -52,6 +53,8 @@ void CONTROL_Init()
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
+	// Считывание значений счетчиков из EEPROM
+	ZcRD_RestoreCountersFromEPROM();
 }
 //------------------------------------------
 
@@ -247,6 +250,11 @@ void CONTROL_LogicProcess()
 			}
 		}
 	}
+	else if(CONTROL_ContactorsCheck)
+	{
+		DataTable[REG_WARNING] = WARNING_CONTACTORS_CHECK;
+		CONTROL_ContactorsCheck = FALSE;
+	}
 	//
 	// Pressure sensing & Safety circuit processor
 	if((CONTROL_State == DS_InProcess) || (CONTROL_State == DS_Ready))
@@ -309,6 +317,21 @@ void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length)
 	{
 		CONTROL_SetDeviceState(DS_Ready, DSS_None);
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_CheckContactorsCounter()
+{
+	for(Int8U i = 0; i < NUM_CONTACTOR_COMMUTATIONS; i++)
+	{
+		if(ZcRD_ContactorsCommCounter[i] >= DataTable[REG_MAX_CONT_COMMUTATIONS])
+		{
+			ZcRD_ContactorsCommCounter[i] = 0;
+			CONTROL_ContactorsCheck = TRUE;
+			DataTable[REG_PROBLEM] = i + 1;
+			return;
+		}
 	}
 }
 //-----------------------------------------------

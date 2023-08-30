@@ -91,5 +91,6 @@ void CONTROL_LogicProcess();
 void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetOutputRegisters();
+void CONTROL_CheckContactorsCounter();
 
 #endif // __CONTROLLER_H

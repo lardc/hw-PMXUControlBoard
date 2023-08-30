@@ -79,6 +79,15 @@ void INITCFG_ConfigTimer7()
 }
 //------------------------------------------------
 
+void INITCFG_ConfigTimer8()
+{
+	TIM_Clock_En(TIM_8);
+	TIM_Config(TIM8, SYSCLK, TIMER8_uS);
+	TIM_Interupt(TIM8, 3, true);
+	TIM_Start(TIM8);
+}
+//------------------------------------------------
+
 void INITCFG_ConfigWatchDog()
 {
 	IWDG_Config();

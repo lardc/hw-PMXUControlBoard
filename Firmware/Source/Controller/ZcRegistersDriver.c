@@ -16,7 +16,6 @@
 //
 static volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
 static volatile Int32U ZcRD_RelayGroupsCommCounter[NUM_RELAY_GROUPS_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0};
-static EPROMServiceConfig EPROMServiceCfg;
 
 // Functions
 //
@@ -42,40 +41,26 @@ void ZcRD_IncrementRelays(uint8_t BitDataArray[])
 
 void ZcRD_SaveCountersToEPROM()
 {
-	const Int16U TableSizeCont = NUM_CONTACTOR_COMMUTATIONS * 2;
-	const Int16U TableSizeRelGroup = NUM_RELAY_GROUPS_COMMUTATIONS * 2;
-	if(EPROMServiceCfg.WriteService)
-	{
-		EPROMServiceCfg.WriteService(ZcRD_COUNTERS_EPROM_ADDRESS, (pInt16U)&ZcRD_ContactorsCommCounter[0],
-				TableSizeCont);
-		EPROMServiceCfg.WriteService(ZcRD_COUNTERS_EPROM_ADDRESS + TableSizeCont,
-				(pInt16U)&ZcRD_RelayGroupsCommCounter[0], TableSizeRelGroup);
-	}
+	// Soon...
 }
 //-----------------------------
 
 void ZcRD_RestoreCountersFromEPROM()
 {
-	const Int16U TableSizeCont = NUM_CONTACTOR_COMMUTATIONS * 2;
-	const Int16U TableSizeRelGroup = NUM_RELAY_GROUPS_COMMUTATIONS * 2;
-	if(EPROMServiceCfg.ReadService)
-	{
-		EPROMServiceCfg.ReadService(ZcRD_COUNTERS_EPROM_ADDRESS, (pInt16U)&ZcRD_ContactorsCommCounter[0],
-				TableSizeCont);
-		EPROMServiceCfg.ReadService(ZcRD_COUNTERS_EPROM_ADDRESS + TableSizeCont,
-				(pInt16U)&ZcRD_RelayGroupsCommCounter[0], TableSizeRelGroup);
-	}
+	// Soon...
 }
 //-----------------------------
 
 void ZcRD_WriteSPI1Contactors(const uint8_t BitDataArray[])
 {
+	ZcRD_IncrementContactors((uint8_t *)BitDataArray);
 	LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
 }
 //-----------------------------
 
 void ZcRD_WriteSPI1Relays(const uint8_t BitDataArray[])
 {
+	ZcRD_IncrementRelays((uint8_t *)BitDataArray);
 	LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
 }
 //-----------------------------

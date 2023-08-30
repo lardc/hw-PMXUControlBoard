@@ -14,7 +14,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, REG_PRESSURE_ADC_K_MAX, REG_PRESSURE_ADC_K_DFLT},						// 3
 		{0, REG_PRESSURE_THRESHOLD_MAX, REG_PRESSURE_THRESHOLD_DFLT},				// 4
 		{0, REG_DFLT_COMM_DELAY_MS_MAX, REG_DFLT_COMM_DELAY_MS_DFLT},				// 5
-		{0, 0, 0},																	// 6
+		{0, REG_MAX_CONT_COMMUTATIONS_MAX, REG_MAX_CONT_COMMUTATIONS_DFLT},			// 6
 		{0, 0, 0},																	// 7
 		{0, 0, 0},																	// 8
 		{0, 0, 0},																	// 9

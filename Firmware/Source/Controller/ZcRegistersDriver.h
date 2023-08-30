@@ -13,8 +13,6 @@
 #define ZcRD_CommutateConfig_macro(arr)		(ZcRD_CommutateConfig(arr, sizeof(arr) / sizeof(arr[0])))
 #define ZcRD_CommutationCheck_macro(arr)	(ZcRD_CommutationCheck(arr, sizeof(arr) / sizeof(arr[0])))
 
-#define ZcRD_COUNTERS_EPROM_ADDRESS		0x08030000ul
-
 // Functions
 //
 void ZcRD_IncrementContactors(uint8_t BitDataArray[]);

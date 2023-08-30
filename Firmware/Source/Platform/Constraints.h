@@ -22,6 +22,9 @@
 //
 #define REG_DFLT_COMM_DELAY_MS_MAX		5000
 #define REG_DFLT_COMM_DELAY_MS_DFLT		500
+//
+#define REG_MAX_CONT_COMMUTATIONS_MAX	50000
+#define REG_MAX_CONT_COMMUTATIONS_DFLT	1000
 // Types
 typedef struct __TableItemConstraint
 {

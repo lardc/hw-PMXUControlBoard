@@ -66,6 +66,7 @@
 #define REG_PRESSURE_ADC_K						3	// Коэффициент пересчёта напряжения АЦП (в мВ) в Бар
 #define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
 #define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
+#define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
 
 // Несохраняемые регистры чтения-записи
 
@@ -100,7 +101,7 @@
 #define DF_NONE									0
 #define DF_RELAY_SHORT							1	// Обнаружено залипшее реле
 #define DF_CHAIN_BREAK							2	// Обнаружен разрыв при прозвонке
-#define DF_CONTACTOR_COMMUTATION_FAULT			3	// Ошибка коммутации контакторов, номер неисправного контактора в Регистре Problem
+#define DF_CONTACTOR_COMMUTATION_FAULT			3	// Ошибка коммутации контакторов, номер неисправного контактора в регистре REG_PROBLEM
 #define DF_LOW_PRESSURE							4	// Низкое давление в пневмосистеме
 #define DF_SAFETY_ERROR							5	// Ошибка защитной цепи
 
@@ -109,6 +110,7 @@
 
 //  Warning
 #define WARNING_NONE							0
+#define WARNING_CONTACTORS_CHECK				1	// Требуется проверка контактных сопротивлений контакторов, номер контактора в регистре REG_PROBLEM
 
 //  User Errors
 #define ERR_NONE								0
