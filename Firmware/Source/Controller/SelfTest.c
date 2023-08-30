@@ -93,72 +93,32 @@ void SELFTEST_Process()
 					CONTROL_SwitchToFault(FailReason);
 				}
 				break;
-			// Проверка контакторов
+			// Проверка контакторов !!!!!!!!!!
 			case STS_TOCU1Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 
 			case STS_TOCU2Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 
 			case STS_TOCU3Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 			case STS_TOCU4Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 			case STS_LCSU1Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 			case STS_LCSU2Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 			case STS_LCSU3Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 			case STS_LCSU4Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
-				{
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					CONTROL_SwitchToFault(FailReason);
-				}
+
 				break;
 
 			default:

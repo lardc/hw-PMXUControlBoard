@@ -8,11 +8,13 @@
 // Include
 #include "stdinc.h"
 #include "stdio.h"
+#include "CommutationTable.h"
 
 //
 #define ZcRD_CommutateConfig_macro(arr)		(ZcRD_CommutateConfig(arr, sizeof(arr) / sizeof(arr[0])))
 #define ZcRD_CommutationCheck_macro(arr)	(ZcRD_CommutationCheck(arr, sizeof(arr) / sizeof(arr[0])))
-
+//
+extern volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS];
 // Functions
 //
 void ZcRD_IncrementContactors(uint8_t BitDataArray[]);

@@ -6,7 +6,6 @@
 #include "ZcRegistersDriver.h"
 //
 #include "SysConfig.h"
-#include "CommutationTable.h"
 #include "LowLevel.h"
 #include "Delay.h"
 #include "DataTable.h"
@@ -14,7 +13,7 @@
 
 // Variables
 //
-static volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
+volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
 static volatile Int32U ZcRD_RelayGroupsCommCounter[NUM_RELAY_GROUPS_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0};
 
 // Functions
