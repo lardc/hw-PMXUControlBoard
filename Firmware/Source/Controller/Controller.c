@@ -445,7 +445,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_SELFTEST:
 			if(CONTROL_State == DS_Ready)
 			{
-				CONTROL_STState = STS_None;
+				CONTROL_SetDeviceSTState(STS_None);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
 				CONTROL_SetDeviceState(DS_InProcess, DSS_SelfTestProgress);
 			}
@@ -590,7 +590,7 @@ void CONTROL_LogicProcess()
 	{
 		if(CONTROL_STState < CONTROL_STS_COUNT)
 		{
-			CONTROL_STState++;
+			CONTROL_SetDeviceSTState(++CONTROL_STState);
 			SELFTEST_Process();
 		}
 		else
