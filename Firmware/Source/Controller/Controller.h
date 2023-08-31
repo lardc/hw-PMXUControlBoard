@@ -8,6 +8,7 @@
 #include "Global.h"
 //
 #define CONTROL_CheckContactorsStates_macro(arr)	(CONTROL_CheckContactorsStates(arr, sizeof(arr) / sizeof(arr[0])))
+#define CONTROL_STS_COUNT		12		// Количество SelfTest коммутаций
 // Types
 //
 typedef enum __DeviceState

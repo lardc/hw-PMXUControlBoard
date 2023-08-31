@@ -51,6 +51,8 @@
 #define ACT_COMM_VF_DOWN						125 // Режим измерения постоянного прямого напряжения диода чоппера и обратно-параллельного диода, позиция DOWN DUT
 #define ACT_COMM_VF_DOWN_REV					126 // Режим измерения постоянного прямого напряжения диода чоппера и обратно-параллельного диода, позиция DOWN DUT инверсное подключение
 //
+#define ACT_SELFTEST							130 // Запуск режима самотестирования
+//
 #define ACT_SAVE_TO_ROM							200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM					201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT					202	// Сброс DataTable в состояние по умолчанию
@@ -83,8 +85,8 @@
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
 #define REG_ST_STATE							199	// Регистр состояния самотестирования
 
-#define REG_SELF_TEST_FAILED_SS					201	// Вспомогательное состояние на котором обнаружен отказ
-#define REG_SELF_TEST_FAILED_RELAY				202	// Номер коммутации на котором обнаружен отказ
+#define REG_SELF_TEST_FAILED_COMMUTATION		201	// SelfTest коммутация, на которой обнаружен отказ
+#define REG_SELF_TEST_FAILED_RELAY				202	// Номер реле, на котором обнаружен отказ
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)

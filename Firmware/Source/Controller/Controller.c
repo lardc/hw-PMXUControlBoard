@@ -114,7 +114,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
 			{
-				DataTable[REG_SELF_TEST_FAILED_SS] = STS_None;
+				DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_None;
 				DataTable[REG_SELF_TEST_FAILED_RELAY] = 0;
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
 				CONTROL_SetDeviceState(DS_Ready, DSS_None);
@@ -143,6 +143,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_CLR_WARNING:
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
+
 			// Commutations
 		case ACT_COMM_PE:
 			if(CONTROL_State == DS_Ready)
@@ -150,6 +151,303 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
 				COMM_Commutate(ACT_COMM_PE);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_ICES_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_ICES_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_ICES_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_ICES_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_IDSS_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_IDSS_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_IDSS_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_IDSS_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_IR_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_IR_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_IR_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_IR_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_QG_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_QG_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_QG_UP_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_QG_UP_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_QG_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_QG_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_QG_DOWN_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_QG_DOWN_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VCESAT_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VCESAT_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VCESAT_UP_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VCESAT_UP_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VCESAT_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VCESAT_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VCESAT_DOWN_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VCESAT_DOWN_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VSD_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VSD_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VSD_UP_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VSD_UP_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VSD_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VSD_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VSD_DOWN_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VSD_DOWN_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_RDSON_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_RDSON_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_RDSON_UP_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_RDSON_UP_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_RDSON_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_RDSON_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_RDSON_DOWN_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_RDSON_DOWN_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VF_UP:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VF_UP);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VF_UP_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VF_UP_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VF_DOWN:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VF_DOWN);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_COMM_VF_DOWN_REV:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
+				COMM_Commutate(ACT_COMM_VF_DOWN_REV);
+				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+			}
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_SELFTEST:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_STState = STS_None;
+				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+				CONTROL_SetDeviceState(DS_InProcess, DSS_SelfTestProgress);
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -284,6 +582,21 @@ void CONTROL_LogicProcess()
 			COMM_DisconnectAll();
 			CONTROL_SetDeviceSubState(DSS_None);
 			CONTROL_CommutationStartTime = 0;
+		}
+	}
+	//
+	// Selftest processor
+	if((CONTROL_State == DS_InProcess) && (CONTROL_SubState == DSS_SelfTestProgress))
+	{
+		if(CONTROL_STState < CONTROL_STS_COUNT)
+		{
+			CONTROL_STState++;
+			SELFTEST_Process();
+		}
+		else
+		{
+			DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
+			CONTROL_SetDeviceState(DS_Ready, DSS_None);
 		}
 	}
 	//

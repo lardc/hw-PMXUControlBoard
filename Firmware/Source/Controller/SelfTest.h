@@ -11,6 +11,7 @@
 
 // Functions
 //
+bool SELFTEST_ContactorsTest();
 void SELFTEST_Process();
 
 #endif // CONTROLLER_SELFTEST_H_
