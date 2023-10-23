@@ -146,57 +146,19 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		// Commutations
 		case ACT_COMM_PE:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_PE, false);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
 		case ACT_COMM_ICES:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_ICES, DataTable[REG_TEST_TOP_SWITCH]);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
 		case ACT_COMM_VCESAT:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VCESAT, DataTable[REG_TEST_TOP_SWITCH]);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
 		case ACT_COMM_VF:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VF, DataTable[REG_TEST_TOP_SWITCH]);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
 		case ACT_COMM_QG:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_QG, DataTable[REG_TEST_TOP_SWITCH]);
+				COMM_Commutate(ActionID, DataTable[REG_TEST_TOP_SWITCH]);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
-			else if(CONTROL_State != DS_None)
+			else if(CONTROL_State == DS_None)
+				*pUserError = ERR_DEVICE_NOT_READY;
+			else
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
