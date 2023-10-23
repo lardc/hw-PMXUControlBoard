@@ -198,25 +198,25 @@ void CONTROL_LogicProcess()
 			{
 				switch(CONTROL_SubState)
 				{
-					case DSS_AwaitingContactorsQgUP:
-						CONTROL_CheckContactorsStates_macro(CT_Qg_UP);
+					case DSS_AwaitingContactorsQg_TOP:
+						CONTROL_CheckContactorsStates_macro(CT_Qg_TOP);
 						break;
-					case DSS_AwaitingContactorsQgDOWN:
-						CONTROL_CheckContactorsStates_macro(CT_Qg_DOWN);
-						break;
-
-					case DSS_AwaitingContactorsVcesatUP:
-						CONTROL_CheckContactorsStates_macro(CT_Vcesat_UP);
-						break;
-					case DSS_AwaitingContactorsVcesatDOWN:
-						CONTROL_CheckContactorsStates_macro(CT_Vcesat_DOWN);
+					case DSS_AwaitingContactorsQg_BOT:
+						CONTROL_CheckContactorsStates_macro(CT_Qg_BOT);
 						break;
 
-					case DSS_AwaitingContactorsVfUP:
-						CONTROL_CheckContactorsStates_macro(CT_Vf_UP);
+					case DSS_AwaitingContactorsVcesat_TOP:
+						CONTROL_CheckContactorsStates_macro(CT_Vcesat_TOP);
 						break;
-					case DSS_AwaitingContactorsVfDOWN:
-						CONTROL_CheckContactorsStates_macro(CT_Vf_DOWN);
+					case DSS_AwaitingContactorsVcesat_BOT:
+						CONTROL_CheckContactorsStates_macro(CT_Vcesat_BOT);
+						break;
+
+					case DSS_AwaitingContactorsVf_TOP:
+						CONTROL_CheckContactorsStates_macro(CT_Vf_TOP);
+						break;
+					case DSS_AwaitingContactorsVf_BOT:
+						CONTROL_CheckContactorsStates_macro(CT_Vf_BOT);
 						break;
 
 					default:

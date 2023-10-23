@@ -26,14 +26,14 @@ typedef enum __DeviceSubState
 	DSS_SelfTestProgress = 1,
 	DSS_AwaitingRelayCommutation = 2,
 
-	DSS_AwaitingContactorsQgUP,
-	DSS_AwaitingContactorsQgDOWN,
+	DSS_AwaitingContactorsQg_TOP,
+	DSS_AwaitingContactorsQg_BOT,
 
-	DSS_AwaitingContactorsVcesatUP,
-	DSS_AwaitingContactorsVcesatDOWN,
+	DSS_AwaitingContactorsVcesat_TOP,
+	DSS_AwaitingContactorsVcesat_BOT,
 
-	DSS_AwaitingContactorsVfUP,
-	DSS_AwaitingContactorsVfDOWN,
+	DSS_AwaitingContactorsVf_TOP,
+	DSS_AwaitingContactorsVf_BOT,
 
 	DSS_AwaitingResetToDefault
 } DeviceSubState;
