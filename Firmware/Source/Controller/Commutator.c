@@ -23,7 +23,7 @@ void COMM_DisconnectAll()
 }
 // ----------------------------------------
 
-void COMM_Commutate(Int16U ActionID)
+void COMM_Commutate(Int16U ActionID, bool TopPosition)
 {
 	switch(ActionID)
 	{
@@ -32,110 +32,21 @@ void COMM_Commutate(Int16U ActionID)
 			COMM_DisconnectAll();
 			break;
 
-		case ACT_COMM_ICES_UP:
-			ZcRD_CommutateConfig_macro(CT_Ices_UP);
+		case ACT_COMM_ICES:
+			TopPosition ? ZcRD_CommutateConfig_macro(CT_Ices_UP) : ZcRD_CommutateConfig_macro(CT_Ices_DOWN);
 			break;
 
-		case ACT_COMM_ICES_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Ices_DOWN);
+		case ACT_COMM_VCESAT:
+			TopPosition ? ZcRD_CommutateConfig_macro(CT_Vcesat_UP) : ZcRD_CommutateConfig_macro(CT_Vcesat_DOWN);
 			break;
 
-		case ACT_COMM_IDSS_UP:
-			ZcRD_CommutateConfig_macro(CT_Idds_UP);
+		case ACT_COMM_VF:
+			TopPosition ? ZcRD_CommutateConfig_macro(CT_Vf_UP) : ZcRD_CommutateConfig_macro(CT_Vf_DOWN);
 			break;
 
-		case ACT_COMM_IDSS_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Idds_DOWN);
-			break;
-
-		case ACT_COMM_IR_UP:
-			ZcRD_CommutateConfig_macro(CT_Ir_UP);
-			break;
-
-		case ACT_COMM_IR_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Ir_DOWN);
-			break;
-
-		case ACT_COMM_QG_UP:
-			ZcRD_CommutateConfig_macro(CT_Qg_UP);
-			break;
-
-		case ACT_COMM_QG_UP_REV:
-			ZcRD_CommutateConfig_macro(CT_Qg_UP_REV);
-			break;
-
-		case ACT_COMM_QG_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Qg_DOWN);
-			break;
-
-		case ACT_COMM_QG_DOWN_REV:
-			ZcRD_CommutateConfig_macro(CT_Qg_DOWN_REV);
-			break;
-
-		case ACT_COMM_VCESAT_UP:
-			ZcRD_CommutateConfig_macro(CT_Vcesat_UP);
-			break;
-
-		case ACT_COMM_VCESAT_UP_REV:
-			ZcRD_CommutateConfig_macro(CT_Vcesat_UP_REV);
-			break;
-
-		case ACT_COMM_VCESAT_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Vcesat_DOWN);
-			break;
-
-		case ACT_COMM_VCESAT_DOWN_REV:
-			ZcRD_CommutateConfig_macro(CT_Vcesat_DOWN_REV);
-			break;
-
-		case ACT_COMM_VSD_UP:
-			ZcRD_CommutateConfig_macro(CT_Vsd_UP);
-			break;
-
-		case ACT_COMM_VSD_UP_REV:
-			ZcRD_CommutateConfig_macro(CT_Vsd_UP_REV);
-			break;
-
-		case ACT_COMM_VSD_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Vsd_DOWN);
-			break;
-
-		case ACT_COMM_VSD_DOWN_REV:
-			ZcRD_CommutateConfig_macro(CT_Rdson_DOWN_REV);
-			break;
-
-		case ACT_COMM_RDSON_UP:
-			ZcRD_CommutateConfig_macro(CT_Rdson_UP);
-			break;
-
-		case ACT_COMM_RDSON_UP_REV:
-			ZcRD_CommutateConfig_macro(CT_Rdson_UP_REV);
-			break;
-
-		case ACT_COMM_RDSON_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Rdson_DOWN);
-			break;
-
-		case ACT_COMM_RDSON_DOWN_REV:
-			ZcRD_CommutateConfig_macro(CT_Rdson_DOWN_REV);
-			break;
-
-		case ACT_COMM_VF_UP:
-			ZcRD_CommutateConfig_macro(CT_Vf_UP);
-			break;
-
-		case ACT_COMM_VF_UP_REV:
-			ZcRD_CommutateConfig_macro(CT_Vf_UP_REV);
-			break;
-
-		case ACT_COMM_VF_DOWN:
-			ZcRD_CommutateConfig_macro(CT_Vf_DOWN);
-			break;
-
-		case ACT_COMM_VF_DOWN_REV:
-			ZcRD_CommutateConfig_macro(CT_Vf_DOWN_REV);
+		case ACT_COMM_QG:
+			TopPosition ? ZcRD_CommutateConfig_macro(CT_Qg_UP) : ZcRD_CommutateConfig_macro(CT_Qg_DOWN);
 			break;
 	}
 }
 // ----------------------------------------
-

@@ -144,298 +144,56 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
 
-			// Commutations
+		// Commutations
 		case ACT_COMM_PE:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_PE);
+				COMM_Commutate(ACT_COMM_PE, false);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_COMM_ICES_UP:
+		case ACT_COMM_ICES:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_ICES_UP);
+				COMM_Commutate(ACT_COMM_ICES, DataTable[REG_TEST_TOP_SWITCH]);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_COMM_ICES_DOWN:
+		case ACT_COMM_VCESAT:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_ICES_DOWN);
+				COMM_Commutate(ACT_COMM_VCESAT, DataTable[REG_TEST_TOP_SWITCH]);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_COMM_IDSS_UP:
+		case ACT_COMM_VF:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_IDSS_UP);
+				COMM_Commutate(ACT_COMM_VF, DataTable[REG_TEST_TOP_SWITCH]);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_COMM_IDSS_DOWN:
+		case ACT_COMM_QG:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_IDSS_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_IR_UP:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_IR_UP);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_IR_DOWN:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_IR_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_QG_UP:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_QG_UP);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_QG_UP_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_QG_UP_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_QG_DOWN:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_QG_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_QG_DOWN_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_QG_DOWN_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VCESAT_UP:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VCESAT_UP);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VCESAT_UP_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VCESAT_UP_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VCESAT_DOWN:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VCESAT_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VCESAT_DOWN_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VCESAT_DOWN_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VSD_UP:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VSD_UP);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VSD_UP_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VSD_UP_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VSD_DOWN:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VSD_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VSD_DOWN_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VSD_DOWN_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_RDSON_UP:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_RDSON_UP);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_RDSON_UP_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_RDSON_UP_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_RDSON_DOWN:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_RDSON_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_RDSON_DOWN_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_RDSON_DOWN_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VF_UP:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VF_UP);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VF_UP_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VF_UP_REV);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VF_DOWN:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VF_DOWN);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-			}
-			else if(CONTROL_State != DS_None)
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_COMM_VF_DOWN_REV:
-			if(CONTROL_State == DS_Ready)
-			{
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ACT_COMM_VF_DOWN_REV);
+				COMM_Commutate(ACT_COMM_QG, DataTable[REG_TEST_TOP_SWITCH]);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
 			}
 			else if(CONTROL_State != DS_None)
@@ -481,67 +239,24 @@ void CONTROL_LogicProcess()
 					case DSS_AwaitingContactorsQgUP:
 						CONTROL_CheckContactorsStates_macro(CT_Qg_UP);
 						break;
-					case DSS_AwaitingContactorsQgUPRev:
-						CONTROL_CheckContactorsStates_macro(CT_Qg_UP_REV);
-						break;
 					case DSS_AwaitingContactorsQgDOWN:
 						CONTROL_CheckContactorsStates_macro(CT_Qg_DOWN);
 						break;
-					case DSS_AwaitingContactorsQgDOWNRev:
-						CONTROL_CheckContactorsStates_macro(CT_Qg_DOWN_REV);
-						break;
-						//
+
 					case DSS_AwaitingContactorsVcesatUP:
 						CONTROL_CheckContactorsStates_macro(CT_Vcesat_UP);
-						break;
-					case DSS_AwaitingContactorsVcesatUPRev:
-						CONTROL_CheckContactorsStates_macro(CT_Vcesat_UP_REV);
 						break;
 					case DSS_AwaitingContactorsVcesatDOWN:
 						CONTROL_CheckContactorsStates_macro(CT_Vcesat_DOWN);
 						break;
-					case DSS_AwaitingContactorsVcesatDOWNRev:
-						CONTROL_CheckContactorsStates_macro(CT_Vcesat_DOWN_REV);
-						break;
-						//
-					case DSS_AwaitingContactorsVsdUP:
-						CONTROL_CheckContactorsStates_macro(CT_Vsd_UP);
-						break;
-					case DSS_AwaitingContactorsVsdUPRev:
-						CONTROL_CheckContactorsStates_macro(CT_Vsd_UP_REV);
-						break;
-					case DSS_AwaitingContactorsVsdDOWN:
-						CONTROL_CheckContactorsStates_macro(CT_Vsd_DOWN);
-						break;
-					case DSS_AwaitingContactorsVsdDOWNRev:
-						CONTROL_CheckContactorsStates_macro(CT_Vsd_DOWN_REV);
-						break;
-						//
-					case DSS_AwaitingContactorsRdsonUP:
-						CONTROL_CheckContactorsStates_macro(CT_Rdson_UP);
-						break;
-					case DSS_AwaitingContactorsRdsonUPRev:
-						CONTROL_CheckContactorsStates_macro(CT_Rdson_UP_REV);
-						break;
-					case DSS_AwaitingContactorsRdsonDOWN:
-						CONTROL_CheckContactorsStates_macro(CT_Rdson_DOWN);
-						break;
-					case DSS_AwaitingContactorsRdsonDOWNRev:
-						CONTROL_CheckContactorsStates_macro(CT_Rdson_DOWN_REV);
-						break;
-						//
+
 					case DSS_AwaitingContactorsVfUP:
 						CONTROL_CheckContactorsStates_macro(CT_Vf_UP);
-						break;
-					case DSS_AwaitingContactorsVfUPRev:
-						CONTROL_CheckContactorsStates_macro(CT_Vf_UP_REV);
 						break;
 					case DSS_AwaitingContactorsVfDOWN:
 						CONTROL_CheckContactorsStates_macro(CT_Vf_DOWN);
 						break;
-					case DSS_AwaitingContactorsVfDOWNRev:
-						CONTROL_CheckContactorsStates_macro(CT_Vf_DOWN_REV);
-						break;
+
 					default:
 						break;
 				}
@@ -588,7 +303,7 @@ void CONTROL_LogicProcess()
 	// Selftest processor
 	if((CONTROL_State == DS_InProcess) && (CONTROL_SubState == DSS_SelfTestProgress))
 	{
-		if(CONTROL_STState < CONTROL_STS_COUNT)
+		if(CONTROL_STState < (STS_Stop - 1))
 		{
 			CONTROL_SetDeviceSTState(++CONTROL_STState);
 			SELFTEST_Process();

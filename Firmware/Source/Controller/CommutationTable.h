@@ -182,38 +182,20 @@ static const Int8U CT_DFLT_Contactors[] = {0, 0};
 // Main Commutations
 static const Int8U CT_PE[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4,
 		BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+
 static const Int8U CT_Ices_UP[] = {BUS3_LCTUP_1, BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4, BUS1_LCTUN_1, BUS1_LCTUN_2,
 		BUS1_LCTUN_3, BUS1_LCTUN_4};
 static const Int8U CT_Ices_DOWN[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS2_LCTUN_1, BUS2_LCTUN_2,
 		BUS2_LCTUN_3, BUS2_LCTUN_4};
-static const Int8U CT_Idds_UP[] = {BUS3_LCTUP_1, BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4, BUS1_LCTUN_1, BUS1_LCTUN_2,
-		BUS1_LCTUN_3, BUS1_LCTUN_4};
-static const Int8U CT_Idds_DOWN[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS2_LCTUN_1, BUS2_LCTUN_2,
-BUS2_LCTUN_3, BUS2_LCTUN_4};
-static const Int8U CT_Ir_UP[] = {BUS3_LCTUP_1, BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4, BUS1_LCTUN_1, BUS1_LCTUN_2,
-		BUS1_LCTUN_3, BUS1_LCTUN_4};
-static const Int8U CT_Ir_DOWN[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS2_LCTUN_1, BUS2_LCTUN_2,
-		BUS2_LCTUN_3, BUS2_LCTUN_4};
+
 static const Int8U CT_Qg_UP[] = {BUS3_TOCUP, BUS1_TOCUN};
-static const Int8U CT_Qg_UP_REV[] = {BUS1_TOCUP, BUS3_TOCUN};
 static const Int8U CT_Qg_DOWN[] = {BUS1_TOCUP, BUS2_TOCUN};
-static const Int8U CT_Qg_DOWN_REV[] = {BUS2_TOCUP, BUS1_TOCUN};
+
 static const Int8U CT_Vcesat_UP[] = {BUS3_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Vcesat_UP_REV[] = {BUS1_LCSUP, BUS3_LCSUN};
 static const Int8U CT_Vcesat_DOWN[] = {BUS1_LCSUP, BUS2_LCSUN};
-static const Int8U CT_Vcesat_DOWN_REV[] = {BUS2_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Vsd_UP[] = {BUS3_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Vsd_UP_REV[] = {BUS1_LCSUP, BUS3_LCSUN};
-static const Int8U CT_Vsd_DOWN[] = {BUS1_LCSUP, BUS2_LCSUN};
-static const Int8U CT_Vsd_DOWN_REV[] = {BUS2_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Rdson_UP[] = {BUS3_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Rdson_UP_REV[] = {BUS1_LCSUP, BUS3_LCSUN};
-static const Int8U CT_Rdson_DOWN[] = {BUS1_LCSUP, BUS2_LCSUN};
-static const Int8U CT_Rdson_DOWN_REV[] = {BUS2_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Vf_UP[] = {BUS3_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Vf_UP_REV[] = {BUS1_LCSUP, BUS3_LCSUN};
-static const Int8U CT_Vf_DOWN[] = {BUS1_LCSUP, BUS2_LCSUN};
-static const Int8U CT_Vf_DOWN_REV[] = {BUS2_LCSUP, BUS1_LCSUN};
+
+static const Int8U CT_Vf_UP[] = {BUS1_LCSUP, BUS3_LCSUN};
+static const Int8U CT_Vf_DOWN[] = {BUS2_LCSUP, BUS1_LCSUN};
 
 
 // Continuity Selftest Commutations

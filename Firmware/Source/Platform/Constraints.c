@@ -5,8 +5,11 @@
 // Header
 #include "Constraints.h"
 
+// Definitions
+#define NO		0
+#define YES		1
+
 // Constants
-//
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 0
 		{0, CONTACTORS_COMM_DELAY_MS_MAX, CONTACTORS_COMM_DELAY_MS_DFLT},			// 1
@@ -136,7 +139,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
-		{0, 0, 0},																	// 128
+		{NO, YES, NO},																// 128
 		{0, 0, 0},																	// 129
 		{0, 0, 0},																	// 130
 		{0, 0, 0},																	// 131

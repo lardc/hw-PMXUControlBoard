@@ -8,7 +8,7 @@
 #include "Global.h"
 //
 #define CONTROL_CheckContactorsStates_macro(arr)	(CONTROL_CheckContactorsStates(arr, sizeof(arr) / sizeof(arr[0])))
-#define CONTROL_STS_COUNT		12		// Количество SelfTest коммутаций
+
 // Types
 //
 typedef enum __DeviceState
@@ -25,48 +25,39 @@ typedef enum __DeviceSubState
 	DSS_None = 0,
 	DSS_SelfTestProgress = 1,
 	DSS_AwaitingRelayCommutation = 2,
+
 	DSS_AwaitingContactorsQgUP,
-	DSS_AwaitingContactorsQgUPRev,
 	DSS_AwaitingContactorsQgDOWN,
-	DSS_AwaitingContactorsQgDOWNRev,
+
 	DSS_AwaitingContactorsVcesatUP,
-	DSS_AwaitingContactorsVcesatUPRev,
 	DSS_AwaitingContactorsVcesatDOWN,
-	DSS_AwaitingContactorsVcesatDOWNRev,
-	DSS_AwaitingContactorsVsdUP,
-	DSS_AwaitingContactorsVsdUPRev,
-	DSS_AwaitingContactorsVsdDOWN,
-	DSS_AwaitingContactorsVsdDOWNRev,
-	DSS_AwaitingContactorsRdsonUP,
-	DSS_AwaitingContactorsRdsonUPRev,
-	DSS_AwaitingContactorsRdsonDOWN,
-	DSS_AwaitingContactorsRdsonDOWNRev,
+
 	DSS_AwaitingContactorsVfUP,
-	DSS_AwaitingContactorsVfUPRev,
 	DSS_AwaitingContactorsVfDOWN,
-	DSS_AwaitingContactorsVfDOWNRev = 22,
-	DSS_AwaitingResetToDefault = 23
+
+	DSS_AwaitingResetToDefault
 } DeviceSubState;
 
 typedef enum __DeviceSelfTestState
 {
 	STS_None = 0,
-	//
+
 	STS_PE1Check = 1,
 	STS_PE2Check = 2,
-	//
+
 	STS_LCTU1Check = 3,
 	STS_LCTU2Check = 4,
-	//
+
 	STS_TOCU1Check = 5,
 	STS_TOCU2Check = 6,
 	STS_TOCU3Check = 7,
 	STS_TOCU4Check = 8,
-	//
+
 	STS_LCSU1Check = 9,
 	STS_LCSU2Check = 10,
 	STS_LCSU3Check = 11,
 	STS_LCSU4Check = 12,
+	STS_Stop
 } DeviceSelfTestState;
 
 // Variables

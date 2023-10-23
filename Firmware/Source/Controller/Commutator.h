@@ -8,13 +8,8 @@
 // Include
 #include "stdinc.h"
 
-// Constants
-//
-
-
 // Functions
-//
 void COMM_DisconnectAll();
-void COMM_Commutate(Int16U ActionID);
+void COMM_Commutate(Int16U ActionID, bool TopPosition);
 
 #endif // __COMMUTATOR_H
