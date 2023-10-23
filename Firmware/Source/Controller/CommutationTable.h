@@ -15,7 +15,7 @@ typedef struct __InnerCommutationTableItem
 	Int8U Type;
 	Int8U Bit;
 	Int8U RegNum;
-} InnerCommutationTableItem;
+} const InnerCommutationTableItem;
 //
 typedef struct __ContactorsStateTableItem
 {
@@ -23,7 +23,7 @@ typedef struct __ContactorsStateTableItem
 	Int8U RegNumClose;
 	Int8U BitOpen;
 	Int8U RegNumOpen;
-} ContactorsStateTableItem;
+} const ContactorsStateTableItem;
 
 //
 // Shift registers pins and data bits
@@ -128,7 +128,8 @@ typedef struct __ContactorsStateTableItem
 #define BUS2_LCTUN_4			43
 //
 //
-InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {{CONTACTOR, PIN_6, REG1}, // 0	// BUS1 to TOCU+
+static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {
+		{CONTACTOR, PIN_6, REG1},		// 0	// BUS1 to TOCU+
 		{CONTACTOR, PIN_5, REG1},		// 1	// BUS1 to TOCU-
 		{CONTACTOR, PIN_4, REG2},		// 2	// BUS1 to LCSU+
 		{CONTACTOR, PIN_3, REG2},		// 3	// BUS1 to LCSU-
@@ -266,7 +267,8 @@ static const Int8U CT_ST_RO_LCTU1[] = {BUS1_LCTUN_1, BUS1_LCTUN_2, BUS1_LCTUN_3,
 static const Int8U CT_ST_RO_LCTU2[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS3_LCTUP_1,
 		BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4};
 //
-ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] = {{PIN_3, REG2, PIN_4, REG2},// 0	// BUS1 to TOCU+
+static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] = {
+		{PIN_3, REG2, PIN_4, REG2},			// 0	// BUS1 to TOCU+
 		{PIN_1, REG2, PIN_2, REG2},			// 1	// BUS1 to TOCU-
 		{PIN_7, REG3, PIN_8, REG3},			// 2	// BUS1 to LCSU+
 		{PIN_5, REG3, PIN_6, REG3},			// 3	// BUS1 to LCSU-
@@ -279,7 +281,5 @@ ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] = {{P
 		{PIN_7, REG2, PIN_8, REG2},			// 10	// BUS3 to LCSU+
 		{PIN_5, REG2, PIN_6, REG2}			// 11	// BUS3 to LCSU-
 };
-//
-
 //
 #endif // __COMMTABLE_H
