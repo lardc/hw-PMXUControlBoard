@@ -32,6 +32,10 @@ void COMM_Commutate(Int16U ActionID, bool TopPosition)
 			COMM_DisconnectAll();
 			break;
 
+		case ACT_COMM_NO_PE:
+			ZcRD_CommutateConfig_macro(CT_PE);
+			break;
+
 		case ACT_COMM_ICES:
 			TopPosition ? ZcRD_CommutateConfig_macro(CT_Ices_TOP) : ZcRD_CommutateConfig_macro(CT_Ices_BOT);
 			break;
