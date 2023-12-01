@@ -44,7 +44,7 @@ void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting G
 	// Turn outputs OFF
 	GPIO_SetState(GPIO_OE, true);
 	GPIO_SetState(GPIO_SS, false);
-	for(int i = 0; i <= Data_Length; i++)
+	for(int i = Data_Length; i >= 0; i--)
 	{
 		SPI_WriteByte8b(SPI1, SPI_Data[i]);
 	}

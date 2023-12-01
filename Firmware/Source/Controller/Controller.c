@@ -150,6 +150,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_VCESAT:
 		case ACT_COMM_VF:
 		case ACT_COMM_QG:
+		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);

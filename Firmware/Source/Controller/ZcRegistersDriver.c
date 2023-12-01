@@ -83,7 +83,7 @@ void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
 {
 	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
-		RelayArray[i] = CT_DFLT_Contactors[i];
+		RelayArray[i] = CT_DFLT_Relays[i];
 	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS];
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 		ContactorArray[i] = CT_DFLT_Contactors[i];
