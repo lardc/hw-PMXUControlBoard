@@ -29,7 +29,7 @@ void LL_ToggleIndication()
 
 bool LL_IsSafetyPinOk()
 {
-	return !GPIO_GetState(GPIO_SAFETY);
+	return (DataTable[REG_SAFETY_ACTIVE]) ? !GPIO_GetState(GPIO_SAFETY) : true;
 }
 //-----------------------------
 
