@@ -39,6 +39,8 @@
 #define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
 #define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
 #define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
+#define REG_SAFETY_ACTIVE						7	// Активация контура безопасности
+#define REG_LAMP_CTRL							8	// Разрешение работы внешнего индикатора
 
 // Несохраняемые регистры чтения-записи
 #define REG_TEST_TOP_SWITCH						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
@@ -61,7 +63,8 @@
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
-// 258 - 259
+#define REG_UNIT_ID								258	// Unit ID
+// 259
 #define REG_FWINFO_STR_LEN						260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN					261	// Begining of the information string record
 

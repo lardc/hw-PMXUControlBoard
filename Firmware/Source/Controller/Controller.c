@@ -29,8 +29,8 @@ volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CONTROL_CommutationStartTime = 0;
-static Int64U CONTROL_IndBlinkStartTime = 0;
 static Boolean CONTROL_ContactorsCheck;
+bool IsCommutation = false;
 
 // Forward functions
 //
@@ -153,6 +153,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Ready)
 			{
+				IsCommutation = true;
 				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
 				COMM_Commutate(ActionID, DataTable[REG_TEST_TOP_SWITCH]);
 				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
@@ -190,7 +191,10 @@ void CONTROL_LogicProcess()
 		if(CONTROL_SubState == DSS_AwaitingRelayCommutation)
 		{
 			if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + COMM_RELAYS_DELAY_MS))
+			{
+				IsCommutation = false;
 				CONTROL_SetDeviceState(DS_Ready, DSS_None);
+			}
 		}
 		// Contactors commutation
 		else
@@ -235,11 +239,11 @@ void CONTROL_LogicProcess()
 	// Pressure sensing & Safety circuit processor
 	if((CONTROL_State == DS_InProcess) || (CONTROL_State == DS_Ready))
 	{
-		if((Conv_PressureADCVtoBar() < DataTable[REG_PRESSURE_THRESHOLD]) || (!LL_IsSelftestPinOk()))
+		if(Conv_PressureADCVtoBar() < DataTable[REG_PRESSURE_THRESHOLD] || !LL_IsSafetyPinOk())
 		{
 			CONTROL_SetDeviceState(DS_Fault, DSS_AwaitingResetToDefault);
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_FAULT_REASON] = LL_IsSelftestPinOk() ? DF_LOW_PRESSURE : DF_SAFETY_ERROR;
+			DataTable[REG_FAULT_REASON] = LL_IsSafetyPinOk() ? DF_LOW_PRESSURE : DF_SAFETY_ERROR;
 		}
 	}
 	//
@@ -277,20 +281,6 @@ void CONTROL_LogicProcess()
 			CONTROL_SetDeviceState(DS_Ready, DSS_None);
 		}
 	}
-	//
-	// Indication processor
-	if((CONTROL_State == DS_Fault) || (CONTROL_State == DS_Disabled))
-	{
-		if(CONTROL_TimeCounter >= (CONTROL_IndBlinkStartTime + TIME_FAULT_LED_BLINK))
-		{
-			LL_ToggleIndication();
-			CONTROL_IndBlinkStartTime = CONTROL_TimeCounter;
-		}
-	}
-	else if(CONTROL_State == DS_InProcess)
-		LL_SetStateIndication(TRUE);
-	else
-		LL_SetStateIndication(FALSE);
 }
 //-----------------------------------------------
 
@@ -346,3 +336,34 @@ void CONTROL_ResetOutputRegisters()
 	DEVPROFILE_ResetEPReadState();
 }
 //------------------------------------------
+
+void CONTROL_HandleExternalLamp(bool IsImpulse)
+{
+	static Int64U ExternalLampCounter = 0;
+
+	if(DataTable[REG_LAMP_CTRL] && CONTROL_State != DS_None)
+	{
+		if(CONTROL_State == DS_Fault)
+		{
+			if(++ExternalLampCounter > TIME_FAULT_LED_BLINK)
+			{
+				LL_ToggleIndication();
+				ExternalLampCounter = 0;
+			}
+		}
+		else
+			{
+				if(IsImpulse)
+				{
+					LL_SetStateIndication(true);
+					ExternalLampCounter = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+				}
+				else
+				{
+					if(CONTROL_TimeCounter >= ExternalLampCounter)
+						LL_SetStateIndication(false);
+				}
+			}
+	}
+}
+//-----------------------------------------------

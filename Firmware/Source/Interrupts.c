@@ -45,6 +45,8 @@ void TIM7_IRQHandler()
 			LED_BlinkTimeCounter = 0;
 		}
 		TIM_StatusClear(TIM7);
+
+		CONTROL_HandleExternalLamp(IsCommutation);
 	}
 }
 //-----------------------------------------

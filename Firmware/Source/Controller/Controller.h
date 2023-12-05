@@ -67,6 +67,7 @@ extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern volatile DeviceSelfTestState CONTROL_STState;
 extern Int64U CONTROL_LEDTimeout;
+extern bool IsCommutation;
 
 // Functions
 //
@@ -84,5 +85,6 @@ void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_CheckContactorsCounter();
+void CONTROL_HandleExternalLamp(bool IsImpulse);
 
 #endif // __CONTROLLER_H
