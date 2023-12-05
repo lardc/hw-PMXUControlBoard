@@ -80,7 +80,7 @@ void DBACT_ReadSPI2Raw()
 // Read raw voltage from ADC input
 void DBACT_GetPressureADCVoltage()
 {
-	DataTable[REG_DBG] = LL_MeasurePressureADCVoltage();
+	DataTable[REG_DBG] = Conv_PressureADCVtoBar();
 }
 //-----------------------
 
