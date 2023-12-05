@@ -48,19 +48,19 @@ typedef struct __ContactorsStateTableItem
 
 // Inner Contactors commutations (Side1_Side2)
 // TOCU HP
-#define BUS1_TOCU_N				1
-#define BUS1_TOCU_P				0
-#define BUS2_TOCU_N				5
-#define BUS2_TOCU_P				4
-#define BUS3_TOCU_N				9
-#define BUS3_TOCU_P				8
+#define BUS1_TOCU_N				6
+#define BUS1_TOCU_P				7
+#define BUS2_TOCU_N				2
+#define BUS2_TOCU_P				3
+#define BUS3_TOCU_N				10
+#define BUS3_TOCU_P				11
 // LCSU
-#define BUS1_LCSU_N				3
-#define BUS1_LCSU_P				2
-#define BUS2_LCSU_N				7
-#define BUS2_LCSU_P				6
-#define BUS3_LCSU_N				11
-#define BUS3_LCSU_P				10
+#define BUS1_LCSU_N				5
+#define BUS1_LCSU_P				4
+#define BUS2_LCSU_N				1
+#define BUS2_LCSU_P				0
+#define BUS3_LCSU_N				9
+#define BUS3_LCSU_P				8
 
 
 // Inner Relays commutations (Side1_Side2_RelayNumber)
