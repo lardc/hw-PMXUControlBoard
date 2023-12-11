@@ -29,7 +29,7 @@ bool SELFTEST_RelayTest(Int8U BitDataArray[], const Int8U CheckedRelaysArray[], 
 		{
 			// Start relay opening test
 			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], FALSE, &BitDataArray[0]);
-			DELAY_MS(COMM_RELAYS_DELAY_MS);
+			DELAY_MS(COMM_DELAY_MS);
 			if(LL_IsSelftestPinOk())
 			{
 				ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);

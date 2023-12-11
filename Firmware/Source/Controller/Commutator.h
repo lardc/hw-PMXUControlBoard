@@ -9,7 +9,7 @@
 #include "stdinc.h"
 
 // Functions
-void COMM_DisconnectAll();
-void COMM_Commutate(Int16U ActionID, bool TopPosition);
+void COMM_SwitchToPE();
+void COMM_Commutate(Int16U ActionID, Int16U TopPosition);
 
 #endif // __COMMUTATOR_H

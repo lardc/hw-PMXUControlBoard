@@ -13,11 +13,14 @@
 //
 typedef enum __DeviceState
 {
-	DS_None = 0,
-	DS_Fault = 1,
-	DS_Disabled = 2,
-	DS_Ready = 3,
-	DS_InProcess = 4
+	DS_None				= 0,
+	DS_Fault			= 1,
+	DS_Disabled			= 2,
+	DS_Enabled			= 3,
+	DS_SafetyActive		= 4,
+	DS_SafetyTrig		= 5,
+	DS_InSelfTest		= 6,
+	DS_InProcess		= 7
 } DeviceState;
 
 typedef enum __DeviceSubState
@@ -85,6 +88,6 @@ void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_CheckContactorsCounter();
-void CONTROL_HandleExternalLamp(bool IsImpulse);
+void CONTROL_HandleExternalLamp(bool Forced);
 
 #endif // __CONTROLLER_H

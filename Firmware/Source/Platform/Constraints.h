@@ -24,6 +24,10 @@
 //
 #define REG_MAX_CONT_COMMUTATIONS_MAX	50000
 #define REG_MAX_CONT_COMMUTATIONS_DFLT	1000
+//
+#define DUT_POS1						1
+#define DUT_POS2						2
+
 // Types
 typedef struct __TableItemConstraint
 {

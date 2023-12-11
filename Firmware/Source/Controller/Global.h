@@ -12,9 +12,9 @@
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
-#define TIME_FAULT_LED_BLINK					250		// Мигание светодиодом в состоянии Fault
-#define COMM_RELAYS_DELAY_MS					8		// Задержка коммутации реле
-#define EXT_LAMP_ON_STATE_TIME					500		// Время свечения внешнего индикатора, мс
+#define TIME_FP_LED_FAULT_BLINK					250		// Мигание светодиодом в состоянии Fault
+#define COMM_DELAY_MS							200		// Время ожидания комммутации
+#define TIME_FP_LED_ON_STATE					500		// Время свечения внешнего индикатора, мс
 
 // Параметры измерения
 #define ADC_REF_VOLTAGE							3300.0f	// Опорное напряжение (в мВ)

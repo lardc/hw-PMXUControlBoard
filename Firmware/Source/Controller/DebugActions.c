@@ -26,7 +26,7 @@ void DBACT_PulseIndication()
 // Safety circuit checking
 void DBACT_IsSafetyOk()
 {
-	DataTable[REG_DBG] = LL_IsSafetyPinOk();
+	DataTable[REG_DBG] = LL_IsSafetyTrig();
 }
 //-----------------------
 

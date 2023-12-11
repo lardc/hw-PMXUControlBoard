@@ -28,7 +28,6 @@ volatile DeviceSubState CONTROL_SubState = DSS_None;
 volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
-static Int64U CONTROL_CommutationStartTime = 0;
 static Boolean CONTROL_ContactorsCheck;
 bool IsCommutation = false;
 
@@ -38,6 +37,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
+void CONTROL_PressureCheck();
+void CONTROL_SafetyCheck();
 
 // Functions
 //
@@ -113,19 +114,16 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-			{
-				DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_None;
-				DataTable[REG_SELF_TEST_FAILED_RELAY] = 0;
-				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_Ready, DSS_None);
-			}
-			else if(CONTROL_State != DS_Ready)
+				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+			else if(CONTROL_State != DS_Enabled)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DISABLE_POWER:
-			if(CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
+				COMM_SwitchToPE();
+				LL_SetStateIndication(false);
 				CONTROL_SetDeviceState(DS_None, DSS_None);
 			}
 			else if(CONTROL_State != DS_None)
@@ -144,6 +142,23 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
 
+		case ACT_SET_ACTIVE:
+			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
+				CONTROL_SetDeviceState(DS_SafetyActive, DSS_None);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
+		case ACT_SET_INACTIVE:
+			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
+			{
+				LL_SetStateIndication(false);
+				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+			}
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		// Commutations
 		case ACT_COMM_PE:
 		case ACT_COMM_ICES:
@@ -151,12 +166,10 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_VF:
 		case ACT_COMM_QG:
 		case ACT_COMM_NO_PE:
-			if(CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
-				IsCommutation = true;
-				CONTROL_SetDeviceState(DS_InProcess, DSS_AwaitingRelayCommutation);
-				COMM_Commutate(ActionID, DataTable[REG_TEST_TOP_SWITCH]);
-				CONTROL_CommutationStartTime = CONTROL_TimeCounter;
+				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION]);
+				CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 			}
 			else if(CONTROL_State == DS_None)
 				*pUserError = ERR_DEVICE_NOT_READY;
@@ -165,7 +178,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_SELFTEST:
-			if(CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Enabled)
 			{
 				CONTROL_SetDeviceSTState(STS_None);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
@@ -184,103 +197,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 void CONTROL_LogicProcess()
 {
-	// Commutation processor
-	if(CONTROL_State == DS_InProcess)
-	{
-		// Relays commutation (without feedback from proximity sensors)
-		if(CONTROL_SubState == DSS_AwaitingRelayCommutation)
-		{
-			if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + COMM_RELAYS_DELAY_MS))
-			{
-				IsCommutation = false;
-				CONTROL_SetDeviceState(DS_Ready, DSS_None);
-			}
-		}
-		// Contactors commutation
-		else
-		{
-			if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_CONTACTORS_COMM_DELAY_MS]))
-			{
-				switch(CONTROL_SubState)
-				{
-					case DSS_AwaitingContactorsQg_TOP:
-						CONTROL_CheckContactorsStates_macro(CT_Qg_TOP);
-						break;
-					case DSS_AwaitingContactorsQg_BOT:
-						CONTROL_CheckContactorsStates_macro(CT_Qg_BOT);
-						break;
-
-					case DSS_AwaitingContactorsVcesat_TOP:
-						CONTROL_CheckContactorsStates_macro(CT_Vcesat_TOP);
-						break;
-					case DSS_AwaitingContactorsVcesat_BOT:
-						CONTROL_CheckContactorsStates_macro(CT_Vcesat_BOT);
-						break;
-
-					case DSS_AwaitingContactorsVf_TOP:
-						CONTROL_CheckContactorsStates_macro(CT_Vf_TOP);
-						break;
-					case DSS_AwaitingContactorsVf_BOT:
-						CONTROL_CheckContactorsStates_macro(CT_Vf_BOT);
-						break;
-
-					default:
-						break;
-				}
-			}
-		}
-	}
-	else if(CONTROL_ContactorsCheck)
-	{
-		DataTable[REG_WARNING] = WARNING_CONTACTORS_CHECK;
-		CONTROL_ContactorsCheck = FALSE;
-	}
-	//
-	// Pressure sensing & Safety circuit processor
-	if((CONTROL_State == DS_InProcess) || (CONTROL_State == DS_Ready))
-	{
-		if(Conv_PressureADCVtoBar() < DataTable[REG_PRESSURE_THRESHOLD] || !LL_IsSafetyPinOk())
-		{
-			CONTROL_SetDeviceState(DS_Fault, DSS_AwaitingResetToDefault);
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_FAULT_REASON] = LL_IsSafetyPinOk() ? DF_LOW_PRESSURE : DF_SAFETY_ERROR;
-		}
-	}
-	//
-	// Reset to default commutation processor
-	if(CONTROL_SubState == DSS_AwaitingResetToDefault)
-	{
-		if(CONTROL_CommutationStartTime == 0)
-			CONTROL_CommutationStartTime = CONTROL_TimeCounter;
-		// При штатной работе отключаем силовые блоки и подключаем PE без задержки
-		if((CONTROL_State != DS_Fault) && (CONTROL_State != DS_Disabled))
-		{
-			COMM_DisconnectAll();
-			CONTROL_SetDeviceSubState(DSS_None);
-		}
-		// При Fault ожидаем задержку до отключения силовых блоков и подключения PE
-		else if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_DFLT_COMM_DELAY_MS]))
-		{
-			COMM_DisconnectAll();
-			CONTROL_SetDeviceSubState(DSS_None);
-			CONTROL_CommutationStartTime = 0;
-		}
-	}
-	//
-	// Selftest processor
-	if((CONTROL_State == DS_InProcess) && (CONTROL_SubState == DSS_SelfTestProgress))
-	{
-		if(CONTROL_STState < (STS_Stop - 1))
-		{
-			CONTROL_SetDeviceSTState(++CONTROL_STState);
-			SELFTEST_Process();
-		}
-		else
-		{
-			DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
-			CONTROL_SetDeviceState(DS_Ready, DSS_None);
-		}
-	}
+	CONTROL_PressureCheck();
+	CONTROL_SafetyCheck();
 }
 //-----------------------------------------------
 
@@ -296,7 +214,7 @@ void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length)
 	}
 	else
 	{
-		CONTROL_SetDeviceState(DS_Ready, DSS_None);
+		CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 	}
 }
@@ -337,33 +255,135 @@ void CONTROL_ResetOutputRegisters()
 }
 //------------------------------------------
 
-void CONTROL_HandleExternalLamp(bool IsImpulse)
+void CONTROL_HandleExternalLamp(bool Forced)
 {
-	static Int64U ExternalLampCounter = 0;
+	static Int64U FPLampCounter = 0;
 
-	if(DataTable[REG_LAMP_CTRL] && CONTROL_State != DS_None)
+	if(CONTROL_State == DS_Fault)
 	{
-		if(CONTROL_State == DS_Fault)
+		if(++FPLampCounter > TIME_FP_LED_FAULT_BLINK)
 		{
-			if(++ExternalLampCounter > TIME_FAULT_LED_BLINK)
-			{
-				LL_ToggleIndication();
-				ExternalLampCounter = 0;
-			}
+			LL_ToggleIndication();
+			FPLampCounter = 0;
 		}
-		else
+	}
+	else
+	{
+		if(CONTROL_State != DS_SafetyTrig)
+		{
+			if(CONTROL_State == DS_None && FPLampCounter)
 			{
-				if(IsImpulse)
+				LL_SetStateIndication(false);
+				FPLampCounter = 0;
+			}
+
+			if(CONTROL_State != DS_None)
+			{
+				if(Forced)
 				{
 					LL_SetStateIndication(true);
-					ExternalLampCounter = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+					FPLampCounter = CONTROL_TimeCounter + TIME_FP_LED_ON_STATE;
 				}
 				else
 				{
-					if(CONTROL_TimeCounter >= ExternalLampCounter)
+					if(CONTROL_TimeCounter >= FPLampCounter)
 						LL_SetStateIndication(false);
 				}
 			}
+		}
+		else
+			LL_SetStateIndication(true);
 	}
+}
+//-----------------------------------------------
+
+void CONTROL_PressureCheck()
+{
+	DataTable[REG_PRESSURE] = Conv_PressureADCVtoBar();
+
+	if(CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled)
+	{
+		if(DataTable[REG_PRESSURE] < DataTable[REG_PRESSURE_THRESHOLD])
+		{
+			COMM_SwitchToPE();
+			CONTROL_SetDeviceState(DS_Fault, DSS_None);
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			DataTable[REG_FAULT_REASON] = DF_LOW_PRESSURE;
+		}
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_SafetyCheck()
+{
+	if((CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled) && LL_IsSafetyTrig())
+	{
+		COMM_SwitchToPE();
+
+		if(CONTROL_State == DS_SafetyActive)
+			CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_SelfTestProcess()
+{
+	/*if((CONTROL_State == DS_InProcess) && (CONTROL_SubState == DSS_SelfTestProgress))
+	{
+		if(CONTROL_STState < (STS_Stop - 1))
+		{
+			CONTROL_SetDeviceSTState(++CONTROL_STState);
+			SELFTEST_Process();
+		}
+		else
+		{
+			DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
+			CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+		}
+	}*/
+}
+//-----------------------------------------------
+
+void CONTROL_CheckContactors()
+{
+/*	// Contactors commutation
+	else
+	{
+		if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_CONTACTORS_COMM_DELAY_MS]))
+		{
+			switch(CONTROL_SubState)
+			{
+				case DSS_AwaitingContactorsQg_TOP:
+					CONTROL_CheckContactorsStates_macro(CT_Qg_TOP);
+					break;
+				case DSS_AwaitingContactorsQg_BOT:
+					CONTROL_CheckContactorsStates_macro(CT_Qg_BOT);
+					break;
+
+				case DSS_AwaitingContactorsVcesat_TOP:
+					CONTROL_CheckContactorsStates_macro(CT_Vcesat_TOP);
+					break;
+				case DSS_AwaitingContactorsVcesat_BOT:
+					CONTROL_CheckContactorsStates_macro(CT_Vcesat_BOT);
+					break;
+
+				case DSS_AwaitingContactorsVf_TOP:
+					CONTROL_CheckContactorsStates_macro(CT_Vf_TOP);
+					break;
+				case DSS_AwaitingContactorsVf_BOT:
+					CONTROL_CheckContactorsStates_macro(CT_Vf_BOT);
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
+}
+else if(CONTROL_ContactorsCheck)
+{
+	DataTable[REG_WARNING] = WARNING_CONTACTORS_CHECK;
+	CONTROL_ContactorsCheck = FALSE;
+}*/
 }
 //-----------------------------------------------
