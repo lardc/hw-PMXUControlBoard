@@ -15,14 +15,17 @@
 #define ACT_DBG_READ_MAGNET_SEN					26	// Проверка считывания датчиков положения ПЦ
 #define ACT_DBG_MEAS_PRESSURE					27	// Измерение значения напряжения на входе АЦП датчика давления
 
-#define ACT_COMM_PE								100 // Отключение всех реле, замыкание шин на PE
-#define ACT_COMM_ICES							101 // Режим измерения тока утечки коллектор-эмиттер
-#define ACT_COMM_VCESAT							102 // Режим измерения напряжения насыщения коллектор-эмиттер IGBT транзисторов
-#define ACT_COMM_VF								103 // Режим измерения постоянного прямого напряжения диода чоппера и обратно-параллельного диода
-#define ACT_COMM_QG								104 // Режим измерения заряда затвора
-#define ACT_COMM_NO_PE							105 // Отключение всех реле и отключение шин от PE
+#define ACT_SET_ACTIVE							100	// Команда активации контура безопасности
+#define ACT_SET_INACTIVE						101	// Команда деактивации контура безопасности
 
-#define ACT_SELFTEST							110 // Запуск режима самотестирования
+#define ACT_COMM_PE								110 // Отключение всех реле, замыкание шин на PE
+#define ACT_COMM_ICES							111 // Режим измерения тока утечки коллектор-эмиттер
+#define ACT_COMM_VCESAT							112 // Режим измерения напряжения насыщения коллектор-эмиттер IGBT транзисторов
+#define ACT_COMM_VF								113 // Режим измерения постоянного прямого напряжения диода чоппера и обратно-параллельного диода
+#define ACT_COMM_QG								114 // Режим измерения заряда затвора
+#define ACT_COMM_NO_PE							115 // Отключение всех реле и отключение шин от PE
+
+#define ACT_SELFTEST							120 // Запуск режима самотестирования
 
 #define ACT_SAVE_TO_ROM							200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM					201	// Восстановление данных из FLASH
@@ -39,11 +42,10 @@
 #define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
 #define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
 #define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
-#define REG_SAFETY_ACTIVE						7	// Активация контура безопасности
-#define REG_LAMP_CTRL							8	// Разрешение работы внешнего индикатора
+#define REG_LAMP_CTRL							7	// Разрешение работы внешнего индикатора
 
 // Несохраняемые регистры чтения-записи
-#define REG_TEST_TOP_SWITCH						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
+#define REG_DUT_POSITION						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
 
 #define REG_DBG									150	// Отладочный регистр
 
@@ -58,12 +60,13 @@
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
 #define REG_ST_STATE							199	// Регистр состояния самотестирования
 
+#define REG_PRESSURE							200	// Давление, Бар
 #define REG_SELF_TEST_FAILED_COMMUTATION		201	// SelfTest коммутация, на которой обнаружен отказ
 #define REG_SELF_TEST_FAILED_RELAY				202	// Номер реле, на котором обнаружен отказ
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
-#define REG_UNIT_ID								258	// Unit ID
+#define REG_DEVICE_ID							258	// Unit ID
 // 259
 #define REG_FWINFO_STR_LEN						260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN					261	// Begining of the information string record
@@ -79,7 +82,6 @@
 #define DF_CHAIN_BREAK							2	// Обнаружен разрыв при прозвонке
 #define DF_CONTACTOR_COMMUTATION_FAULT			3	// Ошибка коммутации контакторов, номер неисправного контактора в регистре REG_PROBLEM
 #define DF_LOW_PRESSURE							4	// Низкое давление в пневмосистеме
-#define DF_SAFETY_ERROR							5	// Ошибка защитной цепи
 
 // Problem
 #define PROBLEM_NONE							0
