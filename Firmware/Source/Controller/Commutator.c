@@ -40,19 +40,19 @@ void COMM_Commutate(Int16U ActionID, Int16U TopPosition)
 			break;
 
 		case ACT_COMM_ICES:
-			(TopPosition == DUT_POS2) ? ZcRD_CommutateConfig_macro(CT_Ices_TOP) : ZcRD_CommutateConfig_macro(CT_Ices_BOT);
+			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_TOP) : ZcRD_CommutateConfig_macro(CT_Ices_BOT);
 			break;
 
 		case ACT_COMM_VCESAT:
-			(TopPosition == DUT_POS2) ? ZcRD_CommutateConfig_macro(CT_Vcesat_TOP) : ZcRD_CommutateConfig_macro(CT_Vcesat_BOT);
+			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vcesat_TOP) : ZcRD_CommutateConfig_macro(CT_Vcesat_BOT);
 			break;
 
 		case ACT_COMM_VF:
-			(TopPosition == DUT_POS2) ? ZcRD_CommutateConfig_macro(CT_Vf_TOP) : ZcRD_CommutateConfig_macro(CT_Vf_BOT);
+			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_TOP) : ZcRD_CommutateConfig_macro(CT_Vf_BOT);
 			break;
 
 		case ACT_COMM_QG:
-			(TopPosition == DUT_POS2) ? ZcRD_CommutateConfig_macro(CT_Qg_TOP) : ZcRD_CommutateConfig_macro(CT_Qg_BOT);
+			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_TOP) : ZcRD_CommutateConfig_macro(CT_Qg_BOT);
 			break;
 	}
 

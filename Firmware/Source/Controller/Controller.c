@@ -318,6 +318,8 @@ void CONTROL_SafetyCheck()
 {
 	if((CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled) && LL_IsSafetyTrig())
 	{
+		DELAY_MS(1);
+
 		COMM_SwitchToPE();
 
 		if(CONTROL_State == DS_SafetyActive)
