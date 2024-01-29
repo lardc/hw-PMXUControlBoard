@@ -10,6 +10,6 @@
 
 // Functions
 void COMM_SwitchToPE();
-void COMM_Commutate(Int16U ActionID, Int16U TopPosition);
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition);
 
 #endif // __COMMUTATOR_H

@@ -24,7 +24,7 @@ void COMM_SwitchToPE()
 }
 // ----------------------------------------
 
-void COMM_Commutate(Int16U ActionID, Int16U TopPosition)
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition)
 {
 	IsCommutation = true;
 
@@ -40,19 +40,19 @@ void COMM_Commutate(Int16U ActionID, Int16U TopPosition)
 			break;
 
 		case ACT_COMM_ICES:
-			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_TOP) : ZcRD_CommutateConfig_macro(CT_Ices_BOT);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_Pos1) : ZcRD_CommutateConfig_macro(CT_Ices_Pos2);
 			break;
 
 		case ACT_COMM_VCESAT:
-			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vcesat_TOP) : ZcRD_CommutateConfig_macro(CT_Vcesat_BOT);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vcesat_Pos1) : ZcRD_CommutateConfig_macro(CT_Vcesat_Pos2);
 			break;
 
 		case ACT_COMM_VF:
-			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_TOP) : ZcRD_CommutateConfig_macro(CT_Vf_BOT);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_Pos1) : ZcRD_CommutateConfig_macro(CT_Vf_Pos2);
 			break;
 
 		case ACT_COMM_QG:
-			(TopPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_TOP) : ZcRD_CommutateConfig_macro(CT_Qg_BOT);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_Pos1) : ZcRD_CommutateConfig_macro(CT_Qg_Pos2);
 			break;
 	}
 
