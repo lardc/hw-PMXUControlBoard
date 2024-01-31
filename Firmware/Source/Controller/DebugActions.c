@@ -44,7 +44,7 @@ void DBACT_WriteSPI1ContactorsRaw()
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 		BitDataArray[i] = CT_DFLT_Contactors[i];
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE, &BitDataArray[0]);
-	ZcRD_WriteSPI1Contactors(BitDataArray);
+	ZcRD_WriteSPI1Comm(BitDataArray, CONTACTOR);
 }
 //-----------------------
 
@@ -55,16 +55,17 @@ void DBACT_WriteSPI1RelaysRaw()
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
 		BitDataArray[i] = CT_DFLT_Contactors[i];
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE, &BitDataArray[0]);
-	ZcRD_WriteSPI1Relays(BitDataArray);
+	ZcRD_WriteSPI1Comm(BitDataArray, RELAY);
 }
 //-----------------------
 
 // Reset SPI1 commutations: Relays and Contactors
 void DBACT_ResetSPI1Commutations()
 {
-	ZcRD_WriteSPI1Relays(CT_DFLT_Relays);
-	ZcRD_WriteSPI1Contactors(CT_DFLT_Contactors);
+	ZcRD_WriteSPI1Comm(CT_DFLT_Relays, RELAY);
+	ZcRD_WriteSPI1Comm(CT_DFLT_Contactors, CONTACTOR);
 }
+//-----------------------
 
 // Read raw data from SPI2
 void DBACT_ReadSPI2Raw()
