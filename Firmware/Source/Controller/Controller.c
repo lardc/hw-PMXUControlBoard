@@ -16,6 +16,7 @@
 #include "Commutator.h"
 #include "ZcRegistersDriver.h"
 #include "Converter.h"
+#include "Constraints.h"
 
 // Types
 //
@@ -39,6 +40,7 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
+bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition);
 
 // Functions
 //
@@ -62,6 +64,7 @@ void CONTROL_Init()
 void CONTROL_Idle()
 {
 	CONTROL_LogicProcess();
+	SELFTEST_Process();
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
@@ -114,7 +117,11 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+			{
+				CONTROL_SetDeviceSTState(STS_None);
+				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+				CONTROL_SetDeviceState(DS_InProcess, DSS_SelfTestProgress);
+			}
 			else if(CONTROL_State != DS_Enabled)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -169,7 +176,15 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
 				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION]);
-				CONTROL_SetDeviceState(CONTROL_State, DSS_None);
+
+				if(CONTROL_CheckContactors(ActionID, DataTable[REG_DUT_POSITION]))
+					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
+				else
+				{
+					CONTROL_SetDeviceState(DS_Fault, DSS_None);
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_FAULT_REASON] = DF_CONTACTOR_FAULT;
+				}
 			}
 			else if(CONTROL_State == DS_None)
 				*pUserError = ERR_DEVICE_NOT_READY;
@@ -202,21 +217,17 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length)
+bool CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length)
 {
 	Int8U ErrorCode = ZcRD_CommutationCheck((Int8U *)CommArray, Length);
+
 	if(ErrorCode != COMM_CHECK_NO_ERROR)
 	{
-		CONTROL_SetDeviceState(DS_Fault, DSS_None);
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_FAULT_REASON] = DF_CONTACTOR_COMMUTATION_FAULT;
-		DataTable[REG_PROBLEM] = ErrorCode;
+		DataTable[REG_FAILED_CONTACTOR] = ErrorCode;
+		return false;
 	}
-	else
-	{
-		CONTROL_SetDeviceState(DS_Enabled, DSS_None);
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
-	}
+
+	return true;
 }
 //-----------------------------------------------
 
@@ -346,46 +357,35 @@ void CONTROL_SelfTestProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_CheckContactors()
+bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 {
-/*	// Contactors commutation
-	else
+	switch(ActionID)
 	{
-		if(CONTROL_TimeCounter >= (CONTROL_CommutationStartTime + DataTable[REG_CONTACTORS_COMM_DELAY_MS]))
-		{
-			switch(CONTROL_SubState)
-			{
-				case DSS_AwaitingContactorsQg_TOP:
-					CONTROL_CheckContactorsStates_macro(CT_Qg_TOP);
-					break;
-				case DSS_AwaitingContactorsQg_BOT:
-					CONTROL_CheckContactorsStates_macro(CT_Qg_BOT);
-					break;
+		case ACT_COMM_PE:
+			return CONTROL_CheckContactorsStates_macro(CT_DFLT_Contactors);
+			break;
 
-				case DSS_AwaitingContactorsVcesat_TOP:
-					CONTROL_CheckContactorsStates_macro(CT_Vcesat_TOP);
-					break;
-				case DSS_AwaitingContactorsVcesat_BOT:
-					CONTROL_CheckContactorsStates_macro(CT_Vcesat_BOT);
-					break;
+		case ACT_COMM_NO_PE:
+			return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
+			break;
 
-				case DSS_AwaitingContactorsVf_TOP:
-					CONTROL_CheckContactorsStates_macro(CT_Vf_TOP);
-					break;
-				case DSS_AwaitingContactorsVf_BOT:
-					CONTROL_CheckContactorsStates_macro(CT_Vf_BOT);
-					break;
+		case ACT_COMM_ICES:
+			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_Pos1 : CT_Ices_Pos2));
+			break;
 
-				default:
-					break;
-			}
-		}
+		case ACT_COMM_VCESAT:
+			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_Pos1 : CT_Vcesat_Pos2));
+			break;
+
+		case ACT_COMM_VF:
+			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_Pos1 : CT_Vf_Pos2));
+			break;
+
+		case ACT_COMM_QG:
+			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_Pos1 : CT_Qg_Pos2));
+			break;
 	}
-}
-else if(CONTROL_ContactorsCheck)
-{
-	DataTable[REG_WARNING] = WARNING_CONTACTORS_CHECK;
-	CONTROL_ContactorsCheck = FALSE;
-}*/
+
+	return false;
 }
 //-----------------------------------------------

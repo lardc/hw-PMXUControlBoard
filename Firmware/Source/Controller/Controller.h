@@ -84,7 +84,7 @@ void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState);
 void CONTROL_ResetToDefaultState();
 bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_LogicProcess();
-void CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length);
+bool CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_CheckContactorsCounter();
