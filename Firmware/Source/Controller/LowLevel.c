@@ -78,3 +78,9 @@ float LL_MeasurePressureADCVoltage()
 	return (float)ADC_Measure(ADC1, ADC_P_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
 }
 //-----------------------------
+
+bool LL_CheckTestCurrent()
+{
+	return GPIO_GetState(GPIO_SELFTEST);
+}
+//-----------------------------
