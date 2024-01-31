@@ -36,7 +36,7 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition)
 			break;
 
 		case ACT_COMM_NO_PE:
-			ZcRD_CommutateConfig_macro(CT_PE);
+			ZcRD_CommutateConfig_macro(CT_NO_PE);
 			break;
 
 		case ACT_COMM_ICES:

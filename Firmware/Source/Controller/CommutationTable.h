@@ -180,7 +180,7 @@ static const Int8U CT_DFLT_Relays[] = {0, 0, 0, 0, 0};
 static const Int8U CT_DFLT_Contactors[] = {0, 0};
 
 // Main Commutations
-static const Int8U CT_PE[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4,
+static const Int8U CT_NO_PE[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4,
 		BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
 
 static const Int8U CT_Ices_Pos1[] = {BUS3_LCTUP_1, BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4, BUS1_LCTUN_1, BUS1_LCTUN_2,

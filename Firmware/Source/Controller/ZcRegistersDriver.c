@@ -82,11 +82,14 @@ void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int8U* BitDataArra
 void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
 {
 	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
+	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS];
+
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
 		RelayArray[i] = CT_DFLT_Relays[i];
-	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS];
+
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 		ContactorArray[i] = CT_DFLT_Contactors[i];
+
 	for(uint8_t i = 0; i < Length; i++)
 	{
 		if(InnerCommutationTable[(uint8_t)CommArray[i]].Type == RELAY)
@@ -105,22 +108,24 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 	Int8U SPI2Data[SPI2_ARRAY_LEN];
 	Int8U ContactorsStateArray[SPI2_ARRAY_LEN];
 	Int8U ErrorNum = COMM_CHECK_NO_ERROR;
+
 	// Generate default contactors state
 	for(Int8U i = 0; i < CONTACTORS_STATE_TABLE_SIZE; i++)
 	{
 		ContactorsStateArray[ContactorsStateTable[i].RegNumClose] &= ~ContactorsStateTable[i].BitClose;
 		ContactorsStateArray[ContactorsStateTable[i].RegNumOpen] |= ContactorsStateTable[i].BitOpen;
 	}
+
 	// Generate destination contactors state
 	for(uint8_t i = 0; i < Length; i++)
 	{
-		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |=
-				ContactorsStateTable[CommArray[i]].BitClose;
-		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &=
-				~ContactorsStateTable[CommArray[i]].BitOpen;
+		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
+		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
 	}
+
 	// Read current state
 	LL_ReadSPI2(&SPI2Data[0]);
+
 	// Compare destination and current states
 	for(Int8U i = 0; i < SPI2_ARRAY_LEN; i++)
 	{
@@ -130,6 +135,7 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 			for(Int8U j = 0; j < BITS_PER_REG; j++)
 			{
 				ErrorNum = j;
+
 				if((ContactorsStateArray[i] >> 1) == (SPI2Data[i] >> 1))
 					break;
 			}
