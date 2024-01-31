@@ -26,7 +26,6 @@ typedef void (*FUNC_AsyncDelegate)();
 //
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = DSS_None;
-volatile DeviceSelfTestState CONTROL_STState = STS_None;
 static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CONTROL_ContactorsCheck;
@@ -73,7 +72,7 @@ void CONTROL_Idle()
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
-	CONTROL_SetDeviceState(DS_Fault, STS_None);
+	CONTROL_SetDeviceState(DS_Fault, DSS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 }
 //------------------------------------------
@@ -95,17 +94,10 @@ void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
 }
 //------------------------------------------
 
-void CONTROL_SetDeviceSTState(DeviceSelfTestState NewSTState)
-{
-	CONTROL_STState = NewSTState;
-	DataTable[REG_ST_STATE] = NewSTState;
-}
-//------------------------------------------
-
 void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
-	CONTROL_SetDeviceState(DS_None, DSS_AwaitingResetToDefault);
+	CONTROL_SetDeviceState(DS_None, DSS_None);
 }
 //------------------------------------------
 
@@ -118,9 +110,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
 			{
-				CONTROL_SetDeviceSTState(STS_None);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InProcess, DSS_SelfTestProgress);
+				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
 			}
 			else if(CONTROL_State != DS_Enabled)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -195,9 +186,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_SELFTEST:
 			if(CONTROL_State == DS_Enabled)
 			{
-				CONTROL_SetDeviceSTState(STS_None);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InProcess, DSS_SelfTestProgress);
+				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;

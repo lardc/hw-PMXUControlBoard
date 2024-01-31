@@ -12,186 +12,118 @@
 #include "CommutationTable.h"
 #include "ZcRegistersDriver.h"
 
-// Variables
+// Functions prototypes
 //
-static Int8U FailedRelayNumber = SELFTEST_NO_BROKEN_RELAY;
-static bool IsTestOk = TRUE;
-static Int8U FailReason = DF_NONE;
+bool SELFTEST_Comm(pInt8U CommTable, Int16U TableLength, pFloat32 ErrorReg);
+void SELFTTEST_CommSingleClose(pInt8U CommTable, Int16U CommNum, bool State);
+void SELFTTEST_CommGroupClose(pInt8U CommTable, Int16U TableLength, bool State);
+void SELFTEST_ResetCommToDefault();
+
+
 // Functions
 //
-bool SELFTEST_RelayTest(Int8U BitDataArray[], const Int8U CheckedRelaysArray[], Int8U CheckedRelaysLength)
-{
-	FailedRelayNumber = SELFTEST_NO_BROKEN_RELAY;
-	IsTestOk = TRUE;
-	for(Int8U i = 0; i < CheckedRelaysLength; i++)
-	{
-		if(LL_IsSelftestPinOk())
-		{
-			// Start relay opening test
-			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], FALSE, &BitDataArray[0]);
-			DELAY_MS(COMM_DELAY_MS);
-			if(LL_IsSelftestPinOk())
-			{
-				ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
-				FailedRelayNumber = (Int8U)CheckedRelaysArray[i];
-				IsTestOk = FALSE;
-				FailReason = DF_RELAY_SHORT;
-				break;
-			}
-			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
-		}
-		else
-		{
-			FailedRelayNumber = CheckedRelaysArray[i];
-			IsTestOk = FALSE;
-			FailReason = DF_CHAIN_BREAK;
-			break;
-		}
-	}
-	return IsTestOk;
-}
-//-----------------------------------------------
-
-bool SELFTEST_ContactorsTest()
-{
-	DELAY_MS(DataTable[REG_CONTACTORS_COMM_DELAY_MS]);
-	IsTestOk = LL_IsSelftestPinOk();
-	if(!IsTestOk)
-	{
-		FailReason = DF_CHAIN_BREAK;
-	}
-	return IsTestOk;
-}
-//-----------------------------------------------
-
 void SELFTEST_Process()
 {
-	if(CONTROL_SubState == DSS_SelfTestProgress)
+	if(CONTROL_State == DS_InSelfTest)
 	{
-		switch(CONTROL_STState)
+		SELFTEST_ResetCommToDefault();
+
+		switch(CONTROL_SubState)
 		{
-			// Проверка реле
-			case STS_PE1Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
+			case DSS_SelfTest_LCTUP:
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_LCTU1, sizeof(CT_ST_LCTU1), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_PE1Check;
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_LCTUP;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
-				break;
-			case STS_PE2Check:
-				ZcRD_CommutateConfig_macro(CT_ST_PE2);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE2, CT_ST_RO_PE2))
-				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_PE2Check;
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
-					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
-				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUN);
 				break;
 
-			case STS_LCTU1Check:
-				ZcRD_CommutateConfig_macro(CT_ST_LCTU1);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_LCTU1, CT_ST_RO_LCTU1))
+			case DSS_SelfTest_LCTUN:
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_LCTU2, sizeof(CT_ST_LCTU2), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCTU1Check;
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_LCTUN;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_PE1);
 				break;
 
-			case STS_LCTU2Check:
-				ZcRD_CommutateConfig_macro(CT_ST_LCTU2);
-				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_LCTU2, CT_ST_RO_LCTU2))
+			case DSS_SelfTest_PE1:
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_PE1, sizeof(CT_ST_PE1), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCTU2Check;
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_PE1;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
-				break;
-				// Проверка контакторов
-			case STS_TOCU1Check:
-				ZcRD_CommutateConfig_macro(CT_ST_TOCU1);
-				if(!SELFTEST_ContactorsTest())
-				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU1Check;
-					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
-				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_PE2);
 				break;
 
-			case STS_TOCU2Check:
-				ZcRD_CommutateConfig_macro(CT_ST_TOCU2);
-				if(!SELFTEST_ContactorsTest())
+			case DSS_SelfTest_PE2:
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_PE2, sizeof(CT_ST_PE2), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU2Check;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_PE2;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCSU1);
 				break;
 
-			case STS_TOCU3Check:
-				ZcRD_CommutateConfig_macro(CT_ST_TOCU3);
-				if(!SELFTEST_ContactorsTest())
+			case DSS_SelfTest_LCSU1:
+				SELFTTEST_CommGroupClose((pInt8U)&CT_ST_BUS1_3, sizeof(CT_ST_BUS1_3), true);
+
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_LCSU1, sizeof(CT_ST_LCSU1), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU3Check;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_LCSU1;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCSU2);
 				break;
 
-			case STS_TOCU4Check:
-				ZcRD_CommutateConfig_macro(CT_ST_TOCU4);
-				if(!SELFTEST_ContactorsTest())
+			case DSS_SelfTest_LCSU2:
+				SELFTTEST_CommGroupClose((pInt8U)&CT_ST_BUS1_2, sizeof(CT_ST_BUS1_2), true);
+
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_LCSU2, sizeof(CT_ST_LCSU2), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU4Check;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_LCSU2;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_TOCU1);
 				break;
 
-			case STS_LCSU1Check:
-				ZcRD_CommutateConfig_macro(CT_ST_LCSU1);
-				if(!SELFTEST_ContactorsTest())
+			case DSS_SelfTest_TOCU1:
+				SELFTTEST_CommGroupClose((pInt8U)&CT_ST_BUS1_3, sizeof(CT_ST_BUS1_3), true);
+
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_TOCU1, sizeof(CT_ST_TOCU1), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU1Check;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_TOCU1;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
+				else
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_TOCU2);
 				break;
 
-			case STS_LCSU2Check:
-				ZcRD_CommutateConfig_macro(CT_ST_LCSU2);
-				if(!SELFTEST_ContactorsTest())
-				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU2Check;
-					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
-				}
-				break;
+			case DSS_SelfTest_TOCU2:
+				SELFTTEST_CommGroupClose((pInt8U)&CT_ST_BUS1_2, sizeof(CT_ST_BUS1_2), true);
 
-			case STS_LCSU3Check:
-				ZcRD_CommutateConfig_macro(CT_ST_LCSU3);
-				if(!SELFTEST_ContactorsTest())
+				if(!SELFTEST_Comm((pInt8U)&CT_ST_TOCU2, sizeof(CT_ST_TOCU2), (pFloat32)&DataTable[REG_FAILED_CONTACTOR]))
 				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU3Check;
+					DataTable[REG_FAILED_COMMUTATION] = DSS_SelfTest_TOCU2;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
+					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
-				break;
-
-			case STS_LCSU4Check:
-				ZcRD_CommutateConfig_macro(CT_ST_LCSU4);
-				if(!SELFTEST_ContactorsTest())
-				{
-					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU4Check;
-					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					CONTROL_SwitchToFault(FailReason);
-				}
+				else
+					CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 				break;
 
 			default:
@@ -201,3 +133,71 @@ void SELFTEST_Process()
 }
 //-----------------------------------------------
 
+bool SELFTEST_Comm(pInt8U CommTable, Int16U TableLength, pFloat32 ErrorReg)
+{
+	// Close relays
+	//
+	SELFTTEST_CommGroupClose(CommTable, TableLength, true);
+
+	DELAY_MS(COMM_DELAY_MS);
+
+	// Check relays
+	//
+	for(int i = 0; i < TableLength; i++)
+	{
+		if(!LL_CheckTestCurrent())
+		{
+			*ErrorReg = i;
+			return false;
+		}
+
+		// Open one relay
+		SELFTTEST_CommSingleClose(CommTable, i, false);
+		DELAY_MS(COMM_DELAY_MS);
+
+		if(LL_CheckTestCurrent())
+		{
+			*ErrorReg = i;
+			return false;
+		}
+
+		// Close one relay
+		SELFTTEST_CommSingleClose(CommTable, i, true);
+		DELAY_MS(COMM_DELAY_MS);
+	}
+
+	return true;
+}
+//-----------------------------------------------
+
+void SELFTTEST_CommSingleClose(pInt8U CommTable, Int16U CommNum, bool State)
+{
+	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS] = {0};
+
+	if(InnerCommutationTable[(uint8_t)CommTable[CommNum]].Type == CT_NormalOpened)
+		ZcRD_OutputValuesCompose((uint8_t)CommTable[CommNum], State, &RelayArray[0]);
+	else
+		ZcRD_OutputValuesCompose((uint8_t)CommTable[CommNum], ~State, &RelayArray[0]);
+
+	ZcRD_WriteSPI1Comm(RelayArray, InnerCommutationTable[(uint8_t)CommTable[CommNum]].Node);
+}
+//-----------------------------------------------
+
+void SELFTTEST_CommGroupClose(pInt8U CommTable, Int16U TableLength, bool State)
+{
+	for(int i = 0; i < TableLength; i++)
+		SELFTTEST_CommSingleClose(CommTable, i, State);
+}
+//-----------------------------------------------
+
+void SELFTEST_ResetCommToDefault()
+{
+	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS] = {0};
+	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS] = {0};
+
+	ZcRD_WriteSPI1Comm(RelayArray, RELAY);
+	ZcRD_WriteSPI1Comm(ContactorArray, CONTACTOR);
+
+	DELAY_MS(COMM_DELAY_MS);
+}
+//-----------------------------------------------

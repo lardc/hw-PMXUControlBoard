@@ -61,8 +61,8 @@
 #define REG_ST_STATE							199	// Регистр состояния самотестирования
 
 #define REG_PRESSURE							200	// Давление, Бар
-#define REG_FAILED_RELAY						201	// Номер реле, в котором обнаружен отказ
-#define REG_FAILED_CONTACTOR					202	// Номер контактора, в котором обнаружен отказ
+#define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
+#define REG_FAILED_CONTACTOR					202	// Номер контактора/реле, в котором обнаружен отказ
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
@@ -78,7 +78,7 @@
 
 //  Fault and disable codes
 #define DF_NONE									0
-#define DF_RELAY_SHORT							1	// Проблема с реле, номер неисправного реле в регистре REG_FAILED_CONTACTOR
+#define DF_SELFT_TEST							1	// Проблема с реле/контактором во время самотестирования
 #define DF_CONTACTOR_FAULT						2	// Проблема с контактором, номер неисправного контактора в регистре REG_FAILED_CONTACTOR
 #define DF_LOW_PRESSURE							3	// Низкое давление в пневмосистеме
 
