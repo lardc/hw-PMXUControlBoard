@@ -5,99 +5,76 @@
 #include "Delay.h"
 #include "Global.h"
 #include "DataTable.h"
+#include "Converter.h"
 
 // Functions
 //
-void LL_ToggleBoardLED()
+void LL_ToggleBoardLed()
 {
 	GPIO_Toggle(GPIO_LED);
 }
 //-----------------------------
 
-void LL_SetStateFPLed(bool State)
+void LL_SetStateIndication(bool State)
 {
-	GPIO_SetState(GPIO_FP_LED, State);
+	GPIO_SetState(GPIO_IND, State);
 }
 //-----------------------------
 
-void LL_SetStateSFRedLed(bool State)
+void LL_ToggleIndication()
 {
-	GPIO_SetState(GPIO_SF_RED_LED, State);
+	GPIO_Toggle(GPIO_IND);
 }
 //-----------------------------
 
-void LL_SetStateSFGreenLed(bool State)
+bool LL_IsSafetyPinOk()
 {
-	GPIO_SetState(GPIO_SF_GRN_LED, State);
+	return !GPIO_GetState(GPIO_SAFETY);
 }
 //-----------------------------
 
-void LL_WriteSPI(uint8_t SPI_Data[], uint8_t Data_Length)
+bool LL_IsSelftestPinOk()
+{
+	return GPIO_GetState(GPIO_SELFTEST);
+}
+//-----------------------------
+
+void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting GPIO_OE, GPIO_PortPinSetting GPIO_SS)
 {
 	// Turn outputs OFF
-	GPIO_SetState(GPIO_SPI_OE, true);
-
-	// Shift-registers reset
-	LL_SPIReset();
-
-	GPIO_SetState(GPIO_SPI_SS, false);
-
-	for (int i = 0; i <= Data_Length; i++)
+	GPIO_SetState(GPIO_OE, true);
+	GPIO_SetState(GPIO_SS, false);
+	for(int i = 0; i <= Data_Length; i++)
 	{
 		SPI_WriteByte8b(SPI1, SPI_Data[i]);
-		GPIO_SetState(GPIO_SPI_SS, true);
-		GPIO_SetState(GPIO_SPI_SS, false);
 	}
-
-	// Turn outputs ON
-	GPIO_SetState(GPIO_SPI_OE, false);
-}
-//-----------------------------
-
-void LL_SPIReset()
-{
-	GPIO_SetState(GPIO_SPI_RST, false);
+	GPIO_SetState(GPIO_SS, true);
 	DELAY_US(1);
-	GPIO_SetState(GPIO_SPI_RST, true);
+	GPIO_SetState(GPIO_SS, false);
+	// Turn outputs ON
+	GPIO_SetState(GPIO_OE, false);
 }
 //-----------------------------
 
-void LL_SetStateSF_EN(bool State)
+void LL_ReadSPI2(volatile uint8_t* SPI_Data)
 {
-	GPIO_SetState(GPIO_SF_EN, State);
+	// Latch
+	GPIO_SetState(GPIO_SPI2_LD, false);
+	DELAY_US(1);
+	GPIO_SetState(GPIO_SPI2_LD, true);
+	// Read data
+	GPIO_SetState(GPIO_SPI2_OE, false);
+	for(int i = 0; i <= SPI2_ARRAY_LEN; i++)
+	{
+		SPI_Data[i] = SPI_ReadByte(SPI2);
+	}
+	// End of transmit
+	GPIO_SetState(GPIO_SPI2_OE, true);
 }
 //-----------------------------
 
-void LL_SetStateSD_EN(bool State)
+float LL_MeasurePressureADCVoltage()
 {
-	GPIO_SetState(GPIO_SD_EN, State);
-}
-//-----------------------------
-
-float LL_SelfTestMeasure()
-{
-	float MeasuredTestVoltage;
-
-	// Enable self-test current
-	LL_SetStateSD_EN(true);
-	DELAY_MS(5);
-	// Measure test-point and convert value to voltage
-	MeasuredTestVoltage = (float)ADC_Measure(ADC1, ADC_V_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
-	// Disable self-test current
-	LL_SetStateSD_EN(false);
-
-	return MeasuredTestVoltage;
-}
-//-----------------------------
-
-bool LL_ClosedRelayFailed()
-{
-	return LL_SelfTestMeasure() > DataTable[REG_SFTST_V_ALLOWED_VOLTAGE];
-}
-//-----------------------------
-
-bool LL_OpenRelayFailed()
-{
-	return LL_SelfTestMeasure() < DataTable[REG_SFTST_V_ALLOWED_VOLTAGE];
+	return (float)ADC_Measure(ADC1, ADC_P_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
 }
 //-----------------------------

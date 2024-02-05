@@ -14,350 +14,190 @@
 
 // Variables
 //
-static const uint8_t TestCommutation_IR1[] = {IL_GT_G_COMM, IL_GT_GE_COMM, IL_GT_G_GE, ST_TI_GT_G, ST_TO_GT_GE};
-static const uint8_t TestCommutation_IR2[] = {IL_GT_G_POT_COMM, IL_GT_GE_POT_COMM, IL_GT_G_GE_POT, ST_TI_GT_G_POT, ST_TO_GT_GE_POT};
-static const uint8_t TestCommutation_IR3[] = {IL_LSL_G_COMM, IL_LSL_GE_COMM, IL_LSL_G_GE, ST_TI_LSL_G, ST_TO_LSL_GE};
-static const uint8_t TestCommutation_IR4[] = {IL_LSL_POTP_COMM, IL_LSL_POTN_COMM, IL_LSL_POTS, ST_TI_LSL_POTP, ST_TO_LSL_POTN};
-
-static const uint8_t TestCommutation_MCR1[] = {MC_G_GT_G, OL_G_COMM1, OL_G_COMM2, OL_G_COMM3, MC_G_GE, OL_GE_COMM1, OL_GE_COMM2, OL_GE_COMM3, MC_GE_GT_GE, ST_TI_GT_G, ST_TO_GT_GE};
-static const uint8_t TestCommutation_MCR2[] = {MC_G_2_GT_G, OL_G_2_COMM1, OL_G_2_COMM2, OL_G_2_COMM3, MC_G_2_GE, OL_GE_2_COMM1, OL_GE_2_COMM2, OL_GE_2_COMM3, MC_GE_2_GT_GE, ST_TI_GT_G, ST_TO_GT_GE};
-static const uint8_t TestCommutation_MCR3[] = {MC_G_GT_G, MC_G_GT_GE, ST_TI_GT_G, ST_TO_GT_GE};
-static const uint8_t TestCommutation_MCR4[] = {MC_G_2_GT_G, MC_G_2_GT_GE, ST_TI_GT_G, ST_TO_GT_GE};
-
+static Int8U FailedRelayNumber = SELFTEST_NO_BROKEN_RELAY;
+static bool IsTestOk = TRUE;
+static Int8U FailReason = DF_NONE;
 // Functions
 //
+bool SELFTEST_RelayTest(Int8U BitDataArray[], const Int8U CheckedRelaysArray[], Int8U CheckedRelaysLength)
+{
+	FailedRelayNumber = SELFTEST_NO_BROKEN_RELAY;
+	IsTestOk = TRUE;
+	for(Int8U i = 0; i < CheckedRelaysLength; i++)
+	{
+		if(LL_IsSelftestPinOk())
+		{
+			// Start relay opening test
+			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], FALSE, &BitDataArray[0]);
+			DELAY_MS(COMM_RELAYS_DELAY_MS);
+			if(LL_IsSelftestPinOk())
+			{
+				ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
+				FailedRelayNumber = (Int8U)CheckedRelaysArray[i];
+				IsTestOk = FALSE;
+				FailReason = DF_RELAY_SHORT;
+				break;
+			}
+			ZcRD_OutputValuesCompose((Int8U)CheckedRelaysArray[i], TRUE, &BitDataArray[0]);
+		}
+		else
+		{
+			FailedRelayNumber = CheckedRelaysArray[i];
+			IsTestOk = FALSE;
+			FailReason = DF_CHAIN_BREAK;
+			break;
+		}
+	}
+	return IsTestOk;
+}
+//-----------------------------------------------
+
+bool SELFTEST_ContactorsTest()
+{
+	DELAY_MS(DataTable[REG_CONTACTORS_COMM_DELAY_MS]);
+	IsTestOk = LL_IsSelftestPinOk();
+	if(!IsTestOk)
+	{
+		FailReason = DF_CHAIN_BREAK;
+	}
+	return IsTestOk;
+}
+//-----------------------------------------------
+
 void SELFTEST_Process()
 {
-	static DeviceSelfTestState PrevSubstate = STS_None;
-	static uint8_t *SelectedTestArray = NULL;
-	static uint8_t SelectedTestArrayLength = 0, TestIndex = 0;
-
-	switch(CONTROL_SubState)
+	if(CONTROL_SubState == DSS_SelfTestProgress)
 	{
-		case STS_InputRelayCheck_1:
-			PrevSubstate = STS_InputRelayCheck_1;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(IL_GT_G_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_GT_GE_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_GT_G_GE, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_GT_GE, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_InputRelayCheck_2:
-			PrevSubstate = STS_InputRelayCheck_2;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(IL_GT_G_POT_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_GT_GE_POT_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_GT_G_GE_POT, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_GT_G_POT, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_GT_GE_POT, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_InputRelayCheck_3:
-			PrevSubstate = STS_InputRelayCheck_3;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(IL_LSL_G_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_LSL_GE_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_LSL_G_GE, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_LSL_G, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_LSL_GE, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_InputRelayCheck_4:
-			PrevSubstate = STS_InputRelayCheck_4;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(IL_LSL_POTP_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_LSL_POTN_COMM, TRUE);
-			ZcRD_OutputValuesCompose(IL_LSL_POTS, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_LSL_POTP, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_LSL_POTN, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_MCRelayCheck_1:
-			PrevSubstate = STS_MCRelayCheck_1;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(MC_G_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(OL_G_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(OL_G_COMM2, TRUE);
-			ZcRD_OutputValuesCompose(OL_G_COMM3, TRUE);
-			ZcRD_OutputValuesCompose(MC_G_GE, TRUE);
-			ZcRD_OutputValuesCompose(OL_GE_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(OL_GE_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(OL_GE_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(MC_GE_GT_GE, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_GT_GE, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_MCRelayCheck_2:
-			PrevSubstate = STS_MCRelayCheck_2;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(MC_G_2_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(OL_G_2_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(OL_G_2_COMM2, TRUE);
-			ZcRD_OutputValuesCompose(OL_G_2_COMM3, TRUE);
-			ZcRD_OutputValuesCompose(MC_G_2_GE, TRUE);
-			ZcRD_OutputValuesCompose(OL_GE_2_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(OL_GE_2_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(OL_GE_2_COMM1, TRUE);
-			ZcRD_OutputValuesCompose(MC_GE_2_GT_GE, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_GT_GE, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_MCRelayCheck_3:
-			PrevSubstate = STS_MCRelayCheck_3;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(MC_G_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(MC_G_GT_GE, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_GT_GE, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_MCRelayCheck_4:
-			PrevSubstate = STS_MCRelayCheck_4;
-
-			ZcRD_OutputValuesReset();
-
-			ZcRD_OutputValuesCompose(MC_G_2_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(MC_G_2_GT_GE, TRUE);
-
-			ZcRD_OutputValuesCompose(ST_TI_GT_G, TRUE);
-			ZcRD_OutputValuesCompose(ST_TO_GT_GE, TRUE);
-
-			ZcRD_RegisterFlushWrite();
-			CONTROL_SetDeviceState(DS_InProcess, STS_CurrentMeasure);
-			break;
-
-		case STS_CurrentMeasure:
-			if(LL_ClosedRelayFailed())
-			{
-				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-				DataTable[REG_SELF_TEST_FAILED_SS] = PrevSubstate;
-				ZcRD_RegisterReset();
-				CONTROL_SwitchToFault(DF_RELAY_HIGH_RES);
-			}
-			else
-			{
-				switch(PrevSubstate)
+		switch(CONTROL_STState)
+		{
+			// Проверка реле
+			case STS_PE1Check:
+				ZcRD_CommutateConfig_macro(CT_ST_PE1);
+				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE1, CT_ST_RO_PE1))
 				{
-					case STS_InputRelayCheck_1:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayCheck_2);
-						break;
-					case STS_InputRelayCheck_2:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayCheck_3);
-						break;
-					case STS_InputRelayCheck_3:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayCheck_4);
-						break;
-					case STS_InputRelayCheck_4:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayCheck_1);
-						break;
-
-					case STS_MCRelayCheck_1:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayCheck_2);
-						break;
-					case STS_MCRelayCheck_2:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayCheck_3);
-						break;
-					case STS_MCRelayCheck_3:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayCheck_4);
-						break;
-					case STS_MCRelayCheck_4:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayOpenCheck_1);
-						break;
-
-					default:
-						break;
-				}
-			}
-			break;
-
-		case STS_InputRelayOpenCheck_1:
-			PrevSubstate = STS_InputRelayOpenCheck_1;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_IR1;
-			SelectedTestArrayLength = sizeof(TestCommutation_IR1);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_InputRelayOpenCheck_2:
-			PrevSubstate = STS_InputRelayOpenCheck_2;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_IR2;
-			SelectedTestArrayLength = sizeof(TestCommutation_IR2);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_InputRelayOpenCheck_3:
-			PrevSubstate = STS_InputRelayOpenCheck_3;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_IR3;
-			SelectedTestArrayLength = sizeof(TestCommutation_IR3);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_InputRelayOpenCheck_4:
-			PrevSubstate = STS_InputRelayOpenCheck_4;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_IR4;
-			SelectedTestArrayLength = sizeof(TestCommutation_IR4);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_MCRelayOpenCheck_1:
-			PrevSubstate = STS_MCRelayOpenCheck_1;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_MCR1;
-			SelectedTestArrayLength = sizeof(TestCommutation_MCR1);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_MCRelayOpenCheck_2:
-			PrevSubstate = STS_MCRelayOpenCheck_2;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_MCR2;
-			SelectedTestArrayLength = sizeof(TestCommutation_MCR2);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_MCRelayOpenCheck_3:
-			PrevSubstate = STS_MCRelayOpenCheck_3;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_MCR3;
-			SelectedTestArrayLength = sizeof(TestCommutation_MCR3);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_MCRelayOpenCheck_4:
-			PrevSubstate = STS_MCRelayOpenCheck_4;
-
-			TestIndex = 0;
-			SelectedTestArray = (uint8_t *)TestCommutation_MCR4;
-			SelectedTestArrayLength = sizeof(TestCommutation_MCR4);
-
-			CONTROL_SetDeviceState(DS_InProcess, STS_OpenRelayCheck);
-			break;
-
-		case STS_OpenRelayCheck:
-			if(TestIndex < SelectedTestArrayLength)
-			{
-				// Включение всех реле
-				for(uint8_t i = 0; i < SelectedTestArrayLength; i++)
-					ZcRD_OutputValuesCompose(SelectedTestArray[i], TRUE);
-
-				// Отключение тестируемого реле
-				ZcRD_OutputValuesCompose(SelectedTestArray[TestIndex], FALSE);
-				ZcRD_RegisterFlushWrite();
-
-				// Тестирование
-				if(LL_OpenRelayFailed())
-				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_PE1Check;
+					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-					DataTable[REG_SELF_TEST_FAILED_SS] = PrevSubstate;
-					DataTable[REG_SELF_TEST_FAILED_RELAY] = SelectedTestArray[TestIndex];
-					ZcRD_RegisterReset();
-					CONTROL_SwitchToFault(DF_RELAY_SHORT);
+					CONTROL_SwitchToFault(FailReason);
 				}
-				TestIndex++;
-			}
-			else
-			{
-				switch(PrevSubstate)
+				break;
+			case STS_PE2Check:
+				ZcRD_CommutateConfig_macro(CT_ST_PE2);
+				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_PE2, CT_ST_RO_PE2))
 				{
-					case STS_InputRelayOpenCheck_1:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayOpenCheck_2);
-						break;
-					case STS_InputRelayOpenCheck_2:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayOpenCheck_3);
-						break;
-					case STS_InputRelayOpenCheck_3:
-						CONTROL_SetDeviceState(DS_InProcess, STS_InputRelayOpenCheck_4);
-						break;
-					case STS_InputRelayOpenCheck_4:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayOpenCheck_1);
-						break;
-
-					case STS_MCRelayOpenCheck_1:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayOpenCheck_2);
-						break;
-					case STS_MCRelayOpenCheck_2:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayOpenCheck_3);
-						break;
-					case STS_MCRelayOpenCheck_3:
-						CONTROL_SetDeviceState(DS_InProcess, STS_MCRelayOpenCheck_4);
-						break;
-					case STS_MCRelayOpenCheck_4:
-						DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
-						ZcRD_RegisterReset();
-						CONTROL_SetDeviceState(DS_Ready, STS_None);
-						break;
-
-					default:
-						break;
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_PE2Check;
+					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
 				}
-			}
-			break;
+				break;
 
-		default:
-			break;
+			case STS_LCTU1Check:
+				ZcRD_CommutateConfig_macro(CT_ST_LCTU1);
+				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_LCTU1, CT_ST_RO_LCTU1))
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCTU1Check;
+					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_LCTU2Check:
+				ZcRD_CommutateConfig_macro(CT_ST_LCTU2);
+				if(!SELFTEST_RelayTest_macro((Int8U * )CT_ST_LCTU2, CT_ST_RO_LCTU2))
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCTU2Check;
+					DataTable[REG_SELF_TEST_FAILED_RELAY] = FailedRelayNumber;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+				// Проверка контакторов
+			case STS_TOCU1Check:
+				ZcRD_CommutateConfig_macro(CT_ST_TOCU1);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU1Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_TOCU2Check:
+				ZcRD_CommutateConfig_macro(CT_ST_TOCU2);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU2Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_TOCU3Check:
+				ZcRD_CommutateConfig_macro(CT_ST_TOCU3);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU3Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_TOCU4Check:
+				ZcRD_CommutateConfig_macro(CT_ST_TOCU4);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_TOCU4Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_LCSU1Check:
+				ZcRD_CommutateConfig_macro(CT_ST_LCSU1);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU1Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_LCSU2Check:
+				ZcRD_CommutateConfig_macro(CT_ST_LCSU2);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU2Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_LCSU3Check:
+				ZcRD_CommutateConfig_macro(CT_ST_LCSU3);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU3Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			case STS_LCSU4Check:
+				ZcRD_CommutateConfig_macro(CT_ST_LCSU4);
+				if(!SELFTEST_ContactorsTest())
+				{
+					DataTable[REG_SELF_TEST_FAILED_COMMUTATION] = STS_LCSU4Check;
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(FailReason);
+				}
+				break;
+
+			default:
+				break;
+		}
 	}
 }
 //-----------------------------------------------
+

@@ -5,16 +5,19 @@
 // Header
 #include "Constraints.h"
 
+// Definitions
+#define NO		0
+#define YES		1
+
 // Constants
-//
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
-		{SFTST_ALLOWED_VOLTAGE_MIN, SFTST_ALLOWED_VOLTAGE_MAX, SFTST_ALLOWED_VOLTAGE_DEF},	// 0
-		{0, 0, 0},																	// 1
-		{0, 0, 0},																	// 2
-		{0, 0, 0},																	// 3
-		{0, 0, 0},																	// 4
-		{0, 0, 0},																	// 5
-		{0, 0, 0},																	// 6
+		{0, 0, 0},																	// 0
+		{0, CONTACTORS_COMM_DELAY_MS_MAX, CONTACTORS_COMM_DELAY_MS_DFLT},			// 1
+		{0, REG_PRESSURE_ADC_OFFSET_MAX, REG_PRESSURE_ADC_OFFSET_DFLT}, 			// 2
+		{0, REG_PRESSURE_ADC_K_MAX, REG_PRESSURE_ADC_K_DFLT},						// 3
+		{0, REG_PRESSURE_THRESHOLD_MAX, REG_PRESSURE_THRESHOLD_DFLT},				// 4
+		{0, REG_DFLT_COMM_DELAY_MS_MAX, REG_DFLT_COMM_DELAY_MS_DFLT},				// 5
+		{0, REG_MAX_CONT_COMMUTATIONS_MAX, REG_MAX_CONT_COMMUTATIONS_DFLT},			// 6
 		{0, 0, 0},																	// 7
 		{0, 0, 0},																	// 8
 		{0, 0, 0},																	// 9
@@ -136,7 +139,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
-		{POS1, POS2, POS1},															// 128
+		{NO, YES, NO},																// 128
 		{0, 0, 0},																	// 129
 		{0, 0, 0},																	// 130
 		{0, 0, 0},																	// 131

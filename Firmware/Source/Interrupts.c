@@ -8,6 +8,7 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
+#include "ZcRegistersDriver.h"
 
 // Functions
 //
@@ -40,18 +41,28 @@ void TIM7_IRQHandler()
 		CONTROL_TimeCounter++;
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{
-			LL_ToggleBoardLED();
+			LL_ToggleBoardLed();
 			LED_BlinkTimeCounter = 0;
 		}
-
 		TIM_StatusClear(TIM7);
+	}
+}
+//-----------------------------------------
+
+void TIM8_IRQHandler()
+{
+	if(TIM_StatusCheck(TIM8))
+	{
+		ZcRD_SaveCountersToEPROM();
+		CONTROL_CheckContactorsCounter();
+		TIM_StatusClear(TIM8);
 	}
 }
 //-----------------------------------------
 
 void EXTI9_5_IRQHandler()
 {
-	LL_SetStateSF_EN(true);
-	EXTI_FlagReset(EXTI_7);
+	//
+	EXTI_FlagReset(EXTI_6);
 }
 //-----------------------------------------

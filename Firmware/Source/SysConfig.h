@@ -1,7 +1,6 @@
 ﻿#ifndef __SYSCONFIG_H
 #define __SYSCONFIG_H
 
-
 // Flash loader options
 #define BOOT_LOADER_VARIABLE			(*((volatile uint32_t *)0x20000000))
 #define BOOT_LOADER_REQUEST				0x12345678
@@ -19,7 +18,9 @@
 // ----------------------------------------------
 
 // Timers
-#define TIMER7_uS						1000		// в мкс
+#define TIMER7_uS						1000						// в мкс
+#define TIMER8_Min						30							// в мин
+#define TIMER8_uS						(TIMER8_Min * 60 * 10e6)	// в мкс
 // ----------------------------------------------
 
 // CAN
@@ -27,11 +28,16 @@
 // ----------------------------------------------
 
 // ADC
-#define ADC_V_CHANNEL					1			// Номер канала оцифровки тока
+#define ADC_P_CHANNEL					1			// Номер канала оцифровки давления
 
 // SPI
-#define SPI1_BAUDRATE_BITS				0x7			// Биты задания битрейта SPI
-#define SPI1_LSB_FIRST					false		// Передача младшим битов вперед
+#define SPI1_BAUDRATE_BITS				0x7			// Биты задания битрейта SPI1
+#define SPI2_BAUDRATE_BITS				0x7			// Биты задания битрейта SPI2
+#define SPI1_LSB_FIRST					false		// Передача младшим битом вперед SPI1
+#define SPI2_LSB_FIRST					false		// Передача младшим битом вперед SPI2
+#define SPI2_ARRAY_LEN					3			// Размер массива датчиков положения
+#define SPI1_ARRAY_LEN_CONTACTORS		2			// Размер массива контакторов
+#define SPI1_ARRAY_LEN_RELAYS			5			// Размер массива реле
 // ----------------------------------------------
 
 #define COMM_MODE_2

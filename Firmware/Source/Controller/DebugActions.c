@@ -7,60 +7,80 @@
 #include "Board.h"
 #include "Delay.h"
 #include "Controller.h"
+#include "Converter.h"
 #include "DataTable.h"
 #include "ZcRegistersDriver.h"
 #include "CommutationTable.h"
 
 // Functions
 //
-// Send pulse to Front Panel LED
-void DBACT_ToggleFPLed()
+// Send pulse to Indicator
+void DBACT_PulseIndication()
 {
-	LL_SetStateFPLed(true);
+	LL_SetStateIndication(true);
 	DELAY_MS(1000);
-	LL_SetStateFPLed(false);
+	LL_SetStateIndication(false);
 }
 //-----------------------
 
-// Send pulse to Safety Subsystem Red LED
-void DBACT_ToggleSFRedLed()
+// Safety circuit checking
+void DBACT_IsSafetyOk()
 {
-	LL_SetStateSFRedLed(true);
-	DELAY_MS(1000);
-	LL_SetStateSFRedLed(false);
+	DataTable[REG_DBG] = LL_IsSafetyPinOk();
 }
 //-----------------------
 
-// Send pulse to Safety Subsystem Green LED
-void DBACT_ToggleSFGreenLed()
+// Selftest circuit checking
+void DBACT_IsSelftestOk()
 {
-	LL_SetStateSFGreenLed(true);
-	DELAY_MS(1000);
-	LL_SetStateSFGreenLed(false);
+	DataTable[REG_DBG] = LL_IsSelftestPinOk();
 }
 //-----------------------
 
-void DBACT_WriteSPI()
+// Write raw data to SPI1 for Contactors
+void DBACT_WriteSPI1ContactorsRaw()
 {
-	// Чтение номера таблицы коммутации из отладочного регистра
-	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
-	// Коммутация выбранной комбинации
-	ZcRD_RegisterFlushWrite();
+	Int8U BitDataArray[SPI1_ARRAY_LEN_CONTACTORS];
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+		BitDataArray[i] = CT_DFLT_Contactors[i];
+	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE, &BitDataArray[0]);
+	ZcRD_WriteSPI1Contactors(BitDataArray);
 }
 //-----------------------
 
-// Safety EN check
-void DBACT_ToggleSF_EN()
+// Write raw data to SPI1 for Relays
+void DBACT_WriteSPI1RelaysRaw()
 {
-	LL_SetStateSF_EN(true);
-	DELAY_MS(1000);
-	LL_SetStateSF_EN(true);
+	Int8U BitDataArray[SPI1_ARRAY_LEN_RELAYS];
+	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
+		BitDataArray[i] = CT_DFLT_Contactors[i];
+	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE, &BitDataArray[0]);
+	ZcRD_WriteSPI1Relays(BitDataArray);
 }
 //-----------------------
 
-// Turn self-test current ON, measure voltage with ADC, compare result with DataTable constant
-void DBACT_SelfTestMeasure()
+// Reset SPI1 commutations: Relays and Contactors
+void DBACT_ResetSPI1Commutations()
 {
-	DataTable[REG_SELF_TEST_OP_RESULT] = LL_ClosedRelayFailed() ? OPRESULT_FAIL : OPRESULT_OK;
+	ZcRD_WriteSPI1Relays(CT_DFLT_Relays);
+	ZcRD_WriteSPI1Contactors(CT_DFLT_Contactors);
+}
+
+// Read raw data from SPI2
+void DBACT_ReadSPI2Raw()
+{
+	Int8U SPI_Data[SPI2_ARRAY_LEN];
+	Int32U RawData = 0;
+	ZcRD_ReadSPI2(SPI_Data);
+	RawData = (Int32U)Conv_SPIArrayToHex(SPI_Data, SPI2_ARRAY_LEN);
+	DataTable[REG_DBG] = RawData;
 }
 //-----------------------
+
+// Read raw voltage from ADC input
+void DBACT_GetPressureADCVoltage()
+{
+	DataTable[REG_DBG] = LL_MeasurePressureADCVoltage();
+}
+//-----------------------
+

@@ -20,29 +20,27 @@ void INITCFG_ConfigIO()
 	
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_LED);
-	GPIO_InitPushPullOutput(GPIO_FP_LED);
-	GPIO_InitPushPullOutput(GPIO_SPI_SS);
-	GPIO_InitPushPullOutput(GPIO_SPI_RST);
-	GPIO_InitPushPullOutput(GPIO_SPI_OE);
-	GPIO_InitPushPullOutput(GPIO_SF_RED_LED);
-	GPIO_InitPushPullOutput(GPIO_SF_GRN_LED);
-	GPIO_InitPushPullOutput(GPIO_SF_EN);
-	GPIO_InitPushPullOutput(GPIO_SD_EN);
-
+	GPIO_InitPushPullOutput(GPIO_IND);
+	GPIO_InitPushPullOutput(GPIO_SPI1_SS_CONT);
+	GPIO_InitPushPullOutput(GPIO_SPI1_SS_REL);
+	GPIO_InitPushPullOutput(GPIO_SPI1_OE_CONT);
+	GPIO_InitPushPullOutput(GPIO_SPI1_OE_REL);
+	GPIO_InitPushPullOutput(GPIO_SPI2_LD);
+	GPIO_InitPushPullOutput(GPIO_SPI2_OE);
 
 	// Входы
-	GPIO_InitInput(GPIO_SF_TRIG, NoPull);
+	GPIO_InitInput(GPIO_SAFETY, NoPull);
+	GPIO_InitInput(GPIO_SELFTEST, NoPull);
 
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_LED, false);
-	GPIO_SetState(GPIO_FP_LED, false);
-	GPIO_SetState(GPIO_SPI_SS, true);
-	GPIO_SetState(GPIO_SPI_RST, true);
-	GPIO_SetState(GPIO_SPI_OE, true);
-	GPIO_SetState(GPIO_SF_RED_LED, true);
-	GPIO_SetState(GPIO_SF_GRN_LED, false);
-	GPIO_SetState(GPIO_SF_EN, false);
-	GPIO_SetState(GPIO_SD_EN, false);
+	GPIO_SetState(GPIO_IND, false);
+	GPIO_SetState(GPIO_SPI1_SS_CONT, true);
+	GPIO_SetState(GPIO_SPI1_SS_REL, true);
+	GPIO_SetState(GPIO_SPI1_OE_CONT, true);
+	GPIO_SetState(GPIO_SPI1_OE_REL, true);
+	GPIO_SetState(GPIO_SPI2_LD, true);
+	GPIO_SetState(GPIO_SPI2_OE, true);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_UART1_RX, AltFn_7);
@@ -51,6 +49,8 @@ void INITCFG_ConfigIO()
 	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_DAT, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI2_CLK, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI2_DAT, AltFn_5);
 }
 
 //------------------------------------------------
@@ -58,7 +58,7 @@ void INITCFG_ConfigIO()
 void INITCFG_ConfigExtInterrupt()
 {
 	// Вход сигнала безопасности
-	EXTI_Config(EXTI_PA, EXTI_7, RISE_TRIG, 0);
+	EXTI_Config(EXTI_PA, EXTI_6, RISE_TRIG, 0);
 	EXTI_EnableInterrupt(EXTI9_5_IRQn, 0, true);
 }
 //------------------------------------------------
@@ -76,6 +76,15 @@ void INITCFG_ConfigTimer7()
 	TIM_Config(TIM7, SYSCLK, TIMER7_uS);
 	TIM_Interupt(TIM7, 2, true);
 	TIM_Start(TIM7);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigTimer8()
+{
+	TIM_Clock_En(TIM_8);
+	TIM_Config(TIM8, SYSCLK, TIMER8_uS);
+	TIM_Interupt(TIM8, 3, true);
+	TIM_Start(TIM8);
 }
 //------------------------------------------------
 
@@ -100,5 +109,6 @@ void INITCFG_ConfigADC()
 void INITCFG_ConfigSPI8b()
 {
 	SPI_Init8b(SPI1, SPI1_BAUDRATE_BITS, SPI1_LSB_FIRST);
+	SPI_Init8b(SPI2, SPI2_BAUDRATE_BITS, SPI2_LSB_FIRST);
 }
 //------------------------------------------------

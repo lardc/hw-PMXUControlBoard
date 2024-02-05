@@ -13,7 +13,7 @@
 
 // CAN node ID
 //
-#define CAN_NID						20
+#define CAN_NID						100
 
 // Конфигурация Slave
 //

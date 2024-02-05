@@ -9,195 +9,251 @@
 #include "stdinc.h"
 
 
-// Constants
-//
-#define NUM_HV_BOARD			2
-#define NUM_THERM_BOARD			1
-#define NUM_INPUT_BOARD			1
-#define COMMUTATION_EXT_BOARDS	(NUM_HV_BOARD + NUM_THERM_BOARD + NUM_INPUT_BOARD)
-
-#define NUM_REGS_HV_BOARD			7
-#define NUM_REGS_THERM_BOARD		3
-#define NUM_REGS_INPUT_BOARD		3
-#define NUM_REGS_TOTAL ((NUM_REGS_HV_BOARD * 2) + NUM_REGS_THERM_BOARD + NUM_REGS_INPUT_BOARD)
-
-#define COMMUTATION_TABLE_SIZE (((NUM_REGS_HV_BOARD * NUM_HV_BOARD) + NUM_REGS_THERM_BOARD + NUM_REGS_INPUT_BOARD) * 8)
-
-//
-// Commutation
-// Out lines to PE Commutation
-#define G_PE1					13
-#define G_PE2					14
-#define G_PE3					15
-#define G_PE4					16
-#define C_POT_PE1				0
-#define C_POT_PE2				1
-#define C_POT_PE3				2
-#define C_POT_PE4				3
-#define E_POT_PE1				37
-#define E_POT_PE2				38
-#define E_POT_PE3				39
-#define E_POT_PE4				40
-#define GE_PE1					25
-#define GE_PE2					26
-#define GE_PE3					27
-#define GE_PE4					28
-#define G_2_PE1					69
-#define G_2_PE2					70
-#define G_2_PE3					71
-#define G_2_PE4					72
-#define C_POT_2_PE1				56
-#define C_POT_2_PE2				57
-#define C_POT_2_PE3				58
-#define C_POT_2_PE4				59
-#define E_POT_2_PE1				93
-#define E_POT_2_PE2				94
-#define E_POT_2_PE3				95
-#define E_POT_2_PE4				96
-#define GE_2_PE1				81
-#define GE_2_PE2				82
-#define GE_2_PE3				83
-#define GE_2_PE4				84
-#define T2_PE1					136
-#define T2_PE2					137
-#define T2_PE3					138
-#define T2_PE4					139
-#define T1_PE1					146
-#define T1_PE2					147
-#define T1_PE3					148
-#define T1_PE4					149
-//
-// Out Lines Self-Commutation
-#define OL_C_POT_COMM1			4
-#define OL_C_POT_COMM2			5
-#define OL_C_POT_COMM3			6
-#define OL_C_POT_COMM4			7
-
-#define OL_G_COMM1				17
-#define OL_G_COMM2				18
-#define OL_G_COMM3				19
-#define OL_G_COMM4				20
-
-#define OL_GE_COMM1				30
-#define OL_GE_COMM2				31
-#define OL_GE_COMM3				32
-#define OL_GE_COMM4				33
-
-#define OL_E_POT_COMM1			41
-#define OL_E_POT_COMM2			42
-#define OL_E_POT_COMM3			43
-#define OL_E_POT_COMM4			44
-
-#define OL_C_POT_2_COMM1		60
-#define OL_C_POT_2_COMM2		61
-#define OL_C_POT_2_COMM3		62
-#define OL_C_POT_2_COMM4		63
-
-#define OL_G_2_COMM1			73
-#define OL_G_2_COMM2			74
-#define OL_G_2_COMM3			75
-#define OL_G_2_COMM4			76
-
-#define OL_GE_2_COMM1			86
-#define OL_GE_2_COMM2			87
-#define OL_GE_2_COMM3			88
-#define OL_GE_2_COMM4			89
-
-#define OL_E_POT_2_COMM1		97
-#define OL_E_POT_2_COMM2		98
-#define OL_E_POT_2_COMM3		99
-#define OL_E_POT_2_COMM4		100
-
-#define OL_T2_COMM1				140
-#define OL_T2_COMM2				141
-#define OL_T2_COMM3				142
-#define OL_T2_COMM4				143
-
-#define OL_T1_COMM1				150
-#define OL_T1_COMM2				151
-#define OL_T1_COMM3				152
-#define OL_T1_COMM4				153
-//
-// In Lines Self-Commutation
-#define IL_GT_G_COMM			114
-#define IL_GT_GE_COMM			115
-#define IL_GT_G_POT_COMM		119
-#define IL_GT_GE_POT_COMM		120
-#define IL_LSL_G_COMM			124
-#define IL_LSL_GE_COMM			125
-#define IL_LSL_POTP_COMM		129
-#define IL_LSL_POTN_COMM		130
-
-//
-// Self-Test Commutation
-#define ST_TI_GT_G				112
-#define ST_TI_GT_G_POT			117
-#define ST_TI_LSL_G				122
-#define ST_TI_LSL_POTP			127
-#define ST_TO_GT_GE				113
-#define ST_TO_GT_GE_POT			118
-#define ST_TO_LSL_GE			123
-#define ST_TO_LSL_POTN			128
-//
-// In Lines Commutation
-#define IL_GT_G_GE				116
-#define IL_GT_G_GE_POT			121
-#define IL_LSL_G_GE				126
-#define IL_LSL_POTS				131
-//
-// Main Commutation
-#define MC_C_POT_LSL_POTN		12
-#define MC_G_C_POT1				8
-#define MC_G_C_POT2				9
-#define MC_G_C_POT3				10
-#define MC_G_C_POT4				11
-#define MC_C_POT_LSL_POTP		24
-#define MC_G_GT_G_POT			23
-#define MC_G_GT_G				22
-#define MC_G_GT_GE				21
-#define MC_G_LSL_G				36
-#define MC_GE_GT_G				35
-#define MC_GE_GT_GE				34
-#define MC_G_GE					29
-#define MC_GE_LSL_GE			48
-#define MC_E_POT_GT_GE_POT		47
-#define MC_E_POT_LSL_POTP		46
-#define MC_E_POT_LSL_POTN		45
-#define MC_C_POT_2_LSL_POTN		68
-#define MC_G_2_C_POT1			64
-#define MC_G_2_C_POT2			65
-#define MC_G_2_C_POT3			66
-#define MC_G_2_C_POT4			67
-#define MC_C_POT_2_LSL_POTP		80
-#define MC_G_2_GT_G_POT			79
-#define MC_G_2_GT_G				78
-#define MC_G_2_GT_GE			77
-#define MC_G_2_LSL_G			92
-#define MC_GE_2_GT_G			91
-#define MC_GE_2_GT_GE			90
-#define MC_G_2_GE				85
-#define MC_GE_2_LSL_GE			104
-#define MC_E_POT_2_GT_GE_POT	103
-#define MC_E_POT_2_LSL_POTP		102
-#define MC_E_POT_2_LSL_POTN		101
-#define MC_T2_GT_G_POT			145
-#define MC_T2_GT_G				144
-#define MC_T1_GT_GE_POT			154
-#define MC_T1_GT_GE				155
-
 // Types
-//
-typedef struct __CommutationTableItem
+typedef struct __InnerCommutationTableItem
 {
-	Int8U BoardNum;
+	Int8U Type;
 	Int8U Bit;
 	Int8U RegNum;
-} CommutationTableItem;
+} const InnerCommutationTableItem;
+
+typedef struct __ContactorsStateTableItem
+{
+	Int8U BitClose;
+	Int8U RegNumClose;
+	Int8U BitOpen;
+	Int8U RegNumOpen;
+} const ContactorsStateTableItem;
 
 
-// Variables
-//
-extern const CommutationTableItem CommutationTable[COMMUTATION_TABLE_SIZE];
+// Commutation type
+#define	CONTACTOR	0
+#define	RELAY		1
+
+// Shift register number (data byte position in full data bytes array)
+#define REG1		0
+#define REG2		1
+#define REG3		2
+#define REG4		3
+#define REG5		4
+
+#define BITS_PER_REG			8
+#define COMM_CHECK_NO_ERROR		0xff
+
+#define NUM_RELAYS_PER_COMMUTATION				4
+#define NUM_CONTACTOR_COMMUTATIONS				12
+#define CONTACTORS_STATE_TABLE_SIZE				(2 * NUM_CONTACTOR_COMMUTATIONS)
+#define NUM_RELAY_GROUPS_COMMUTATIONS			10
+#define INNER_COMMUTATION_TABLE_SIZE 			((NUM_RELAY_GROUPS_COMMUTATIONS * NUM_RELAYS_PER_COMMUTATION) + NUM_CONTACTOR_COMMUTATIONS)
+
+// Inner Contactors commutations (Side1_Side2)
+// TOCU HP
+#define BUS1_TOCU_N				1
+#define BUS1_TOCU_P				0
+#define BUS2_TOCU_N				5
+#define BUS2_TOCU_P				4
+#define BUS3_TOCU_N				9
+#define BUS3_TOCU_P				8
+// LCSU
+#define BUS1_LCSU_N				3
+#define BUS1_LCSU_P				2
+#define BUS2_LCSU_N				7
+#define BUS2_LCSU_P				6
+#define BUS3_LCSU_N				11
+#define BUS3_LCSU_P				10
+
+
+// Inner Relays commutations (Side1_Side2_RelayNumber)
+// PE commutations
+#define BUS1_PE_1				12
+#define BUS1_PE_2				13
+#define BUS1_PE_3				14
+#define BUS1_PE_4				15
+
+#define BUS2_PE_1				16
+#define BUS2_PE_2				17
+#define BUS2_PE_3				18
+#define BUS2_PE_4				19
+
+#define BUS3_PE_1				20
+#define BUS3_PE_2				21
+#define BUS3_PE_3				22
+#define BUS3_PE_4				23
+
+// Selftest source commutations
+#define BUS1_STN_1				24
+#define BUS1_STN_2				25
+#define BUS1_STN_3				26
+#define BUS1_STN_4				27
+
+#define BUS2_STP_1				28
+#define BUS2_STP_2				29
+#define BUS2_STP_3				30
+#define BUS2_STP_4				31
+
+#define BUS3_STP_1				32
+#define BUS3_STP_2				33
+#define BUS3_STP_3				34
+#define BUS3_STP_4				35
+
+// LCTU commutations
+#define BUS1_LCTUP_1			44
+#define BUS1_LCTUP_2			45
+#define BUS1_LCTUP_3			46
+#define BUS1_LCTUP_4			47
+
+#define BUS3_LCTUP_1			48
+#define BUS3_LCTUP_2			49
+#define BUS3_LCTUP_3			50
+#define BUS3_LCTUP_4			51
+
+#define BUS1_LCTUN_1			36
+#define BUS1_LCTUN_2			37
+#define BUS1_LCTUN_3			38
+#define BUS1_LCTUN_4			39
+
+#define BUS2_LCTUN_1			40
+#define BUS2_LCTUN_2			41
+#define BUS2_LCTUN_3			42
+#define BUS2_LCTUN_4			43
+
+
+static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {
+		{CONTACTOR, BIT5, REG1},		// 0	// BUS1 to TOCU+
+		{CONTACTOR, BIT4, REG1},		// 1	// BUS1 to TOCU-
+		{CONTACTOR, BIT3, REG2},		// 2	// BUS1 to LCSU+
+		{CONTACTOR, BIT2, REG2},		// 3	// BUS1 to LCSU-
+		{CONTACTOR, BIT3, REG1},		// 4	// BUS2 to TOCU+
+		{CONTACTOR, BIT2, REG1},		// 5	// BUS2 to TOCU-
+		{CONTACTOR, BIT1, REG2},		// 6	// BUS2 to LCSU+
+		{CONTACTOR, BIT0, REG2},		// 7	// BUS2 to LCSU-
+		{CONTACTOR, BIT1, REG1},		// 8	// BUS3 to TOCU+
+		{CONTACTOR, BIT0, REG1},		// 9	// BUS3 to TOCU-
+		{CONTACTOR, BIT7, REG1},		// 10	// BUS3 to LCSU+
+		{CONTACTOR, BIT6, REG1},		// 11	// BUS3 to LCSU-
+		
+		{RELAY, BIT4, REG4},			// 12	// BUS1 to PE_1
+		{RELAY, BIT5, REG4},			// 13	// BUS1 to PE_2
+		{RELAY, BIT6, REG4},			// 14	// BUS1 to PE_3
+		{RELAY, BIT7, REG4},			// 15	// BUS1 to PE_4
+		{RELAY, BIT0, REG5},			// 16	// BUS2 to PE_1
+		{RELAY, BIT1, REG5},			// 17	// BUS2 to PE_2
+		{RELAY, BIT2, REG5},			// 18	// BUS2 to PE_3
+		{RELAY, BIT3, REG5},			// 19	// BUS2 to PE_4
+		{RELAY, BIT4, REG5},			// 20	// BUS3 toPE_1
+		{RELAY, BIT5, REG5},			// 21	// BUS3 to PE_2
+		{RELAY, BIT6, REG5},			// 22	// BUS3 to PE_3
+		{RELAY, BIT7, REG5},			// 23	// BUS3 to PE_4
+		{RELAY, BIT0, REG4},			// 24	// BUS1 to ST-_1
+		{RELAY, BIT1, REG4},			// 25	// BUS1 to ST-_2
+		{RELAY, BIT2, REG4},			// 26	// BUS1 to ST-_3
+		{RELAY, BIT3, REG4},			// 27	// BUS1 to ST-_4
+		{RELAY, BIT0, REG3},			// 28	// BUS2 to ST+_1
+		{RELAY, BIT1, REG3},			// 29	// BUS2 to ST+_2
+		{RELAY, BIT2, REG3},			// 30	// BUS2 to ST+_3
+		{RELAY, BIT3, REG3},			// 31	// BUS2 to ST+_4
+		{RELAY, BIT4, REG3},			// 32	// BUS3 to ST+_1
+		{RELAY, BIT5, REG3},			// 33	// BUS3 to ST+_2
+		{RELAY, BIT6, REG3},			// 34	// BUS3 to ST+_3
+		{RELAY, BIT7, REG3},			// 35	// BUS3 to ST+_4
+		{RELAY, BIT4, REG2},			// 36	// BUS1 to LCTU-_1
+		{RELAY, BIT5, REG2},			// 37	// BUS1 to LCTU-_2
+		{RELAY, BIT6, REG2},			// 38	// BUS1 to LCTU-_3
+		{RELAY, BIT7, REG2},			// 39	// BUS1 to LCTU-_4
+		{RELAY, BIT0, REG2},			// 40	// BUS2 to LCTU-_1
+		{RELAY, BIT1, REG2},			// 41	// BUS2 to LCTU-_2
+		{RELAY, BIT2, REG2},			// 42	// BUS2 to LCTU-_3
+		{RELAY, BIT3, REG2},			// 43	// BUS2 to LCTU-_4
+		{RELAY, BIT0, REG1},			// 44	// BUS1 to LCTU+_1
+		{RELAY, BIT1, REG1},			// 45	// BUS1 to LCTU+_2
+		{RELAY, BIT2, REG1},			// 46	// BUS1 to LCTU+_3
+		{RELAY, BIT3, REG1},			// 47	// BUS1 to LCTU+_4
+		{RELAY, BIT4, REG1},			// 48	// BUS3 to LCTU+_1
+		{RELAY, BIT5, REG1},			// 49	// BUS3 to LCTU+_2
+		{RELAY, BIT6, REG1},			// 50	// BUS3 to LCTU+_3
+		{RELAY, BIT7, REG1}				// 51	// BUS3 to LCTU+_4
+};
+
+
+// Default DataArrays
+static const Int8U CT_DFLT_Relays[] = {0, 0, 0, 0, 0};
+static const Int8U CT_DFLT_Contactors[] = {0, 0};
+
+// Main Commutations
+static const Int8U CT_PE[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4,
+		BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+
+static const Int8U CT_Ices_TOP[] = {BUS3_LCTUP_1, BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4, BUS1_LCTUN_1, BUS1_LCTUN_2,
+		BUS1_LCTUN_3, BUS1_LCTUN_4};
+static const Int8U CT_Ices_BOT[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS2_LCTUN_1, BUS2_LCTUN_2,
+		BUS2_LCTUN_3, BUS2_LCTUN_4};
+
+static const Int8U CT_Qg_TOP[] = {BUS3_TOCU_P, BUS1_TOCU_N};
+static const Int8U CT_Qg_BOT[] = {BUS1_TOCU_P, BUS2_TOCU_N};
+
+static const Int8U CT_Vcesat_TOP[] = {BUS3_LCSU_P, BUS1_LCSU_N};
+static const Int8U CT_Vcesat_BOT[] = {BUS1_LCSU_P, BUS2_LCSU_N};
+
+static const Int8U CT_Vf_TOP[] = {BUS1_LCSU_P, BUS3_LCSU_N};
+static const Int8U CT_Vf_BOT[] = {BUS2_LCSU_P, BUS1_LCSU_N};
+
+
+// Continuity Selftest Commutations
+static const Int8U CT_ST_PE1[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS2_STP_1, BUS2_STP_2, BUS2_STP_3,
+		BUS2_STP_4, BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1, BUS3_PE_2,
+		BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_PE2[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS3_STP_1, BUS3_STP_2, BUS3_STP_3,
+		BUS3_STP_4, BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1, BUS3_PE_2,
+		BUS3_PE_3, BUS3_PE_4};
+
+static const Int8U CT_ST_LCTU1[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS2_STP_1, BUS2_STP_2, BUS2_STP_3,
+		BUS2_STP_4, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4, BUS1_LCTUN_1, BUS1_LCTUN_2, BUS1_LCTUN_3, BUS1_LCTUN_4,
+		BUS2_LCTUN_1, BUS2_LCTUN_2, BUS2_LCTUN_3, BUS2_LCTUN_4};
+static const Int8U CT_ST_LCTU2[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS3_STP_1, BUS3_STP_2, BUS3_STP_3,
+		BUS3_STP_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4,
+		BUS3_LCTUP_1, BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4};
+
+static const Int8U CT_ST_TOCU1[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS2_STP_1, BUS2_STP_2, BUS2_STP_3,
+		BUS2_STP_4, BUS1_TOCU_P, BUS2_TOCU_P, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_TOCU2[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS3_STP_1, BUS3_STP_2, BUS3_STP_3,
+		BUS3_STP_4, BUS1_TOCU_P, BUS3_TOCU_P, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_TOCU3[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS2_STP_1, BUS2_STP_2, BUS2_STP_3,
+		BUS2_STP_4, BUS1_TOCU_N, BUS2_TOCU_N, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_TOCU4[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS3_STP_1, BUS3_STP_2, BUS3_STP_3,
+		BUS3_STP_4, BUS1_TOCU_N, BUS3_TOCU_N, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4};
+
+static const Int8U CT_ST_LCSU1[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS2_STP_1, BUS2_STP_2, BUS2_STP_3,
+		BUS2_STP_4, BUS1_LCSU_P, BUS2_LCSU_P, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_LCSU2[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS3_STP_1, BUS3_STP_2, BUS3_STP_3,
+		BUS3_STP_4, BUS1_LCSU_P, BUS3_LCSU_P, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_LCSU3[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS2_STP_1, BUS2_STP_2, BUS2_STP_3,
+		BUS2_STP_4, BUS1_LCSU_N, BUS2_LCSU_N, BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_LCSU4[] = {BUS1_STN_1, BUS1_STN_2, BUS1_STN_3, BUS1_STN_4, BUS3_STP_1, BUS3_STP_2, BUS3_STP_3,
+		BUS3_STP_4, BUS1_LCSU_N, BUS3_LCSU_N, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3, BUS2_PE_4};
+
+// Relay opening Self Test - relay numbers for checking
+static const Int8U CT_ST_RO_PE1[] = {BUS1_PE_1, BUS1_PE_2, BUS1_PE_3, BUS1_PE_4, BUS2_PE_1, BUS2_PE_2, BUS2_PE_3,
+		BUS2_PE_4};
+static const Int8U CT_ST_RO_PE2[] = {BUS3_PE_1, BUS3_PE_2, BUS3_PE_3, BUS3_PE_4};
+static const Int8U CT_ST_RO_LCTU1[] = {BUS1_LCTUN_1, BUS1_LCTUN_2, BUS1_LCTUN_3, BUS1_LCTUN_4, BUS2_LCTUN_1,
+		BUS2_LCTUN_2, BUS2_LCTUN_3, BUS2_LCTUN_4};
+static const Int8U CT_ST_RO_LCTU2[] = {BUS1_LCTUP_1, BUS1_LCTUP_2, BUS1_LCTUP_3, BUS1_LCTUP_4, BUS3_LCTUP_1,
+		BUS3_LCTUP_2, BUS3_LCTUP_3, BUS3_LCTUP_4};
+
+static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] = {
+		{BIT2, REG2, BIT3, REG2},			// 0	// BUS1 to TOCU+
+		{BIT0, REG2, BIT1, REG2},			// 1	// BUS1 to TOCU-
+		{BIT6, REG3, BIT7, REG3},			// 2	// BUS1 to LCSU+
+		{BIT4, REG3, BIT5, REG3},			// 3	// BUS1 to LCSU-
+		{BIT6, REG1, BIT7, REG1},			// 4	// BUS2 to TOCU+
+		{BIT4, REG1, BIT5, REG1},			// 5	// BUS2 to TOCU-
+		{BIT2, REG3, BIT3, REG3},			// 6	// BUS2 to LCSU+
+		{BIT0, REG3, BIT1, REG3},			// 7	// BUS2 to LCSU-
+		{BIT2, REG1, BIT3, REG1},			// 8	// BUS3 to TOCU+
+		{BIT0, REG1, BIT1, REG1},			// 9	// BUS3 to TOCU-
+		{BIT6, REG2, BIT7, REG2},			// 10	// BUS3 to LCSU+
+		{BIT4, REG2, BIT5, REG2}			// 11	// BUS3 to LCSU-
+};
 
 
 #endif // __COMMTABLE_H

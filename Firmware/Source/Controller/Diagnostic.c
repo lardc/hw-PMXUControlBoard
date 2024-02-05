@@ -13,32 +13,32 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 {
 	switch(ActionID)
 	{
-		case ACT_DBG_FP_LED:
-			DBACT_ToggleFPLed();
+		case ACT_DBG_IND:
+			DBACT_PulseIndication();
 			break;
 
-		case ACT_DBG_SF_RED_LED:
-			DBACT_ToggleSFRedLed();
+		case ACT_DBG_SAFETY:
+			DBACT_IsSafetyOk();
 			break;
 
-		case ACT_DBG_SF_GRN_LED:
-			DBACT_ToggleSFGreenLed();
+		case ACT_DBG_SELFTEST:
+			DBACT_IsSelftestOk();
 			break;
 
-		case ACT_DBG_WRITE_SPI:
-			DBACT_WriteSPI();
+		case ACT_DBG_WRITE_CONT:
+			DBACT_WriteSPI1ContactorsRaw();
 			break;
 
-		case ACT_DBG_SPI_RST:
-			ZcRD_RegisterReset();
+		case ACT_DBG_WRITE_REL:
+			DBACT_WriteSPI1RelaysRaw();
 			break;
 
-		case ACT_SF_EN:
-			DBACT_ToggleSF_EN();
+		case ACT_DBG_READ_MAGNET_SEN:
+			DBACT_ReadSPI2Raw();
 			break;
 
-		case ACT_DBG_SELF_TEST_MEASURE:
-			DBACT_SelfTestMeasure();
+		case ACT_DBG_MEAS_PRESSURE:
+			DBACT_GetPressureADCVoltage();
 			break;
 
 		default:

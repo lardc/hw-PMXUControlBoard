@@ -6,27 +6,22 @@
 #define ACT_DISABLE_POWER						2	// Выключение блока
 #define ACT_CLR_FAULT							3	// Очистка всех fault
 #define ACT_CLR_WARNING							4	// Очистка всех warning
-//
-#define ACT_DBG_FP_LED							21	// Проверка работы индикатора на передней панели
-#define ACT_DBG_SF_RED_LED						22	// Проверка работы красного индикатора системы безопасности
-#define ACT_DBG_SF_GRN_LED						23	// Проверка работы зеленого индикатора системы безопасности
-#define ACT_DBG_WRITE_SPI						24	// Проверка работы коммутации тестовой комбинации
-#define ACT_DBG_SPI_RST							25	// Сброс сдвиговых регистров
-#define ACT_SF_EN								26	// Проверка работы сигнала-разрешения системы безопаснсоти
-#define ACT_DBG_SELF_TEST_MEASURE				27	// Измерение значения напряжение системы самодиагностики
 
-#define ACT_COMM_NONE							100 // Отключение всех реле
-#define ACT_COMM_ILEAK_GATE_EMITTER_POS_PULSE	101 // Режим измерения тока утечки затвора-эмиттера (положительный импульс)
-#define ACT_COMM_ILEAK_GATE_EMITTER_NEG_PULSE	102 // Режим измерения тока утечки затвора-эмиттера (отрицательный импульс)
-#define ACT_COMM_UTH_GATE_EMITTER				103 // Режим измерения порогового напряжения затвор-эмиттер
-#define ACT_COMM_Q_GATE							104 // Режим измерения заряда затвора (положительный импульс)
-#define ACT_COMM_USAT_COLLECTOR_EMITTER			105 // Режим измерения напряжения насыщения коллектор-эмиттер
-#define ACT_COMM_UFW_CHOPPER_DIODE				106 // Режим измерения прямого напряжения обратно-параллельного диода и диода чоппера
-#define ACT_COMM_ILEAK_COLLECTOR_EMITTER		107 // Режим измерения тока утечки коллектор-эмиттер
-#define ACT_COMM_THERMISTOR						108 // Режим измерения сопротивления термистора
-#define ACT_COMM_NO_PE							109 // Отключения защитного заземления
+#define ACT_DBG_IND								21	// Проверка работы индикатора на передней панели
+#define ACT_DBG_SAFETY							22	// Проверка входа безопасности
+#define ACT_DBG_SELFTEST						23	// Проверка входа самотестирования
+#define ACT_DBG_WRITE_CONT						24	// Проверка работы коммутации контакторов
+#define ACT_DBG_WRITE_REL						25	// Проверка работы коммутации ВВ реле
+#define ACT_DBG_READ_MAGNET_SEN					26	// Проверка считывания датчиков положения ПЦ
+#define ACT_DBG_MEAS_PRESSURE					27	// Измерение значения напряжения на входе АЦП датчика давления
 
-#define ACT_SF_DEACTIVATE						120	// Команда деактивации контура безопасности
+#define ACT_COMM_PE								100 // Отключение всех реле, замыкание шин на PE
+#define ACT_COMM_ICES							101 // Режим измерения тока утечки коллектор-эмиттер
+#define ACT_COMM_VCESAT							102 // Режим измерения напряжения насыщения коллектор-эмиттер IGBT транзисторов
+#define ACT_COMM_VF								103 // Режим измерения постоянного прямого напряжения диода чоппера и обратно-параллельного диода
+#define ACT_COMM_QG								104 // Режим измерения заряда затвора
+
+#define ACT_SELFTEST							110 // Запуск режима самотестирования
 
 #define ACT_SAVE_TO_ROM							200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM					201	// Восстановление данных из FLASH
@@ -35,14 +30,17 @@
 #define ACT_BOOT_LOADER_REQUEST					320	// Перезапуск процессора с целью перепрограммирования
 // -----------------------------
 
-
-
 // Регистры
 // Сохраняемые регистры
-#define REG_SFTST_V_ALLOWED_VOLTAGE				0	// Допустимое значение напряжения на замкнутом реле
+#define REG_CONTACTORS_COMM_DELAY_MS			1	// Задержка ожидания коммутации контакторов
+#define REG_PRESSURE_ADC_OFFSET					2	// Смещение оцифрованного напряжения АЦП (в мВ)
+#define REG_PRESSURE_ADC_K						3	// Коэффициент пересчёта напряжения АЦП (в мВ) в Бар
+#define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
+#define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
+#define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
 
 // Несохраняемые регистры чтения-записи
-#define REG_MEASUREMENT_POSITION				128	// Регистр выбора позции при измерении (1 или 2)
+#define REG_TEST_TOP_SWITCH						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
 
 #define REG_DBG									150	// Отладочный регистр
 
@@ -55,16 +53,16 @@
 #define REG_OP_RESULT							197	// Регистр результата операции
 #define REG_SELF_TEST_OP_RESULT					198	// Регистр результата самотестирования
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
+#define REG_ST_STATE							199	// Регистр состояния самотестирования
 
-#define REG_SELF_TEST_FAILED_SS					201	// Вспомогательное состояние на котором обнаружен отказ
-#define REG_SELF_TEST_FAILED_RELAY				202	// Номер коммутации на котором обнаружен отказ
+#define REG_SELF_TEST_FAILED_COMMUTATION		201	// SelfTest коммутация, на которой обнаружен отказ
+#define REG_SELF_TEST_FAILED_RELAY				202	// Номер реле, на котором обнаружен отказ
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
 // 258 - 259
 #define REG_FWINFO_STR_LEN						260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN					261	// Begining of the information string record
-
 
 // Operation results
 #define OPRESULT_NONE							0	// No information or not finished
@@ -74,13 +72,17 @@
 //  Fault and disable codes
 #define DF_NONE									0
 #define DF_RELAY_SHORT							1	// Обнаружено залипшее реле
-#define DF_RELAY_HIGH_RES						2	// Обнаружено повышенное сопротивление на реле
+#define DF_CHAIN_BREAK							2	// Обнаружен разрыв при прозвонке
+#define DF_CONTACTOR_COMMUTATION_FAULT			3	// Ошибка коммутации контакторов, номер неисправного контактора в регистре REG_PROBLEM
+#define DF_LOW_PRESSURE							4	// Низкое давление в пневмосистеме
+#define DF_SAFETY_ERROR							5	// Ошибка защитной цепи
 
 // Problem
 #define PROBLEM_NONE							0
 
 //  Warning
 #define WARNING_NONE							0
+#define WARNING_CONTACTORS_CHECK				1	// Требуется проверка контактных сопротивлений контакторов, номер контактора в регистре REG_PROBLEM
 
 //  User Errors
 #define ERR_NONE								0
