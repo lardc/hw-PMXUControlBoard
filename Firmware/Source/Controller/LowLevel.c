@@ -27,9 +27,9 @@ void LL_ToggleIndication()
 }
 //-----------------------------
 
-bool LL_IsSafetyPinOk()
+bool LL_IsSafetyTrig()
 {
-	return !GPIO_GetState(GPIO_SAFETY);
+	return GPIO_GetState(GPIO_SAFETY);
 }
 //-----------------------------
 
@@ -44,7 +44,7 @@ void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting G
 	// Turn outputs OFF
 	GPIO_SetState(GPIO_OE, true);
 	GPIO_SetState(GPIO_SS, false);
-	for(int i = 0; i <= Data_Length; i++)
+	for(int i = Data_Length; i >= 0; i--)
 	{
 		SPI_WriteByte8b(SPI1, SPI_Data[i]);
 	}
@@ -76,5 +76,11 @@ void LL_ReadSPI2(volatile uint8_t* SPI_Data)
 float LL_MeasurePressureADCVoltage()
 {
 	return (float)ADC_Measure(ADC1, ADC_P_CHANNEL) * ADC_REF_VOLTAGE / ADC_RESOLUTION;
+}
+//-----------------------------
+
+bool LL_CheckTestCurrent()
+{
+	return GPIO_GetState(GPIO_SELFTEST);
 }
 //-----------------------------

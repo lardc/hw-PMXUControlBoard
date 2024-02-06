@@ -11,42 +11,57 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "Delay.h"
+#include "Constraints.h"
 
 // Variables
 //
 // Functions
 //
-void COMM_DisconnectAll()
+void COMM_SwitchToPE()
 {
-	ZcRD_WriteSPI1Contactors(CT_DFLT_Contactors);
-	ZcRD_WriteSPI1Relays(CT_DFLT_Relays);
+	ZcRD_WriteSPI1Comm(CT_DFLT_Contactors, CONTACTOR);
+	ZcRD_WriteSPI1Comm(CT_DFLT_Relays, RELAY);
 }
 // ----------------------------------------
 
-void COMM_Commutate(Int16U ActionID, bool TopPosition)
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition)
 {
+	IsCommutation = true;
+
 	switch(ActionID)
 	{
 		case ACT_COMM_PE:
 		default:
-			COMM_DisconnectAll();
+			COMM_SwitchToPE();
+			break;
+
+		case ACT_COMM_NO_PE:
+			ZcRD_CommutateConfig_macro(CT_NO_PE);
 			break;
 
 		case ACT_COMM_ICES:
-			TopPosition ? ZcRD_CommutateConfig_macro(CT_Ices_TOP) : ZcRD_CommutateConfig_macro(CT_Ices_BOT);
+			ZcRD_CommutateConfig_macro(CT_NO_PE);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_Pos1) : ZcRD_CommutateConfig_macro(CT_Ices_Pos2);
 			break;
 
 		case ACT_COMM_VCESAT:
-			TopPosition ? ZcRD_CommutateConfig_macro(CT_Vcesat_TOP) : ZcRD_CommutateConfig_macro(CT_Vcesat_BOT);
+			ZcRD_CommutateConfig_macro(CT_NO_PE);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vcesat_Pos1) : ZcRD_CommutateConfig_macro(CT_Vcesat_Pos2);
 			break;
 
 		case ACT_COMM_VF:
-			TopPosition ? ZcRD_CommutateConfig_macro(CT_Vf_TOP) : ZcRD_CommutateConfig_macro(CT_Vf_BOT);
+			ZcRD_CommutateConfig_macro(CT_NO_PE);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_Pos1) : ZcRD_CommutateConfig_macro(CT_Vf_Pos2);
 			break;
 
 		case ACT_COMM_QG:
-			TopPosition ? ZcRD_CommutateConfig_macro(CT_Qg_TOP) : ZcRD_CommutateConfig_macro(CT_Qg_BOT);
+			ZcRD_CommutateConfig_macro(CT_NO_PE);
+			(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_Pos1) : ZcRD_CommutateConfig_macro(CT_Qg_Pos2);
 			break;
 	}
+
+	DELAY_MS(COMM_DELAY_MS);
+
+	IsCommutation = false;
 }
 // ----------------------------------------

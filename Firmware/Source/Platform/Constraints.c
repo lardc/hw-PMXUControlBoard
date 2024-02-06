@@ -13,13 +13,13 @@
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 0
 		{0, CONTACTORS_COMM_DELAY_MS_MAX, CONTACTORS_COMM_DELAY_MS_DFLT},			// 1
-		{0, REG_PRESSURE_ADC_OFFSET_MAX, REG_PRESSURE_ADC_OFFSET_DFLT}, 			// 2
+		{INT16S_MIN, INT16S_MAX, REG_PRESSURE_ADC_OFFSET_DFLT}, 					// 2
 		{0, REG_PRESSURE_ADC_K_MAX, REG_PRESSURE_ADC_K_DFLT},						// 3
 		{0, REG_PRESSURE_THRESHOLD_MAX, REG_PRESSURE_THRESHOLD_DFLT},				// 4
 		{0, REG_DFLT_COMM_DELAY_MS_MAX, REG_DFLT_COMM_DELAY_MS_DFLT},				// 5
 		{0, REG_MAX_CONT_COMMUTATIONS_MAX, REG_MAX_CONT_COMMUTATIONS_DFLT},			// 6
-		{0, 0, 0},																	// 7
-		{0, 0, 0},																	// 8
+		{NO, YES, YES},																// 7
+		{NO, YES, YES},																// 8
 		{0, 0, 0},																	// 9
 		{0, 0, 0},																	// 10
 		{0, 0, 0},																	// 11
@@ -139,7 +139,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
-		{NO, YES, NO},																// 128
+		{DUT_POS1, DUT_POS2, DUT_POS1},												// 128
 		{0, 0, 0},																	// 129
 		{0, 0, 0},																	// 130
 		{0, 0, 0},																	// 131
@@ -161,7 +161,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 147
 		{0, 0, 0},																	// 148
 		{0, 0, 0},																	// 149
-		{0, 0, 0},																	// 150
+		{INT16S_MIN, INT16S_MAX, 0},												// 150
 		{0, 0, 0},																	// 151
 		{0, 0, 0},																	// 152
 		{0, 0, 0},																	// 153
