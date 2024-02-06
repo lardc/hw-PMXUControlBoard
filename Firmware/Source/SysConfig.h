@@ -40,10 +40,6 @@
 #define SPI1_ARRAY_LEN_RELAYS			5			// Размер массива реле
 // ----------------------------------------------
 
-// Device ID
-//
-#define DEVICE_ID						100
-
 #define COMM_MODE_2
 
 #endif // __SYSCONFIG_H
