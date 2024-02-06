@@ -329,24 +329,6 @@ void CONTROL_SafetyCheck()
 }
 //-----------------------------------------------
 
-void CONTROL_SelfTestProcess()
-{
-	/*if((CONTROL_State == DS_InProcess) && (CONTROL_SubState == DSS_SelfTestProgress))
-	{
-		if(CONTROL_STState < (STS_Stop - 1))
-		{
-			CONTROL_SetDeviceSTState(++CONTROL_STState);
-			SELFTEST_Process();
-		}
-		else
-		{
-			DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
-			CONTROL_SetDeviceState(DS_Enabled, DSS_None);
-		}
-	}*/
-}
-//-----------------------------------------------
-
 bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 {
 	switch(ActionID)
