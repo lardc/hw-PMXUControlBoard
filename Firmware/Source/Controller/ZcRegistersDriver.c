@@ -33,7 +33,7 @@ void ZcRD_IncrementRelays(uint8_t BitDataArray[])
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
 	{
 		for(Int8U j = 0; j < 8; j++)
-			ZcRD_ContactorsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
+			ZcRD_RelayGroupsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
 	}
 }
 //-----------------------------

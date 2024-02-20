@@ -132,7 +132,7 @@ static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE
 
 // Default DataArrays
 //
-static const Int8U CT_DFLT_Relays[] = {0, 0, 0, 0, 0};
+static const Int8U CT_DFLT_Relays[] = {0, 0};
 static const Int8U CT_DFLT_Contactors[] = {0, 0};
 
 // Main Commutations
