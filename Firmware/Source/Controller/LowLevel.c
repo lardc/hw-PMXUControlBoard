@@ -58,17 +58,17 @@ void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting G
 
 void LL_ReadSPI2(volatile uint8_t* SPI_Data)
 {
-	// Latch
+	// Latch data
 	GPIO_SetState(GPIO_SPI2_LD, false);
 	DELAY_US(1);
 	GPIO_SetState(GPIO_SPI2_LD, true);
+
 	// Read data
 	GPIO_SetState(GPIO_SPI2_OE, false);
-	for(int i = 0; i <= SPI2_ARRAY_LEN; i++)
-	{
-		SPI_Data[i] = SPI_ReadByte(SPI2);
-	}
-	// End of transmit
+	for(int i = 0; i < SPI2_ARRAY_LEN; i++)
+		SPI_Data[i] = SPI_ReadByte8b(SPI2);
+
+	// End of receive
 	GPIO_SetState(GPIO_SPI2_OE, true);
 }
 //-----------------------------
