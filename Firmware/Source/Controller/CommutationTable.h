@@ -139,17 +139,17 @@ static const Int8U CT_DFLT_Contactors[] = {0, 0};
 //
 static const Int8U CT_NO_PE[] = {BUS1_PE, BUS2_PE, BUS3_PE};
 
-static const Int8U CT_Ices_Pos1[] = {BUS3_LCTUP, BUS1_LCTUN};
-static const Int8U CT_Ices_Pos2[] = {BUS1_LCTUP, BUS2_LCTUN};
+static const Int8U CT_Ices_Pos1[] = {BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Ices_Pos2[] = {BUS3_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
-static const Int8U CT_Qg_Pos1[] = {BUS3_TOCUP, BUS1_TOCUN};
-static const Int8U CT_Qg_Pos2[] = {BUS1_TOCUP, BUS2_TOCUN};
+static const Int8U CT_Qg_Pos1[] = {BUS1_TOCUP, BUS2_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Qg_Pos2[] = {BUS3_TOCUP, BUS1_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
-static const Int8U CT_Vcesat_Pos1[] = {BUS3_LCSUP, BUS1_LCSUN};
-static const Int8U CT_Vcesat_Pos2[] = {BUS1_LCSUP, BUS2_LCSUN};
+static const Int8U CT_Vcesat_Pos1[] = {BUS1_LCSUP, BUS2_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Vcesat_Pos2[] = {BUS3_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
-static const Int8U CT_Vf_Pos1[] = {BUS1_LCSUP, BUS3_LCSUN};
-static const Int8U CT_Vf_Pos2[] = {BUS2_LCSUP, BUS1_LCSUN};
+static const Int8U CT_Vf_Pos1[] = {BUS2_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Vf_Pos2[] = {BUS1_LCSUP, BUS3_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
 // Continuity Selftest Commutations
 //
