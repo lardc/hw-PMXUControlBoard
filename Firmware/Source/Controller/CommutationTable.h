@@ -72,20 +72,20 @@ typedef struct __ContactorsStateTableItem
 
 // Inner Relays commutations (Side1_Side2_RelayNumber)
 // PE commutations
-#define BUS1_PE					13
-#define BUS2_PE					14
-#define BUS3_PE					15
+#define BUS1_PE					20
+#define BUS2_PE					21
+#define BUS3_PE					22
 
 // Selftest source commutations
-#define BUS1_STN				16
+#define BUS1_STN				19
 #define BUS2_STP				17
 #define BUS3_STP				18
 
 // LCTU commutations
-#define BUS1_LCTUP				21
-#define BUS3_LCTUP				22
-#define BUS1_LCTUN				19
-#define BUS2_LCTUN				20
+#define BUS1_LCTUP				13
+#define BUS3_LCTUP				14
+#define BUS1_LCTUN				16
+#define BUS2_LCTUN				15
 
 
 static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {
@@ -103,16 +103,16 @@ static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_S
 		{CONTACTOR, BIT7, REG1, CT_NormalOpened},		// 11	// BUS3 to TOCU-
 		{CONTACTOR, BIT6, REG1, CT_NormalOpened},		// 12	// BUS3 to TOCU+
 		
-		{RELAY, BIT7, REG1, CT_NormalClosed},			// 13	// BUS1 to PE
-		{RELAY, BIT0, REG2, CT_NormalClosed},			// 14	// BUS2 to PE
-		{RELAY, BIT1, REG2, CT_NormalClosed},			// 15	// BUS3 to PE
-		{RELAY, BIT6, REG1, CT_NormalOpened},			// 16	// BUS1 to ST-
-		{RELAY, BIT4, REG1, CT_NormalOpened},			// 17	// BUS2 to ST+
-		{RELAY, BIT5, REG1, CT_NormalOpened},			// 18	// BUS3 to ST+
-		{RELAY, BIT3, REG1, CT_NormalOpened},			// 19	// BUS1 to LCTU-
-		{RELAY, BIT2, REG1, CT_NormalOpened},			// 20	// BUS2 to LCTU-
-		{RELAY, BIT0, REG1, CT_NormalOpened},			// 21	// BUS1 to LCTU+
-		{RELAY, BIT1, REG1, CT_NormalOpened},			// 22	// BUS3 to LCTU+
+		{RELAY, BIT0, REG1, CT_NormalOpened},			// 13	// BUS1 to LCTU+
+		{RELAY, BIT1, REG1, CT_NormalOpened},			// 14	// BUS3 to LCTU+
+		{RELAY, BIT2, REG1, CT_NormalOpened},			// 15	// BUS2 to LCTU-
+		{RELAY, BIT3, REG1, CT_NormalOpened},			// 16	// BUS1 to LCTU-
+		{RELAY, BIT4, REG1, CT_NormalOpened},			// 17	// BUS2 to ST_OUT
+		{RELAY, BIT5, REG1, CT_NormalOpened},			// 18	// BUS3 to ST_OUT
+		{RELAY, BIT6, REG1, CT_NormalOpened},			// 19	// BUS1 to ST_IN
+		{RELAY, BIT7, REG1, CT_NormalClosed},			// 20	// BUS1 to PE
+		{RELAY, BIT0, REG2, CT_NormalClosed},			// 21	// BUS2 to PE
+		{RELAY, BIT1, REG2, CT_NormalClosed},			// 22	// BUS3 to PE
 };
 
 static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] = {
@@ -131,11 +131,16 @@ static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE
 		{BIT5, REG2, BIT4, REG2}						// 12	// BUS3 to TOCU+
 };
 
-
 // Default DataArrays
 //
 static const Int8U CT_DFLT_Relays[] = {0, 0};
 static const Int8U CT_DFLT_Contactors[] = {0, 0};
+
+// Common
+//
+static const Int8U CT_AllContactors[] = {BUS1_TOCUN, BUS1_TOCUP, BUS2_TOCUN, BUS2_TOCUP, BUS3_TOCUN, BUS3_TOCUP, BUS1_LCSUN, BUS1_LCSUP,
+											BUS2_LCSUN, BUS2_LCSUP, BUS3_LCSUN, BUS3_LCSUP};
+static const Int8U CT_AllRelays[] = {BUS1_PE, BUS2_PE, BUS3_PE, BUS1_STN, BUS2_STP, BUS3_STP, BUS1_LCTUP, BUS3_LCTUP, BUS1_LCTUN, BUS2_LCTUN};
 
 // Main Commutations
 //
@@ -161,11 +166,11 @@ static const Int8U CT_ST_LCTU2[] = {BUS2_STP, BUS2_LCTUN, BUS1_LCTUN, BUS1_STN};
 static const Int8U CT_ST_PE1[] = {BUS2_STP, BUS2_PE, BUS1_PE, BUS1_STN};
 static const Int8U CT_ST_PE2[] = {BUS3_STP, BUS3_PE, BUS1_PE, BUS1_STN};
 
-static const Int8U CT_ST_LCSU1[] = {BUS3_LCSUN, BUS2_LCSUN, BUS2_LCSUP, BUS1_LCSUP};
+static const Int8U CT_ST_LCSU1[] = {BUS3_LCSUN, BUS2_LCSUN, BUS3_LCSUP, BUS1_LCSUP};
 static const Int8U CT_ST_LCSU2[] = {BUS2_LCSUP, BUS3_LCSUP, BUS3_LCSUN, BUS1_LCSUN};
 
-static const Int8U CT_ST_TOCU1[] = {BUS3_TOCUN, BUS2_TOCUN, BUS2_TOCUP, BUS1_TOCUP};
-static const Int8U CT_ST_TOCU2[] = {BUS2_TOCUP, BUS3_TOCUP, BUS3_TOCUN, BUS1_TOCUN};
+static const Int8U CT_ST_TOCU1[] = {BUS3_TOCUP, BUS2_TOCUP, BUS2_TOCUN, BUS1_TOCUN};
+static const Int8U CT_ST_TOCU2[] = {BUS2_TOCUN, BUS3_TOCUN, BUS1_TOCUP, BUS2_TOCUP};
 
 static const Int8U CT_ST_BUS1_2[] = {BUS1_STN, BUS2_STP};
 static const Int8U CT_ST_BUS1_3[] = {BUS1_STN, BUS3_STP};

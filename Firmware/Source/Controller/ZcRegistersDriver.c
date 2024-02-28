@@ -101,7 +101,6 @@ void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
 
 	ZcRD_WriteSPI1Comm(RelayArray, RELAY);
 	ZcRD_WriteSPI1Comm(ContactorArray, CONTACTOR);
-
 }
 // ----------------------------------------
 

@@ -114,8 +114,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_None)
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				//CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
-				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
 			}
 			else if(CONTROL_State != DS_Enabled)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -221,13 +220,16 @@ void CONTROL_LogicProcess()
 
 void CONTROL_CheckContactorsProcess()
 {
-	if(!CONTROL_CheckContactors(LastActionID, LastDUTposition))
+	if(CONTROL_State != DS_InSelfTest && CONTROL_State != DS_Fault && CONTROL_State != DS_None)
 	{
-		CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		LastActionID = ACT_COMM_PE;
+		if(!CONTROL_CheckContactors(LastActionID, LastDUTposition))
+		{
+			CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			LastActionID = ACT_COMM_PE;
 
-		COMM_SwitchToPE();
+			COMM_SwitchToPE();
+		}
 	}
 }
 //-----------------------------------------------
@@ -327,7 +329,7 @@ void CONTROL_PressureCheck()
 {
 	DataTable[REG_PRESSURE] = Conv_PressureADCVtoBar();
 
-	if(CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled)
+	if(CONTROL_State != DS_None)
 	{
 		if(DataTable[REG_PRESSURE] < DataTable[REG_PRESSURE_THRESHOLD])
 		{
