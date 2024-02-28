@@ -121,8 +121,11 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 	// Generate destination contactors state
 	for(uint8_t i = 0; i < Length; i++)
 	{
-		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
-		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
+		if(CommArray[i] && CommArray[i] <= CONTACTORS_STATE_TABLE_SIZE)
+		{
+			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
+			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
+		}
 	}
 
 	// Read current state
