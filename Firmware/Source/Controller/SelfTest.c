@@ -16,7 +16,7 @@
 // Definitions
 //
 #define ST_RELAY_DELAY_MS		50
-#define ST_CONT_DELAY_MS		500
+#define ST_CONT_DELAY_MS		COMM_DELAY_MS
 
 // Variables
 //
