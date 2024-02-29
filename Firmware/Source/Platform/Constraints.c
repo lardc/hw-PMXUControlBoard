@@ -20,7 +20,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, REG_MAX_CONT_COMMUTATIONS_MAX, REG_MAX_CONT_COMMUTATIONS_DFLT},			// 6
 		{NO, YES, YES},																// 7
 		{ST_START_STAGE, ST_STOP_STAGE, ST_STOP_STAGE},								// 8
-		{0, 0, 0},																	// 9
+		{NO, YES, YES},																// 9
 		{0, 0, 0},																	// 10
 		{0, 0, 0},																	// 11
 		{0, 0, 0},																	// 12

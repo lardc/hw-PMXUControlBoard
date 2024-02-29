@@ -41,7 +41,7 @@ void SELFTEST_Process()
 		if(CONTROL_SubState == DataTable[REG_ST_STOP_STAGE])
 			CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_Finish);
 
-		IsCommutation = true;
+		FPledForcedLight = true;
 		SELFTEST_OpenAll();
 
 		switch(CONTROL_SubState)
@@ -149,7 +149,7 @@ void SELFTEST_Process()
 			case DSS_SelfTest_Finish:
 				COMM_SwitchToPE();
 				DELAY_MS(ST_CONT_DELAY_MS);
-				IsCommutation = false;
+
 
 				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 				break;
@@ -157,6 +157,8 @@ void SELFTEST_Process()
 			default:
 				break;
 		}
+
+		FPledForcedLight = false;
 	}
 }
 //-----------------------------------------------

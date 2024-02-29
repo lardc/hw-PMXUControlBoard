@@ -31,7 +31,7 @@ volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CONTROL_ContactorsCheck;
 Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
-bool IsCommutation = false;
+bool FPledForcedLight = false;
 
 // Forward functions
 //
@@ -297,30 +297,25 @@ void CONTROL_HandleExternalLamp(bool Forced)
 	}
 	else
 	{
-		if(CONTROL_State != DS_SafetyTrig)
+		if(CONTROL_State == DS_None && FPLampCounter)
 		{
-			if(CONTROL_State == DS_None && FPLampCounter)
-			{
-				LL_SetStateIndication(false);
-				FPLampCounter = 0;
-			}
+			LL_SetStateIndication(false);
+			FPLampCounter = 0;
+		}
 
-			if(CONTROL_State != DS_None)
+		if(CONTROL_State != DS_None)
+		{
+			if(Forced)
 			{
-				if(Forced)
-				{
-					LL_SetStateIndication(true);
-					FPLampCounter = CONTROL_TimeCounter + TIME_FP_LED_ON_STATE;
-				}
-				else
-				{
-					if(CONTROL_TimeCounter >= FPLampCounter)
-						LL_SetStateIndication(false);
-				}
+				LL_SetStateIndication(true);
+				FPLampCounter = CONTROL_TimeCounter + TIME_FP_LED_ON_STATE;
+			}
+			else
+			{
+				if(CONTROL_TimeCounter >= FPLampCounter)
+					LL_SetStateIndication(false);
 			}
 		}
-		else
-			LL_SetStateIndication(true);
 	}
 }
 //-----------------------------------------------
@@ -345,14 +340,23 @@ void CONTROL_PressureCheck()
 
 void CONTROL_SafetyCheck()
 {
-	if((CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled) && LL_IsSafetyTrig())
+	if(DataTable[REG_SAFETY_ACTIVE])
 	{
-		DELAY_MS(1);
+		if(LL_IsSafetyTrig())
+		{
+			if(CONTROL_State == DS_SafetyActive)
+				CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
 
-		//COMM_SwitchToPE();
-
-		if(CONTROL_State == DS_SafetyActive)
-			CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
+			if(COMM_State != COMM_Def)
+			{
+				DELAY_MS(SAFETY_DELAY);
+				COMM_SwitchToPE();
+				FPledForcedLight = true;
+				LastActionID = ACT_COMM_PE;
+				DELAY_MS(COMM_DELAY_MS);
+				FPledForcedLight = false;
+			}
+		}
 	}
 }
 //-----------------------------------------------

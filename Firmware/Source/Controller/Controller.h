@@ -43,7 +43,7 @@ extern volatile Int64U CONTROL_TimeCounter;
 extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern Int64U CONTROL_LEDTimeout;
-extern bool IsCommutation;
+extern bool FPledForcedLight;
 
 // Functions
 //
