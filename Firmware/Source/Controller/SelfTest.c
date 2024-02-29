@@ -38,6 +38,10 @@ void SELFTEST_Process()
 {
 	if(CONTROL_State == DS_InSelfTest)
 	{
+		if(CONTROL_SubState == DataTable[REG_ST_STOP_STAGE])
+			CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_Finish);
+
+		IsCommutation = true;
 		SELFTEST_OpenAll();
 
 		switch(CONTROL_SubState)
@@ -139,12 +143,15 @@ void SELFTEST_Process()
 					CONTROL_SwitchToFault(DF_SELFT_TEST);
 				}
 				else
-				{
-					COMM_SwitchToPE();
-					DELAY_MS(ST_CONT_DELAY_MS);
+					CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_Finish);
+				break;
 
-					CONTROL_SetDeviceState(DS_Enabled, DSS_None);
-				}
+			case DSS_SelfTest_Finish:
+				COMM_SwitchToPE();
+				DELAY_MS(ST_CONT_DELAY_MS);
+				IsCommutation = false;
+
+				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 				break;
 
 			default:
