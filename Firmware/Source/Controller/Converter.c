@@ -15,7 +15,7 @@
 uint64_t Conv_SPIArrayToHex(uint8_t SPI_Data[], uint8_t Data_Length)
 {
 	uint64_t HexData = 0x0;
-	for(int i = 0; i <= Data_Length; i++)
+	for(int i = 0; i < Data_Length; i++)
 	{
 		HexData = HexData << 8;
 		HexData |= SPI_Data[i];

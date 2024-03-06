@@ -29,7 +29,9 @@ volatile DeviceSubState CONTROL_SubState = DSS_None;
 static Boolean CycleActive = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CONTROL_ContactorsCheck;
-bool IsCommutation = false;
+Int16U LastActionID = ACT_COMM_PE;
+Int16U LastDUTposition = DUT_POS1;
+bool FPledForcedLight = false;
 
 // Forward functions
 //
@@ -40,6 +42,7 @@ void CONTROL_LogicProcess();
 void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
 bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition);
+void CONTROL_CheckContactorsProcess();
 
 // Functions
 //
@@ -122,6 +125,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				COMM_SwitchToPE();
 				LL_SetStateIndication(false);
+				LastActionID = ACT_COMM_PE;
+
 				CONTROL_SetDeviceState(DS_None, DSS_None);
 			}
 			else if(CONTROL_State != DS_None)
@@ -168,13 +173,18 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION]);
 
-				if(CONTROL_CheckContactors(ActionID, DataTable[REG_DUT_POSITION]))
+				LastActionID = ActionID;
+				LastDUTposition = DataTable[REG_DUT_POSITION];
+
+				if(CONTROL_CheckContactors(LastActionID, LastDUTposition))
 					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 				else
 				{
-					CONTROL_SetDeviceState(DS_Fault, DSS_None);
+					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-					DataTable[REG_FAULT_REASON] = DF_CONTACTOR_FAULT;
+					LastActionID = ACT_COMM_PE;
+
+					COMM_SwitchToPE();
 				}
 			}
 			else if(CONTROL_State == DS_None)
@@ -202,8 +212,25 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 void CONTROL_LogicProcess()
 {
+	CONTROL_CheckContactorsProcess();
 	CONTROL_PressureCheck();
 	CONTROL_SafetyCheck();
+}
+//-----------------------------------------------
+
+void CONTROL_CheckContactorsProcess()
+{
+	if(CONTROL_State != DS_InSelfTest && CONTROL_State != DS_Fault && CONTROL_State != DS_None)
+	{
+		if(!CONTROL_CheckContactors(LastActionID, LastDUTposition))
+		{
+			CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			LastActionID = ACT_COMM_PE;
+
+			COMM_SwitchToPE();
+		}
+	}
 }
 //-----------------------------------------------
 
@@ -270,30 +297,25 @@ void CONTROL_HandleExternalLamp(bool Forced)
 	}
 	else
 	{
-		if(CONTROL_State != DS_SafetyTrig)
+		if(CONTROL_State == DS_None && FPLampCounter)
 		{
-			if(CONTROL_State == DS_None && FPLampCounter)
-			{
-				LL_SetStateIndication(false);
-				FPLampCounter = 0;
-			}
+			LL_SetStateIndication(false);
+			FPLampCounter = 0;
+		}
 
-			if(CONTROL_State != DS_None)
+		if(CONTROL_State != DS_None)
+		{
+			if(Forced)
 			{
-				if(Forced)
-				{
-					LL_SetStateIndication(true);
-					FPLampCounter = CONTROL_TimeCounter + TIME_FP_LED_ON_STATE;
-				}
-				else
-				{
-					if(CONTROL_TimeCounter >= FPLampCounter)
-						LL_SetStateIndication(false);
-				}
+				LL_SetStateIndication(true);
+				FPLampCounter = CONTROL_TimeCounter + TIME_FP_LED_ON_STATE;
+			}
+			else
+			{
+				if(CONTROL_TimeCounter >= FPLampCounter)
+					LL_SetStateIndication(false);
 			}
 		}
-		else
-			LL_SetStateIndication(true);
 	}
 }
 //-----------------------------------------------
@@ -302,14 +324,15 @@ void CONTROL_PressureCheck()
 {
 	DataTable[REG_PRESSURE] = Conv_PressureADCVtoBar();
 
-	if(CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled)
+	if(CONTROL_State != DS_None)
 	{
 		if(DataTable[REG_PRESSURE] < DataTable[REG_PRESSURE_THRESHOLD])
 		{
-			COMM_SwitchToPE();
-			CONTROL_SetDeviceState(DS_Fault, DSS_None);
+			CONTROL_SwitchToFault(DF_LOW_PRESSURE);
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_FAULT_REASON] = DF_LOW_PRESSURE;
+			LastActionID = ACT_COMM_PE;
+
+			COMM_SwitchToPE();
 		}
 	}
 }
@@ -317,14 +340,23 @@ void CONTROL_PressureCheck()
 
 void CONTROL_SafetyCheck()
 {
-	if((CONTROL_State == DS_SafetyActive || CONTROL_State == DS_Enabled) && LL_IsSafetyTrig())
+	if(DataTable[REG_SAFETY_ACTIVE])
 	{
-		DELAY_MS(1);
+		if(LL_IsSafetyTrig())
+		{
+			if(CONTROL_State == DS_SafetyActive)
+				CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
 
-		COMM_SwitchToPE();
-
-		if(CONTROL_State == DS_SafetyActive)
-			CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
+			if(COMM_State != COMM_Def)
+			{
+				DELAY_MS(SAFETY_DELAY);
+				COMM_SwitchToPE();
+				FPledForcedLight = true;
+				LastActionID = ACT_COMM_PE;
+				DELAY_MS(COMM_DELAY_MS);
+				FPledForcedLight = false;
+			}
+		}
 	}
 }
 //-----------------------------------------------

@@ -37,7 +37,7 @@
 #define SPI2_LSB_FIRST					false		// Передача младшим битом вперед SPI2
 #define SPI2_ARRAY_LEN					3			// Размер массива датчиков положения
 #define SPI1_ARRAY_LEN_CONTACTORS		2			// Размер массива контакторов
-#define SPI1_ARRAY_LEN_RELAYS			5			// Размер массива реле
+#define SPI1_ARRAY_LEN_RELAYS			2			// Размер массива реле
 // ----------------------------------------------
 
 #define COMM_MODE_2

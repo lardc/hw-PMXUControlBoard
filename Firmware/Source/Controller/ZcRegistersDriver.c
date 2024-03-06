@@ -33,7 +33,7 @@ void ZcRD_IncrementRelays(uint8_t BitDataArray[])
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
 	{
 		for(Int8U j = 0; j < 8; j++)
-			ZcRD_ContactorsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
+			ZcRD_RelayGroupsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
 	}
 }
 //-----------------------------
@@ -101,7 +101,6 @@ void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
 
 	ZcRD_WriteSPI1Comm(RelayArray, RELAY);
 	ZcRD_WriteSPI1Comm(ContactorArray, CONTACTOR);
-
 }
 // ----------------------------------------
 
@@ -121,8 +120,11 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 	// Generate destination contactors state
 	for(uint8_t i = 0; i < Length; i++)
 	{
-		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
-		ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
+		if(CommArray[i] && CommArray[i] <= CONTACTORS_STATE_TABLE_SIZE)
+		{
+			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
+			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
+		}
 	}
 
 	// Read current state

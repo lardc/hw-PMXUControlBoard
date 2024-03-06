@@ -25,15 +25,16 @@ typedef enum __DeviceState
 
 typedef enum __DeviceSubState
 {
-	DSS_None = 0,
-	DSS_SelfTest_LCTUP,
-	DSS_SelfTest_LCTUN,
-	DSS_SelfTest_PE1,
-	DSS_SelfTest_PE2,
-	DSS_SelfTest_LCSU1,
-	DSS_SelfTest_LCSU2,
-	DSS_SelfTest_TOCU1,
-	DSS_SelfTest_TOCU2
+	DSS_None 			= 0,
+	DSS_SelfTest_LCTUP	= 1,
+	DSS_SelfTest_LCTUN	= 2,
+	DSS_SelfTest_PE1	= 3,
+	DSS_SelfTest_PE2	= 4,
+	DSS_SelfTest_LCSU1	= 5,
+	DSS_SelfTest_LCSU2	= 6,
+	DSS_SelfTest_TOCU1	= 7,
+	DSS_SelfTest_TOCU2	= 8,
+	DSS_SelfTest_Finish = 9
 } DeviceSubState;
 
 // Variables
@@ -42,7 +43,7 @@ extern volatile Int64U CONTROL_TimeCounter;
 extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern Int64U CONTROL_LEDTimeout;
-extern bool IsCommutation;
+extern bool FPledForcedLight;
 
 // Functions
 //
