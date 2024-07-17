@@ -46,7 +46,7 @@ void TIM7_IRQHandler()
 		}
 		TIM_StatusClear(TIM7);
 
-		CONTROL_HandleExternalLamp(IsCommutation);
+		CONTROL_HandleExternalLamp(FPledForcedLight);
 	}
 }
 //-----------------------------------------
