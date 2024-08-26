@@ -171,7 +171,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
-				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION]);
+				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION], DataTable[REG_DEV_CASE]);
 
 				LastActionID = ActionID;
 				LastDUTposition = DataTable[REG_DUT_POSITION];

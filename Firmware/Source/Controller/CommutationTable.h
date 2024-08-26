@@ -146,6 +146,7 @@ static const Int8U CT_AllRelays[] = {BUS1_PE, BUS2_PE, BUS3_PE, BUS1_STN, BUS2_S
 //
 static const Int8U CT_NO_PE[] = {BUS1_PE, BUS2_PE, BUS3_PE};
 
+// Direct commutation
 static const Int8U CT_Ices_Pos1[] = {BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Ices_Pos2[] = {BUS3_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
@@ -157,6 +158,12 @@ static const Int8U CT_Vcesat_Pos2[] = {BUS3_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE,
 
 static const Int8U CT_Vf_Pos1[] = {BUS2_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Vf_Pos2[] = {BUS1_LCSUP, BUS3_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
+
+// Commutation for single switch devices (MIHV, MIHM, MISM2)
+static const Int8U CT_Ices_SS[] = {BUS1_LCTUP, BUS2_LCTUN, BUS1_PE};
+static const Int8U CT_Qg_SS[] = {BUS1_TOCUP, BUS3_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Vcesat_SS[] = {BUS1_LCSUP, BUS3_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Vf_SS[] = {BUS3_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
 // Continuity Selftest Commutations
 //

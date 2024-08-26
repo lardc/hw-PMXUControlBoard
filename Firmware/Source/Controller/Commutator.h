@@ -26,6 +26,6 @@ extern CommutationState COMM_State;
 
 // Functions
 void COMM_SwitchToPE();
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition);
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, Int16U DevCase);
 
 #endif // __COMMUTATOR_H
