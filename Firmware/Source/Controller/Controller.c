@@ -31,6 +31,7 @@ volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CONTROL_ContactorsCheck;
 Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
+DevType LastDevCase = SC_Type_MIAA;
 bool FPledForcedLight = false;
 
 // Forward functions
@@ -41,7 +42,7 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
-bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition);
+bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition);
 void CONTROL_CheckContactorsProcess();
 
 // Functions
@@ -169,14 +170,21 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_VF:
 		case ACT_COMM_QG:
 		case ACT_COMM_NO_PE:
+// При выборе измерения Ices с перечисленными корпусами измерение блокируется, т.к. PMXU требует доработок
+			if((LastDevCase == SC_Type_MIHV || LastDevCase == SC_Type_MIHM || LastDevCase == SC_Type_MISM2_SS_SD
+					|| LastDevCase == SC_Type_MISM2_CH)	&& ActionID == ACT_COMM_ICES)
+				*pUserError = ERR_OPERATION_BLOCKED;
+//-----------------
+
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
 				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION], DataTable[REG_DEV_CASE]);
 
 				LastActionID = ActionID;
 				LastDUTposition = DataTable[REG_DUT_POSITION];
+				LastDevCase = DataTable[REG_DEV_CASE];
 
-				if(CONTROL_CheckContactors(LastActionID, LastDUTposition))
+				if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 				else
 				{
@@ -222,7 +230,7 @@ void CONTROL_CheckContactorsProcess()
 {
 	if(CONTROL_State != DS_InSelfTest && CONTROL_State != DS_Fault && CONTROL_State != DS_None)
 	{
-		if(!CONTROL_CheckContactors(LastActionID, LastDUTposition))
+		if(!CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 		{
 			CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
@@ -361,7 +369,7 @@ void CONTROL_SafetyCheck()
 }
 //-----------------------------------------------
 
-bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
+bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition)
 {
 	switch(ActionID)
 	{
@@ -374,19 +382,79 @@ bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 			break;
 
 		case ACT_COMM_ICES:
-			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_Pos1 : CT_Ices_Pos2));
+			switch(DevCase)
+			{
+				case SC_Type_MIHV:
+				case SC_Type_MIHM:
+				case SC_Type_MISM2_SS_SD:
+					return CONTROL_CheckContactorsStates_macro(CT_Ices_SS);
+					break;
+
+				case SC_Type_MISM2_CH:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_MISM2_CH_1 : CT_Ices_MISM2_CH_2));
+					break;
+
+				default:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_Pos1 : CT_Ices_Pos2));
+					break;
+			}
 			break;
 
 		case ACT_COMM_VCESAT:
-			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_Pos1 : CT_Vcesat_Pos2));
+			switch(DevCase)
+			{
+				case SC_Type_MIHV:
+				case SC_Type_MIHM:
+				case SC_Type_MISM2_SS_SD:
+					return CONTROL_CheckContactorsStates_macro(CT_Vcesat_SS);
+					break;
+
+				case SC_Type_MISM2_CH:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_MISM2_CH_1 : CT_Vcesat_MISM2_CH_2));
+					break;
+
+				default:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_Pos1 : CT_Vcesat_Pos2));
+					break;
+			}
 			break;
 
 		case ACT_COMM_VF:
-			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_Pos1 : CT_Vf_Pos2));
+			switch(DevCase)
+			{
+				case SC_Type_MIHV:
+				case SC_Type_MIHM:
+				case SC_Type_MISM2_SS_SD:
+					return CONTROL_CheckContactorsStates_macro(CT_Vf_SS);
+					break;
+
+				case SC_Type_MISM2_CH:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_MISM2_CH_1 : CT_Vf_MISM2_CH_2));
+					break;
+
+				default:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_Pos1 : CT_Vf_Pos2));
+					break;
+			}
 			break;
 
 		case ACT_COMM_QG:
-			return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_Pos1 : CT_Qg_Pos2));
+			switch(DevCase)
+			{
+				case SC_Type_MIHV:
+				case SC_Type_MIHM:
+				case SC_Type_MISM2_SS_SD:
+					return CONTROL_CheckContactorsStates_macro(CT_Qg_SS);
+					break;
+
+				case SC_Type_MISM2_CH:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_MISM2_CH_1 : CT_Qg_MISM2_CH_2));
+					break;
+
+				default:
+					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_Pos1 : CT_Qg_Pos2));
+					break;
+			}
 			break;
 	}
 

@@ -7,6 +7,7 @@
 
 // Include
 #include "stdinc.h"
+#include "Controller.h"
 
 // Types
 //
@@ -26,6 +27,6 @@ extern CommutationState COMM_State;
 
 // Functions
 void COMM_SwitchToPE();
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, Int16U DevCase);
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase);
 
 #endif // __COMMUTATOR_H

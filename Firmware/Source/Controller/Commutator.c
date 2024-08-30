@@ -28,7 +28,7 @@ void COMM_SwitchToPE()
 }
 // ----------------------------------------
 
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, Int16U DevCase)
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 {
 	FPledForcedLight = true;
 
@@ -50,9 +50,7 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, Int16U DevCase)
 				case SC_Type_MIHV:
 				case SC_Type_MIHM:
 				case SC_Type_MISM2_SS_SD:
-					//ZcRD_CommutateConfig_macro(CT_Ices_SS);
-					ZcRD_CommutateConfig_macro(CT_NO_PE);
-					COMM_State = COMM_NoPE;
+					ZcRD_CommutateConfig_macro(CT_Ices_SS);
 					break;
 
 				case SC_Type_MISM2_CH:
