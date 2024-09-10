@@ -170,12 +170,6 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_VF:
 		case ACT_COMM_QG:
 		case ACT_COMM_NO_PE:
-// При выборе измерения Ices с перечисленными корпусами измерение блокируется, т.к. PMXU требует доработок
-			if((LastDevCase == SC_Type_MIHV || LastDevCase == SC_Type_MIHM || LastDevCase == SC_Type_MISM2_SS_SD
-					|| LastDevCase == SC_Type_MISM2_CH)	&& ActionID == ACT_COMM_ICES)
-				*pUserError = ERR_OPERATION_BLOCKED;
-//-----------------
-
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
 				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION], DataTable[REG_DEV_CASE]);

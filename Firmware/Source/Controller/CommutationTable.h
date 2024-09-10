@@ -86,6 +86,8 @@ typedef struct __ContactorsStateTableItem
 #define BUS3_LCTUP				14
 #define BUS1_LCTUN				16
 #define BUS2_LCTUN				15
+#define BUS3_LCTUN				23
+#define BUS2_LCTUP				24
 
 
 static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {
@@ -113,6 +115,9 @@ static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_S
 		{RELAY, BIT7, REG1, CT_NormalClosed},			// 20	// BUS1 to PE
 		{RELAY, BIT0, REG2, CT_NormalClosed},			// 21	// BUS2 to PE
 		{RELAY, BIT1, REG2, CT_NormalClosed},			// 22	// BUS3 to PE
+
+		{RELAY, BIT4, REG2, CT_NormalOpened},			// 23	// BUS3 to LCTU-
+		{RELAY, BIT6, REG2, CT_NormalOpened},			// 24	// BUS3 to LCTU+
 };
 
 static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE] = {
@@ -160,14 +165,14 @@ static const Int8U CT_Vf_Pos1[] = {BUS2_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS
 static const Int8U CT_Vf_Pos2[] = {BUS1_LCSUP, BUS3_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
 // Commutation for single switch devices (MIHV, MIHM, MISM2-SS-SD)
-static const Int8U CT_Ices_SS[] = {/*BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE*/};
+static const Int8U CT_Ices_SS[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Qg_SS[] = {BUS1_TOCUP, BUS3_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Vcesat_SS[] = {BUS1_LCSUP, BUS3_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Vf_SS[] = {BUS3_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
 // Commutation for MISM2-CH
-static const Int8U CT_Ices_MISM2_CH_1[] = {/*BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE*/};
-static const Int8U CT_Ices_MISM2_CH_2[] = {/*BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE*/};
+static const Int8U CT_Ices_MISM2_CH_1[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Ices_MISM2_CH_2[] = {BUS2_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Qg_MISM2_CH_1[] = {BUS1_TOCUP, BUS3_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Qg_MISM2_CH_2[] = {BUS2_TOCUP, BUS1_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Vcesat_MISM2_CH_1[] = {BUS1_LCSUP, BUS3_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
