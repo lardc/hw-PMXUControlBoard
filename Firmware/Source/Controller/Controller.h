@@ -61,7 +61,8 @@ typedef enum __DevType
 	// 2011
 	SC_Type_MISM2_CH = 2012,
 	SC_Type_MISM2_SS_SD = 2014,
-	SC_Type_MIADAP = 2015
+	SC_Type_MIADAP = 2015,
+	SC_Type_MDAA = 2016
 } DevType;
 
 // Variables
