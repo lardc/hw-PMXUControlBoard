@@ -61,6 +61,10 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Ices_MISM2_CH_2);
 					break;
 
+				case SC_Type_MDSM:
+					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_MDSM_1) : ZcRD_CommutateConfig_macro(CT_Ices_MDSM_2);
+					break;
+
 				default:
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_Pos1) : ZcRD_CommutateConfig_macro(CT_Ices_Pos2);
 					break;
@@ -86,6 +90,8 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vcesat_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Vcesat_MISM2_CH_2);
 					break;
 
+				case SC_Type_MDSM:
+				case SC_Type_MDFA:
 				case SC_Type_MDAA:
 					ZcRD_CommutateConfig_macro(CT_NO_PE);
 					COMM_State = COMM_NoPE;
@@ -118,6 +124,10 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Vf_MISM2_CH_2);
 					break;
 
+				case SC_Type_MDSM:
+					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_MDSM_1) : ZcRD_CommutateConfig_macro(CT_Vf_MDSM_2);
+					break;
+
 				default:
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_Pos1) : ZcRD_CommutateConfig_macro(CT_Vf_Pos2);
 					break;
@@ -143,6 +153,8 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Qg_MISM2_CH_2);
 					break;
 
+				case SC_Type_MDSM:
+				case SC_Type_MDFA:
 				case SC_Type_MDAA:
 					ZcRD_CommutateConfig_macro(CT_NO_PE);
 					COMM_State = COMM_NoPE;

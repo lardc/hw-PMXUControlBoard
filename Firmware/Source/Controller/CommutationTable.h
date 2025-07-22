@@ -180,6 +180,12 @@ static const Int8U CT_Vcesat_MISM2_CH_2[] = {BUS2_LCSUP, BUS1_LCSUN, BUS1_PE, BU
 static const Int8U CT_Vf_MISM2_CH_1[] = {BUS3_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Vf_MISM2_CH_2[] = {BUS1_LCSUP, BUS2_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
+// Commutation for MDSM
+static const Int8U CT_Vf_MDSM_1[] = {BUS3_LCSUP, BUS1_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Vf_MDSM_2[] = {BUS1_LCSUP, BUS2_LCSUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Ices_MDSM_1[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Ices_MDSM_2[] = {BUS2_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
+
 // Continuity Selftest Commutations
 //
 static const Int8U CT_ST_LCTU1[] = {BUS3_STP, BUS3_LCTUP, BUS1_LCTUP, BUS1_STN};
