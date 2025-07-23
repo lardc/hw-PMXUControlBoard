@@ -388,6 +388,7 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 					return CONTROL_CheckContactorsStates_macro(CT_Ices_Pos2);
 					break;
 
+				case SC_Type_MDSV:
 				case SC_Type_MISM2_CH:
 					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_MISM2_CH_1 : CT_Ices_MISM2_CH_2));
 					break;
@@ -415,6 +416,13 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_MISM2_CH_1 : CT_Vcesat_MISM2_CH_2));
 					break;
 
+				case SC_Type_MDSV:
+				case SC_Type_MDSM:
+				case SC_Type_MDFA:
+				case SC_Type_MDAA:
+					return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
+					break;
+
 				default:
 					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_Pos1 : CT_Vcesat_Pos2));
 					break;
@@ -434,6 +442,7 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 					return CONTROL_CheckContactorsStates_macro(CT_Vf_Pos2);
 					break;
 
+				case SC_Type_MDSV:
 				case SC_Type_MISM2_CH:
 					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_MISM2_CH_1 : CT_Vf_MISM2_CH_2));
 					break;
@@ -459,6 +468,13 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 
 				case SC_Type_MISM2_CH:
 					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_MISM2_CH_1 : CT_Qg_MISM2_CH_2));
+					break;
+
+				case SC_Type_MDSV:
+				case SC_Type_MDSM:
+				case SC_Type_MDFA:
+				case SC_Type_MDAA:
+					return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
 					break;
 
 				default:
