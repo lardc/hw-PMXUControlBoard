@@ -154,6 +154,7 @@ static const Int8U CT_NO_PE[] = {BUS1_PE, BUS2_PE, BUS3_PE};
 // Direct commutation
 static const Int8U CT_Ices_Pos1[] = {BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Ices_Pos2[] = {BUS3_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
+static const Int8U CT_Ices_Pos2_Inverse[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
 static const Int8U CT_Qg_Pos1[] = {BUS1_TOCUP, BUS2_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Qg_Pos2[] = {BUS3_TOCUP, BUS1_TOCUN, BUS1_PE, BUS2_PE, BUS3_PE};
