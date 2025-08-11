@@ -44,12 +44,6 @@ void ZcRD_SaveCountersToEPROM()
 }
 //-----------------------------
 
-void ZcRD_RestoreCountersFromEPROM()
-{
-	// Soon...
-}
-//-----------------------------
-
 void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
 {
 	if(Node == RELAY)

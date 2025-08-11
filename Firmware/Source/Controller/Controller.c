@@ -48,6 +48,7 @@ void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
 bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition);
 void CONTROL_CheckContactorsProcess();
+void CONTROL_InitStoragePointers();
 
 // Functions
 //
@@ -70,8 +71,9 @@ void CONTROL_Init()
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
-	// Считывание значений счетчиков из EEPROM
-	ZcRD_RestoreCountersFromEPROM();
+	// Инициализация указателей на счетчики и сами счетчики
+	CONTROL_InitStoragePointers();
+	STF_LoadCounters();
 }
 //------------------------------------------
 
@@ -113,6 +115,13 @@ void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
 	CONTROL_SetDeviceState(DS_None, DSS_None);
+}
+//------------------------------------------
+
+void CONTROL_InitStoragePointers()
+{
+	for (Int16U i = 0; i < INNER_COMMUTATION_TABLE_SIZE; ++i)
+		STF_AssignCounterPointer(i, (Int32U)&CycleCounters[i]);
 }
 //------------------------------------------
 
