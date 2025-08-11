@@ -26,6 +26,7 @@ typedef enum __CommutationState
 //
 extern CommutationState COMM_State;
 extern Int32U CycleCounters[INNER_COMMUTATION_TABLE_SIZE];
+extern Int64U CT_SaveTimer;
 
 // Functions
 void COMM_SwitchToPE();

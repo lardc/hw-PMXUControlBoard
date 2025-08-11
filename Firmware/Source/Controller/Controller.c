@@ -79,6 +79,12 @@ void CONTROL_Init()
 
 void CONTROL_Idle()
 {
+	if (CONTROL_TimeCounter - CT_SaveTimer >= CT_SAVE_TIMEOUT)
+	{
+		STF_SaveCounterData();
+		CT_SaveTimer = CONTROL_TimeCounter;
+	}
+
 	CONTROL_LogicProcess();
 	SELFTEST_Process();
 

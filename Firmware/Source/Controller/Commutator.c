@@ -17,6 +17,7 @@
 //
 CommutationState COMM_State = COMM_Def;
 Int32U CycleCounters[INNER_COMMUTATION_TABLE_SIZE] = {0};
+Int64U CT_SaveTimer = 0;
 
 // Functions
 //
