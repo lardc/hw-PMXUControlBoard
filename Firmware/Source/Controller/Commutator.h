@@ -8,6 +8,7 @@
 // Include
 #include "stdinc.h"
 #include "Controller.h"
+#include "CommutationTable.h"
 
 // Types
 //
@@ -24,6 +25,7 @@ typedef enum __CommutationState
 // Variables
 //
 extern CommutationState COMM_State;
+extern Int32U CycleCounters[INNER_COMMUTATION_TABLE_SIZE];
 
 // Functions
 void COMM_SwitchToPE();

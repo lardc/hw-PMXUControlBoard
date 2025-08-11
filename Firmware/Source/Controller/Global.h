@@ -6,8 +6,9 @@
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
 #define EP_COUNT								0		// Количество массивов для чтения
-#define FEP_COUNT								0		// Количество массивов для чтения типа float
+#define FEP_COUNT								1		// Количество массивов для чтения типа float
 #define VALUES_x_SIZE							0		// Размер массивов
+#define VALUES_DIAG_SIZE						80		// Размер массива диагностических данных и счетчиков
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 
 // Временные параметры

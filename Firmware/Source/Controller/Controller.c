@@ -17,6 +17,7 @@
 #include "ZcRegistersDriver.h"
 #include "Converter.h"
 #include "Constraints.h"
+#include "SaveToFlash.h"
 
 // Types
 //
@@ -33,6 +34,9 @@ Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
 DevType LastDevCase = SC_Type_MIAA;
 bool FPledForcedLight = false;
+volatile Int16U CONTROL_DiagCounter = 0;
+//
+volatile float CONTROL_DiagData[VALUES_DIAG_SIZE];
 
 // Forward functions
 //
@@ -49,12 +53,19 @@ void CONTROL_CheckContactorsProcess();
 //
 void CONTROL_Init()
 {
+	// Конфигурация EndPoint
+	Int16U FEPIndexes[FEP_COUNT] = {EP_DiagData};
+	Int16U FEPSized[FEP_COUNT] = {VALUES_DIAG_SIZE};
+	pInt16U FEPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_DiagCounter};
+	pFloat32 FEPDatas[FEP_COUNT] = {(pFloat32)&CONTROL_DiagData};
+
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
 	// Инициализация data table
 	DT_Init(EPROMService, false);
 	DT_SaveFirmwareInfo(CAN_NID, 0);
-	// Инициализация device profile
+	// Инициализация Device Profile и EndPoint
+	DEVPROFILE_InitFEPService(FEPIndexes, FEPSized, FEPCounters, FEPDatas);
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
@@ -203,6 +214,19 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_SET_COUNTER:
+			CycleCounters[(Int16U)DataTable[REG_CNT_NUMBER]] = DataTable[REG_CNT_VALUE];
+			break;
+
+		case ACT_SAVE_COUNTERS:
+			STF_SaveCounterData();
+			break;
+
+		case ACT_ERASE_COUNTERS:
+			NFLASH_Unlock();
+			STF_EraseCounterDataSector();
 			break;
 
 		default:

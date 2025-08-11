@@ -77,6 +77,9 @@ extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern Int64U CONTROL_LEDTimeout;
 extern bool FPledForcedLight;
+extern volatile Int16U CONTROL_DiagCounter;
+//
+extern volatile float CONTROL_DiagData[VALUES_DIAG_SIZE];
 
 // Functions
 //

@@ -31,6 +31,12 @@
 #define ACT_RESTORE_FROM_ROM					201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT					202	// Сброс DataTable в состояние по умолчанию
 
+#define ACT_FLASH_CNT_INIT_READ					334	// Перемещение указателя в область счетчиков
+#define ACT_SET_COUNTER							336	// Установка значения счетчика
+#define ACT_SAVE_COUNTERS						337	// Сохранить счетчики в памяти
+#define ACT_ERASE_COUNTERS						338	// Удалить счетчики из памяти
+#define ACT_FLASH_COUNTER_TO_EP					339 // Выполнить чтение массива из памяти счетчиков отработки в EP
+
 #define ACT_BOOT_LOADER_REQUEST					320	// Перезапуск процессора с целью перепрограммирования
 // -----------------------------
 
@@ -45,6 +51,9 @@
 #define REG_LAMP_CTRL							7	// Разрешение работы внешнего индикатора
 #define REG_ST_STOP_STAGE						8	// Номер стадии окончания самотестирования
 #define REG_SAFETY_ACTIVE						9	// Активация безопасности
+//
+#define REG_CNT_NUMBER							104	// Номер счетчика, в который будет записано значение
+#define REG_CNT_VALUE							105	// Значение, которое будет записано в счетчик
 
 // Несохраняемые регистры чтения-записи
 #define REG_DUT_POSITION						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
@@ -98,5 +107,7 @@
 #define ERR_WRONG_PWD							4	//  Неправильный ключ
 
 // Endpoints
+
+#define EP_DiagData								20	// External information from flash
 
 #endif //  __DEV_OBJ_DIC_H
