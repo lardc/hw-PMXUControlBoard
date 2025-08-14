@@ -55,7 +55,6 @@ void TIM8_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM8))
 	{
-		ZcRD_SaveCountersToEPROM();
 		CONTROL_CheckContactorsCounter();
 		TIM_StatusClear(TIM8);
 	}

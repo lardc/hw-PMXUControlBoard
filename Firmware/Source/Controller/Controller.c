@@ -66,8 +66,8 @@ void CONTROL_Init()
 	DT_Init(EPROMService, false);
 	DT_SaveFirmwareInfo(CAN_NID, 0);
 	// Инициализация Device Profile и EndPoint
-	DEVPROFILE_InitFEPService(FEPIndexes, FEPSized, FEPCounters, FEPDatas);
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
+	DEVPROFILE_InitFEPService(FEPIndexes, FEPSized, FEPCounters, FEPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();

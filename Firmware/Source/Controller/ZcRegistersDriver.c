@@ -10,11 +10,14 @@
 #include "Delay.h"
 #include "DataTable.h"
 #include "Converter.h"
+#include "Commutator.h"
 
 // Variables
 //
 volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
 static volatile Int32U ZcRD_RelayGroupsCommCounter[NUM_RELAY_GROUPS_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0};
+static uint8_t PrevRelayState[SPI1_ARRAY_LEN_RELAYS] = {0};
+static uint8_t PrevContactorState[SPI1_ARRAY_LEN_CONTACTORS] = {0};
 
 // Functions
 //
@@ -38,14 +41,38 @@ void ZcRD_IncrementRelays(uint8_t BitDataArray[])
 }
 //-----------------------------
 
-void ZcRD_SaveCountersToEPROM()
+void ZcRD_SaveCounters(const uint8_t BitDataArray[], Int8U Node)
 {
-	// Soon...
+	uint8_t *PrevElement = (Node == RELAY) ? PrevRelayState : PrevContactorState;
+
+	// Инкремент счётчиков только при изменении соответствующего бита
+	for (Int16U i = 1; i < INNER_COMMUTATION_TABLE_SIZE; i++)
+	{
+		if (InnerCommutationTable[i].Node != Node)
+			continue;
+
+		if ((PrevElement[InnerCommutationTable[i].RegNum] & InnerCommutationTable[i].Bit) !=
+			 (BitDataArray[InnerCommutationTable[i].RegNum] & InnerCommutationTable[i].Bit) )
+			CycleCounters[i]++;
+	}
+
+	// Обновление предыдущего состояния соответствующего узла
+	if (Node == RELAY)
+	{
+		for (Int16U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
+			PrevRelayState[i] = BitDataArray[i];
+	}
+	else
+	{
+		for (Int16U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+			PrevContactorState[i] = BitDataArray[i];
+	}
 }
 //-----------------------------
 
 void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
 {
+	ZcRD_SaveCounters(BitDataArray, Node);
 	if(Node == RELAY)
 	{
 		ZcRD_IncrementRelays((uint8_t *)BitDataArray);
