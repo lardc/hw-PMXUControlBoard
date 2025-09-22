@@ -21,7 +21,7 @@ static uint8_t PrevContactorState[SPI1_ARRAY_LEN_CONTACTORS] = {0};
 
 // Functions
 //
-void ZcRD_IncrementContactors(uint8_t BitDataArray[])
+void ZcRD_IncrementContactors(const uint8_t BitDataArray[])
 {
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
 	{
@@ -31,7 +31,7 @@ void ZcRD_IncrementContactors(uint8_t BitDataArray[])
 }
 //-----------------------------
 
-void ZcRD_IncrementRelays(uint8_t BitDataArray[])
+void ZcRD_IncrementRelays(const uint8_t BitDataArray[])
 {
 	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
 	{
@@ -75,12 +75,12 @@ void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
 	ZcRD_SaveCounters(BitDataArray, Node);
 	if(Node == RELAY)
 	{
-		ZcRD_IncrementRelays((uint8_t *)BitDataArray);
+		ZcRD_IncrementRelays(BitDataArray);
 		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
 	}
 	else
 	{
-		ZcRD_IncrementContactors((uint8_t *)BitDataArray);
+		ZcRD_IncrementContactors(BitDataArray);
 		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
 	}
 }

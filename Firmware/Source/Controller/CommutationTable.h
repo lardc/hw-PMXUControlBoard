@@ -53,7 +53,7 @@ typedef struct __ContactorsStateTableItem
 #define NUM_RELAY_GROUPS_COMMUTATIONS			10
 #define INNER_COMMUTATION_TABLE_SIZE 			((NUM_RELAY_GROUPS_COMMUTATIONS * NUM_RELAYS_PER_COMMUTATION) + NUM_CONTACTOR_COMMUTATIONS + 1)
 
-#define CT_SAVE_TIMEOUT			1800000
+#define CT_SAVE_TIMEOUT			1800000 // Значение в мс (30 мин)
 
 // Inner Contactors commutations (Side1_Side2)
 // TOCU HP

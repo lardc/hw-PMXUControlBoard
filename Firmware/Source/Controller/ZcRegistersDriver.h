@@ -17,8 +17,8 @@
 extern volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS];
 // Functions
 //
-void ZcRD_IncrementContactors(uint8_t BitDataArray[]);
-void ZcRD_IncrementRelays(uint8_t BitDataArray[]);
+void ZcRD_IncrementContactors(const uint8_t BitDataArray[]);
+void ZcRD_IncrementRelays(const uint8_t BitDataArray[]);
 void ZcRD_SaveCounters(const uint8_t BitDataArray[], Int8U Node);
 void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node);
 void ZcRD_ReadSPI2(volatile uint8_t* SPI_Data);

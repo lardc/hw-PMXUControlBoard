@@ -3,12 +3,11 @@
 #include "Global.h"
 
 // Variables
-RecordDescription StorageDescription[] =
-{
+RecordDescription StorageDescription[] = {};
 
-};
-Int32U TablePointers[sizeof(StorageDescription) / sizeof(StorageDescription[0])] = {0};
-const Int16U StorageSize = sizeof(StorageDescription) / sizeof(StorageDescription[0]);
+#define SIZE_OF_POINTERS (sizeof(StorageDescription) / sizeof(StorageDescription[0]))
+Int32U TablePointers[SIZE_OF_POINTERS ? SIZE_OF_POINTERS : 1] = {0};
+const Int16U StorageSize = SIZE_OF_POINTERS;
 
 CounterDescription CounterStorageDescription[] =
 {
