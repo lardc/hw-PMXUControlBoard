@@ -100,8 +100,18 @@ void CONTROL_Idle()
 }
 //------------------------------------------
 
+void CONTROL_SaveLastRequest(Int16U ActionID)
+{
+	DataTable[REG_LAST_CMD] = ActionID;
+	DataTable[REG_LAST_POS] = DataTable[REG_DUT_POSITION];
+	DataTable[REG_LAST_CASE] = DataTable[REG_DUT_CASE];
+	DataTable[REG_LAST_TYPE] = DataTable[REG_DUT_SCHEME];
+}
+//------------------------------------------
+
 void CONTROL_SwitchToFault(Int16U Reason)
 {
+	CONTROL_SaveLastRequest(LastActionID);
 	CONTROL_SetDeviceState(DS_Fault, DSS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 }
@@ -223,6 +233,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 						(DevType)DataTable[REG_DUT_CASE], (Int16U)DataTable[REG_DUT_SCHEME]);
 
 				LastActionID = ActionID;
+				CONTROL_SaveLastRequest(ActionID);
 				LastDUTposition = DataTable[REG_DUT_POSITION];
 				LastDevCase = (DevType)DataTable[REG_DUT_CASE];
 
@@ -240,16 +251,6 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			else if(CONTROL_State == DS_None)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			else
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_SELFTEST:
-			if(CONTROL_State == DS_Enabled)
-			{
-				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
-			}
-			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 

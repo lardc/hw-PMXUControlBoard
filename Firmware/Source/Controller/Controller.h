@@ -97,5 +97,6 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_CheckContactorsCounter();
 void CONTROL_HandleExternalLamp(bool Forced);
+void CONTROL_SaveLastRequest(Int16U ActionID);
 
 #endif // __CONTROLLER_H

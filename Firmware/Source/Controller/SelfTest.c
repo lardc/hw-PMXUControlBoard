@@ -38,7 +38,7 @@ void SELFTEST_Process()
 {
 	if(CONTROL_State == DS_InSelfTest)
 	{
-		if(CONTROL_SubState == DataTable[REG_ST_STOP_STAGE])
+		if(CONTROL_SubState == DataTable[8])
 			CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_Finish);
 
 		FPledForcedLight = true;

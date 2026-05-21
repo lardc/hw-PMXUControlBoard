@@ -25,8 +25,6 @@
 // 114 — зарезервирован: ACT_COMM_QG удалён (303)
 #define ACT_COMM_NO_PE							115 // Отключение всех реле и отключение шин от PE
 
-#define ACT_SELFTEST							120 // Запуск режима самотестирования
-
 #define ACT_SAVE_TO_ROM							200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM					201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT					202	// Сброс DataTable в состояние по умолчанию
@@ -51,7 +49,6 @@
 #define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
 #define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
 #define REG_LAMP_CTRL							7	// Разрешение работы внешнего индикатора
-#define REG_ST_STOP_STAGE						8	// Номер стадии окончания самотестирования
 #define REG_SAFETY_ACTIVE						9	// Активация безопасности
 //
 #define REG_CNT_NUMBER							104	// Номер счетчика, в который будет записано значение
@@ -64,6 +61,11 @@
 #define REG_DUT_SCHEME							130	// Схема подключения внутри корпуса
 
 #define REG_DBG									150	// Отладочный регистр
+//
+#define REG_LAST_CMD							152	// Код последней коммутации
+#define REG_LAST_POS							153	// Позиция DUT на момент последней коммутации
+#define REG_LAST_CASE							154	// Тип корпуса DUT
+#define REG_LAST_TYPE							155	// Схема DUT
 
 // Регистры только чтение
 #define REG_DEV_STATE							192	// Регистр состояния

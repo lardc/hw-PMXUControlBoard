@@ -33,9 +33,6 @@
 #define REG_DUT_SCHEME_MIN				0
 #define REG_DUT_SCHEME_MAX				99
 #define REG_DUT_SCHEME_DFLT				0
-//
-#define ST_START_STAGE					0
-#define ST_STOP_STAGE					DSS_SelfTest_TOCU2
 
 // Types
 typedef struct __TableItemConstraint
