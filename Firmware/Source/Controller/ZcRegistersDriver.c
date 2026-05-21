@@ -76,12 +76,12 @@ void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
 	if(Node == RELAY)
 	{
 		ZcRD_IncrementRelays(BitDataArray);
-		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_OE_REL, GPIO_SPI1_SS_REL);
+		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_SS_REL);
 	}
 	else
 	{
 		ZcRD_IncrementContactors(BitDataArray);
-		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_OE_CONT, GPIO_SPI1_SS_CONT);
+		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_SS_CONT);
 	}
 }
 //-----------------------------

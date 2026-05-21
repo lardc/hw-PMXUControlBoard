@@ -151,7 +151,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
 				COMM_SwitchToPE();
-				LL_SetStateIndication(false);
+				LL_SetStateFPLed(false);
 				LastActionID = ACT_COMM_PE;
 
 				CONTROL_SetDeviceState(DS_None, DSS_None);
@@ -182,7 +182,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_SET_INACTIVE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
-				LL_SetStateIndication(false);
+				LL_SetStateFPLed(false);
 				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 			}
 			else
@@ -332,7 +332,7 @@ void CONTROL_HandleExternalLamp(bool Forced)
 	{
 		if(++FPLampCounter > TIME_FP_LED_FAULT_BLINK)
 		{
-			LL_ToggleIndication();
+			LL_ToggleFPLed();
 			FPLampCounter = 0;
 		}
 	}
@@ -340,7 +340,7 @@ void CONTROL_HandleExternalLamp(bool Forced)
 	{
 		if(CONTROL_State == DS_None && FPLampCounter)
 		{
-			LL_SetStateIndication(false);
+			LL_SetStateFPLed(false);
 			FPLampCounter = 0;
 		}
 
@@ -348,13 +348,13 @@ void CONTROL_HandleExternalLamp(bool Forced)
 		{
 			if(Forced)
 			{
-				LL_SetStateIndication(true);
+				LL_SetStateFPLed(true);
 				FPLampCounter = CONTROL_TimeCounter + TIME_FP_LED_ON_STATE;
 			}
 			else
 			{
 				if(CONTROL_TimeCounter >= FPLampCounter)
-					LL_SetStateIndication(false);
+					LL_SetStateFPLed(false);
 			}
 		}
 	}

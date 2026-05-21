@@ -28,15 +28,6 @@ GPIO_PortPinSettingMacro GPIO_SPI2_OE = {GPIOB, Pin_12};
 // Определения для входных портов
 GPIO_PortPinSettingMacro GPIO_SFT_IN = {GPIOA, Pin_6};
 
-// Алиасы до этапа 2 (LowLevel / ZcRegistersDriver) — удалить при переработке SPI
-#define GPIO_IND				GPIO_FP_LED
-#define GPIO_SAFETY				GPIO_SFT_IN
-#define GPIO_SPI1_OE_CONT		GPIO_SFT_ENABLE
-#define GPIO_SPI1_OE_REL		GPIO_SFT_ENABLE
-
-// PA1 ST_STATE — снят с платы 303; define оставлен до этапа 2 (удаление LL_IsSelftestPinOk)
-GPIO_PortPinSettingMacro GPIO_SELFTEST = {GPIOA, Pin_1};
-
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_UART1_TX = {GPIOA, Pin_9};
 GPIO_PortPinSettingMacro GPIO_ALT_UART1_RX = {GPIOA, Pin_10};

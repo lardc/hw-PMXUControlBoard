@@ -14,30 +14,28 @@
 
 // Functions
 //
-// Send pulse to Indicator
 void DBACT_PulseIndication()
 {
-	LL_SetStateIndication(true);
+	LL_SetStateFPLed(true);
 	DELAY_MS(1000);
-	LL_SetStateIndication(false);
+	LL_SetStateFPLed(false);
 }
 //-----------------------
 
-// Safety circuit checking
-void DBACT_IsSafetyOk()
+void DBACT_ReadSftIn()
 {
-	DataTable[REG_DBG] = LL_IsSafetyTrig();
+	DataTable[REG_DBG] = LL_IsSafetyTrig() ? 1 : 0;
 }
 //-----------------------
 
-// Selftest circuit checking
-void DBACT_IsSelftestOk()
+void DBACT_SftEnablePulse()
 {
-	DataTable[REG_DBG] = LL_IsSelftestPinOk();
+	LL_SetStateSFT_ENABLE(true);
+	DELAY_MS(1000);
+	LL_SetStateSFT_ENABLE(false);
 }
 //-----------------------
 
-// Write raw data to SPI1 for Contactors
 void DBACT_WriteSPI1ContactorsRaw()
 {
 	Int8U BitDataArray[SPI1_ARRAY_LEN_CONTACTORS];
@@ -53,7 +51,6 @@ void DBACT_WriteSPI1ContactorsRaw()
 }
 //-----------------------
 
-// Write raw data to SPI1 for Relays
 void DBACT_WriteSPI1RelaysRaw()
 {
 	Int8U BitDataArray[SPI1_ARRAY_LEN_RELAYS];
@@ -69,7 +66,6 @@ void DBACT_WriteSPI1RelaysRaw()
 }
 //-----------------------
 
-// Reset SPI1 commutations: Relays and Contactors
 void DBACT_ResetSPI1Commutations()
 {
 	ZcRD_WriteSPI1Comm(CT_DFLT_Relays, RELAY);
@@ -77,7 +73,6 @@ void DBACT_ResetSPI1Commutations()
 }
 //-----------------------
 
-// Read raw data from SPI2
 void DBACT_ReadSPI2Raw()
 {
 	Int8U SPI_Data[SPI2_ARRAY_LEN];
@@ -88,10 +83,8 @@ void DBACT_ReadSPI2Raw()
 }
 //-----------------------
 
-// Read raw voltage from ADC input
 void DBACT_GetPressureADCVoltage()
 {
 	DataTable[REG_DBG] = Conv_PressureADCVtoBar();
 }
 //-----------------------
-

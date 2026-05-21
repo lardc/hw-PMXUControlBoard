@@ -180,7 +180,7 @@ bool SELFTEST_Comm(pInt8U BitArray, pInt8U CommTable, Int16U TableLength, pFloat
 	{
 		CommPositionCorrect = (InnerCommutationTable[CommTable[i]].Node == CONTACTOR) ? CONTROL_CheckContactorsStates_macro(CommTable) : true;
 
-		if(!LL_CheckTestCurrent() || !CommPositionCorrect)
+		if(!CommPositionCorrect)
 		{
 			*ErrorReg = i;
 			return false;
@@ -201,7 +201,7 @@ bool SELFTEST_Comm(pInt8U BitArray, pInt8U CommTable, Int16U TableLength, pFloat
 
 		CommPositionCorrect = (InnerCommutationTable[CommTable[i]].Node == CONTACTOR) ? CONTROL_CheckContactorsStates_macro(CopiedCommTable) : true;
 
-		if(LL_CheckTestCurrent() || !CommPositionCorrect)
+		if(!CommPositionCorrect)
 		{
 			*ErrorReg = i;
 			return false;

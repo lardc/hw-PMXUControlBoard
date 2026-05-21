@@ -8,8 +8,8 @@
 // Functions
 //
 void DBACT_PulseIndication();
-void DBACT_IsSafetyOk();
-void DBACT_IsSelftestOk();
+void DBACT_ReadSftIn();
+void DBACT_SftEnablePulse();
 void DBACT_WriteSPI1ContactorsRaw();
 void DBACT_WriteSPI1RelaysRaw();
 void DBACT_ReadSPI2Raw();
