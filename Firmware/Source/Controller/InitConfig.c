@@ -17,28 +17,27 @@ void INITCFG_ConfigIO()
 	RCC_GPIO_Clk_EN(PORTA);
 	RCC_GPIO_Clk_EN(PORTB);
 	RCC_GPIO_Clk_EN(PORTC);
-	
-	// Выходы
+
+	// Выходы PushPull
 	GPIO_InitPushPullOutput(GPIO_LED);
-	GPIO_InitPushPullOutput(GPIO_IND);
-	GPIO_InitPushPullOutput(GPIO_SPI1_SS_CONT);
-	GPIO_InitPushPullOutput(GPIO_SPI1_SS_REL);
-	GPIO_InitPushPullOutput(GPIO_SPI1_OE_CONT);
-	GPIO_InitPushPullOutput(GPIO_SPI1_OE_REL);
-	GPIO_InitPushPullOutput(GPIO_SPI2_LD);
-	GPIO_InitPushPullOutput(GPIO_SPI2_OE);
+	GPIO_InitPushPullOutput(GPIO_FP_LED);
+
+	// Выходы OpenDrain
+	GPIO_InitOpenDrainOutput(GPIO_SPI1_SS_CONT, NoPull);
+	GPIO_InitOpenDrainOutput(GPIO_SPI1_SS_REL, NoPull);
+	GPIO_InitOpenDrainOutput(GPIO_SFT_ENABLE, NoPull);
+	GPIO_InitOpenDrainOutput(GPIO_SPI2_LD, NoPull);
+	GPIO_InitOpenDrainOutput(GPIO_SPI2_OE, NoPull);
 
 	// Входы
-	GPIO_InitInput(GPIO_SAFETY, NoPull);
-	GPIO_InitInput(GPIO_SELFTEST, NoPull);
+	GPIO_InitInput(GPIO_SFT_IN, NoPull);
 
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_LED, false);
-	GPIO_SetState(GPIO_IND, false);
+	GPIO_SetState(GPIO_FP_LED, false);
 	GPIO_SetState(GPIO_SPI1_SS_CONT, true);
 	GPIO_SetState(GPIO_SPI1_SS_REL, true);
-	GPIO_SetState(GPIO_SPI1_OE_CONT, true);
-	GPIO_SetState(GPIO_SPI1_OE_REL, true);
+	GPIO_SetState(GPIO_SFT_ENABLE, true);
 	GPIO_SetState(GPIO_SPI2_LD, true);
 	GPIO_SetState(GPIO_SPI2_OE, true);
 
@@ -57,7 +56,7 @@ void INITCFG_ConfigIO()
 
 void INITCFG_ConfigExtInterrupt()
 {
-	// Вход сигнала безопасности
+	// Вход контура безопасности 
 	EXTI_Config(EXTI_PA, EXTI_6, RISE_TRIG, 0);
 	EXTI_EnableInterrupt(EXTI9_5_IRQn, 0, true);
 }

@@ -18,16 +18,23 @@
 
 // Определения для выходных портов
 GPIO_PortPinSettingMacro GPIO_LED = {GPIOB, Pin_0};
-GPIO_PortPinSettingMacro GPIO_IND = {GPIOA, Pin_7};
+GPIO_PortPinSettingMacro GPIO_FP_LED = {GPIOA, Pin_7};
 GPIO_PortPinSettingMacro GPIO_SPI1_SS_CONT = {GPIOB, Pin_4};
 GPIO_PortPinSettingMacro GPIO_SPI1_SS_REL = {GPIOB, Pin_7};
-GPIO_PortPinSettingMacro GPIO_SPI1_OE_CONT = {GPIOB, Pin_6};
-GPIO_PortPinSettingMacro GPIO_SPI1_OE_REL = {GPIOA, Pin_15};
+GPIO_PortPinSettingMacro GPIO_SFT_ENABLE = {GPIOB, Pin_6};
 GPIO_PortPinSettingMacro GPIO_SPI2_LD = {GPIOB, Pin_15};
 GPIO_PortPinSettingMacro GPIO_SPI2_OE = {GPIOB, Pin_12};
 
 // Определения для входных портов
-GPIO_PortPinSettingMacro GPIO_SAFETY = {GPIOA, Pin_6};
+GPIO_PortPinSettingMacro GPIO_SFT_IN = {GPIOA, Pin_6};
+
+// Алиасы до этапа 2 (LowLevel / ZcRegistersDriver) — удалить при переработке SPI
+#define GPIO_IND				GPIO_FP_LED
+#define GPIO_SAFETY				GPIO_SFT_IN
+#define GPIO_SPI1_OE_CONT		GPIO_SFT_ENABLE
+#define GPIO_SPI1_OE_REL		GPIO_SFT_ENABLE
+
+// PA1 ST_STATE — снят с платы 303; define оставлен до этапа 2 (удаление LL_IsSelftestPinOk)
 GPIO_PortPinSettingMacro GPIO_SELFTEST = {GPIOA, Pin_1};
 
 // Определения для портов альтернативных функций
