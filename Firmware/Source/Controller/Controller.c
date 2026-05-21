@@ -229,15 +229,13 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
-				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION],
-						(DevType)DataTable[REG_DUT_CASE], (Int16U)DataTable[REG_DUT_SCHEME]))
+				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
 					*pUserError = ERR_OPERATION_BLOCKED;
 					break;
 				}
 
-				COMM_Commutate(ActionID, (Int16U)DataTable[REG_DUT_POSITION],
-						(DevType)DataTable[REG_DUT_CASE], (Int16U)DataTable[REG_DUT_SCHEME]);
+				COMM_Commutate(ActionID);
 
 				LastActionID = ActionID;
 				CONTROL_SaveLastRequest(ActionID);
@@ -280,9 +278,9 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 void CONTROL_LogicProcess()
 {
+	CONTROL_SafetyCheck();
 	CONTROL_CheckContactorsProcess();
 	CONTROL_PressureCheck();
-	CONTROL_SafetyCheck();
 }
 //-----------------------------------------------
 
@@ -407,7 +405,7 @@ void CONTROL_SafetyCheck()
 		SafetyFlushPending = false;
 
 		LL_SetStateSFT_ENABLE(true);
-		LL_SafetyResetSPI1();
+		ZcRD_ApplySafetyReset();
 		COMM_State = COMM_Def;
 		LastActionID = ACT_COMM_PE;
 

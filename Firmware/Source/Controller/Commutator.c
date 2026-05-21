@@ -60,18 +60,13 @@ void COMM_SwitchToPE()
 }
 // ----------------------------------------
 
-bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme)
+bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition)
 {
 	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
 
 	(void)ModuleType;
-	(void)DevCase;
-	(void)DUTScheme;
 
 	if(DUTPosition != DUT_POS1 && DUTPosition != DUT_POS2)
-		return false;
-
-	if(DUTScheme < REG_DUT_SCHEME_MIN || DUTScheme > REG_DUT_SCHEME_MAX)
 		return false;
 
 	switch(ActionID)
@@ -89,12 +84,13 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition, DevType DevCase, 
 }
 // ----------------------------------------
 
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme)
+void COMM_Commutate(Int16U ActionID)
 {
+	Int16U DUTPosition = DataTable[REG_DUT_POSITION];
 	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
-
+	DevType DevCase = 0; // заглушка
 	(void)ModuleType;
-	(void)DUTScheme;
+	(void)DevCase;
 
 	if(COMM_State == COMM_IcesOrIrrm && ActionID != ACT_COMM_ICES_OR_IRRM)
 		COMM_DischargeBeforeIcesOrIrrm();

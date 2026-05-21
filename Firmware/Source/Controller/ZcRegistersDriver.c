@@ -59,6 +59,20 @@ void ZcRD_SaveCounters(const uint8_t BitDataArray[], Int8U Node)
 }
 //-----------------------------
 
+void ZcRD_ApplySafetyReset(void)
+{
+	Int16U i;
+
+	LL_SafetyResetSPI1();
+
+	for (i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
+		PrevRelayState[i] = 0;
+
+	for (i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+		PrevContactorState[i] = 0;
+}
+//-----------------------------
+
 void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
 {
 	ZcRD_SaveCounters(BitDataArray, Node);

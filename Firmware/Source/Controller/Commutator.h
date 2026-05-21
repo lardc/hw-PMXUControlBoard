@@ -35,7 +35,7 @@ extern Int64U CT_SaveTimer;
 // Functions
 void COMM_SwitchToPE();
 Int32U COMM_CalcModuleType();
-bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme);
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme);
+bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition);
+void COMM_Commutate(Int16U ActionID);
 
 #endif // __COMMUTATOR_H
