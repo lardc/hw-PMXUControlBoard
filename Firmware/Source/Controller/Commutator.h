@@ -14,7 +14,7 @@
 //
 typedef enum __ModuleTypes
 {
-	// TODO: заполнить по схемам коммутации 303
+	Module_None
 } ModuleTypes;
 
 typedef enum __CommutationState
