@@ -11,7 +11,6 @@
 #include "DebugActions.h"
 #include "Diagnostic.h"
 #include "BCCIxParams.h"
-#include "SelfTest.h"
 #include "CommutationTable.h"
 #include "Commutator.h"
 #include "ZcRegistersDriver.h"
@@ -35,6 +34,8 @@ Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
 DevType LastDevCase = SC_Type_MIAA;
 bool FPledForcedLight = false;
+static bool PrevSafetyTrig = false;
+static volatile bool SafetyFlushPending = false;
 volatile Int16U CONTROL_DiagCounter = 0;
 //
 volatile float CONTROL_DiagData[VALUES_DIAG_SIZE];
@@ -47,6 +48,7 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
+void CONTROL_SafetyIrqTick();
 bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition);
 void CONTROL_CheckContactorsProcess();
 void CONTROL_InitStoragePointers();
@@ -93,7 +95,6 @@ void CONTROL_Idle()
 	}
 
 	CONTROL_LogicProcess();
-	SELFTEST_Process();
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
@@ -112,6 +113,9 @@ void CONTROL_SaveLastRequest(Int16U ActionID)
 void CONTROL_SwitchToFault(Int16U Reason)
 {
 	CONTROL_SaveLastRequest(LastActionID);
+	COMM_SwitchToPE();
+	LL_SetStateSFT_ENABLE(true);
+	LastActionID = ACT_COMM_PE;
 	CONTROL_SetDeviceState(DS_Fault, DSS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 }
@@ -166,7 +170,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_None)
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
+				LL_SetStateSFT_ENABLE(false);
+				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 			}
 			else if(CONTROL_State != DS_Enabled)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -188,6 +193,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_CLR_FAULT:
 			if(CONTROL_State == DS_Fault)
 			{
+				COMM_SwitchToPE();
+				LL_SetStateSFT_ENABLE(false);
 				CONTROL_SetDeviceState(DS_None, DSS_None);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
@@ -243,9 +250,6 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				{
 					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-					LastActionID = ACT_COMM_PE;
-
-					COMM_SwitchToPE();
 				}
 			}
 			else if(CONTROL_State == DS_None)
@@ -284,15 +288,12 @@ void CONTROL_LogicProcess()
 
 void CONTROL_CheckContactorsProcess()
 {
-	if(CONTROL_State != DS_InSelfTest && CONTROL_State != DS_Fault && CONTROL_State != DS_None)
+	if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 	{
 		if(!CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 		{
 			CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			LastActionID = ACT_COMM_PE;
-
-			COMM_SwitchToPE();
 		}
 	}
 }
@@ -394,9 +395,6 @@ void CONTROL_PressureCheck()
 		{
 			CONTROL_SwitchToFault(DF_LOW_PRESSURE);
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			LastActionID = ACT_COMM_PE;
-
-			COMM_SwitchToPE();
 		}
 	}
 }
@@ -404,24 +402,34 @@ void CONTROL_PressureCheck()
 
 void CONTROL_SafetyCheck()
 {
-	if(DataTable[REG_SAFETY_ACTIVE])
+	if(SafetyFlushPending)
 	{
-		if(LL_IsSafetyTrig())
+		SafetyFlushPending = false;
+
+		LL_SetStateSFT_ENABLE(true);
+		LL_SafetyResetSPI1();
+		COMM_State = COMM_Def;
+		LastActionID = ACT_COMM_PE;
+
+		if(DataTable[REG_SAFETY_ACTIVE])
 		{
 			if(CONTROL_State == DS_SafetyActive)
 				CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
 
-			if(COMM_State != COMM_Def)
-			{
-				DELAY_MS(SAFETY_DELAY);
-				COMM_SwitchToPE();
-				FPledForcedLight = true;
-				LastActionID = ACT_COMM_PE;
-				DELAY_MS(COMM_DELAY_MS);
-				FPledForcedLight = false;
-			}
+			FPledForcedLight = true;
 		}
 	}
+}
+//-----------------------------------------------
+
+void CONTROL_SafetyIrqTick()
+{
+	bool SafetyTrig = LL_IsSafetyTrig();
+
+	if(SafetyTrig && !PrevSafetyTrig)
+		SafetyFlushPending = true;
+
+	PrevSafetyTrig = SafetyTrig;
 }
 //-----------------------------------------------
 

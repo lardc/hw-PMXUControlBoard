@@ -19,22 +19,12 @@ typedef enum __DeviceState
 	DS_Enabled			= 3,
 	DS_SafetyActive		= 4,
 	DS_SafetyTrig		= 5,
-	DS_InSelfTest		= 6,
 	DS_InProcess		= 7
 } DeviceState;
 
 typedef enum __DeviceSubState
 {
-	DSS_None 			= 0,
-	DSS_SelfTest_LCTUP	= 1,
-	DSS_SelfTest_LCTUN	= 2,
-	DSS_SelfTest_PE1	= 3,
-	DSS_SelfTest_PE2	= 4,
-	DSS_SelfTest_LCSU1	= 5,
-	DSS_SelfTest_LCSU2	= 6,
-	DSS_SelfTest_TOCU1	= 7,
-	DSS_SelfTest_TOCU2	= 8,
-	DSS_SelfTest_Finish = 9
+	DSS_None = 0
 } DeviceSubState;
 
 typedef enum __DevType
@@ -85,8 +75,8 @@ extern volatile float CONTROL_DiagData[VALUES_DIAG_SIZE];
 //
 void CONTROL_Init();
 void CONTROL_Idle();
-void CONTROL_SaveTestResult();
 void CONTROL_SwitchToFault(Int16U Reason);
+void CONTROL_SafetyIrqTick();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_ResetToDefaultState();

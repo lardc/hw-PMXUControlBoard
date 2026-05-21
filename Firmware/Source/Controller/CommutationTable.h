@@ -189,21 +189,4 @@ static const Int8U CT_Vf_MDSM_2[] = {BUS1_LCSUP, BUS2_LCSUN, BUS1_PE, BUS2_PE, B
 static const Int8U CT_Ices_MDSM_1[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 static const Int8U CT_Ices_MDSM_2[] = {BUS2_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
-// Continuity Selftest Commutations
-//
-static const Int8U CT_ST_LCTU1[] = {BUS3_STP, BUS3_LCTUP, BUS1_LCTUP, BUS1_STN};
-static const Int8U CT_ST_LCTU2[] = {BUS2_STP, BUS2_LCTUN, BUS1_LCTUN, BUS1_STN};
-
-static const Int8U CT_ST_PE1[] = {BUS2_STP, BUS2_PE, BUS1_PE, BUS1_STN};
-static const Int8U CT_ST_PE2[] = {BUS3_STP, BUS3_PE, BUS1_PE, BUS1_STN};
-
-static const Int8U CT_ST_LCSU1[] = {BUS3_LCSUN, BUS2_LCSUN, BUS3_LCSUP, BUS1_LCSUP};
-static const Int8U CT_ST_LCSU2[] = {BUS2_LCSUP, BUS3_LCSUP, BUS3_LCSUN, BUS1_LCSUN};
-
-static const Int8U CT_ST_TOCU1[] = {BUS3_TOCUP, BUS2_TOCUP, BUS2_TOCUN, BUS1_TOCUN};
-static const Int8U CT_ST_TOCU2[] = {BUS2_TOCUN, BUS3_TOCUN, BUS1_TOCUP, BUS2_TOCUP};
-
-static const Int8U CT_ST_BUS1_2[] = {BUS1_STN, BUS2_STP};
-static const Int8U CT_ST_BUS1_3[] = {BUS1_STN, BUS3_STP};
-
 #endif // __COMMTABLE_H
