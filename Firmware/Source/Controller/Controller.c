@@ -28,6 +28,7 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = DSS_None;
 static Boolean CycleActive = false;
+static Boolean RequestSaveToFlash = FALSE;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CONTROL_ContactorsCheck;
 Int16U LastActionID = ACT_COMM_PE;
@@ -85,6 +86,12 @@ void CONTROL_Idle()
 		CT_SaveTimer = CONTROL_TimeCounter;
 	}
 
+	if (RequestSaveToFlash)
+	{
+		RequestSaveToFlash = FALSE;
+		STF_SaveDiagData();
+	}
+
 	CONTROL_LogicProcess();
 	SELFTEST_Process();
 
@@ -126,8 +133,16 @@ void CONTROL_ResetToDefaultState()
 
 void CONTROL_InitStoragePointers()
 {
+	Int16U idx = 0;
+
 	for (Int16U i = 0; i < INNER_COMMUTATION_TABLE_SIZE; ++i)
 		STF_AssignCounterPointer(i, (Int32U)&CycleCounters[i]);
+
+	STF_AssignPointer(idx++, (Int32U)&CONTROL_State);
+	STF_AssignPointer(idx++, (Int32U)&LastActionID);
+	STF_AssignPointer(idx++, (Int32U)&LastDUTposition);
+	STF_AssignPointer(idx++, (Int32U)&LastDevCase);
+	STF_AssignPointer(idx++, (Int32U)&DataTable[REG_FAULT_REASON]);
 }
 //------------------------------------------
 

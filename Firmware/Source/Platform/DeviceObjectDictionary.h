@@ -31,11 +31,13 @@
 #define ACT_RESTORE_FROM_ROM					201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT					202	// Сброс DataTable в состояние по умолчанию
 
+#define ACT_FLASH_DIAG_INIT_READ				331	// Начало считывания отладочной информации 
 #define ACT_FLASH_CNT_INIT_READ					334	// Перемещение указателя в область счетчиков
 #define ACT_SET_COUNTER							336	// Установка значения счетчика
 #define ACT_SAVE_COUNTERS						337	// Сохранить счетчики в памяти
 #define ACT_ERASE_COUNTERS						338	// Удалить счетчики из памяти
-#define ACT_FLASH_COUNTER_TO_EP					339 // Выполнить чтение массива из памяти счетчиков отработки в EP
+#define ACT_FLASH_COUNTER_TO_EP					339	// Чтение счётчиков из flash в EP
+#define ACT_FLASH_DIAG_TO_EP					340	// Чтение отладочной информации из flash в EP
 
 #define ACT_BOOT_LOADER_REQUEST					320	// Перезапуск процессора с целью перепрограммирования
 // -----------------------------
@@ -43,8 +45,8 @@
 // Регистры
 // Сохраняемые регистры
 #define REG_CONTACTORS_COMM_DELAY_MS			1	// Задержка ожидания коммутации контакторов
-#define REG_PRESSURE_ADC_OFFSET					2	// Смещение оцифрованного напряжения АЦП (в мВ)
-#define REG_PRESSURE_ADC_K						3	// Коэффициент пересчёта напряжения АЦП (в мВ) в Бар
+#define REG_PRESSURE_ADC_OFFSET					2	// Смещение калибровки давления (Bar)
+#define REG_PRESSURE_ADC_K						3	// Коэфф. пересчёта напряжения на датчике (мВ) в Bar
 #define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
 #define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
 #define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений

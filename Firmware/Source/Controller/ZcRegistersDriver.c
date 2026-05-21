@@ -15,7 +15,6 @@
 // Variables
 //
 volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
-static volatile Int32U ZcRD_RelayGroupsCommCounter[NUM_RELAY_GROUPS_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0};
 static uint8_t PrevRelayState[SPI1_ARRAY_LEN_RELAYS] = {0};
 static uint8_t PrevContactorState[SPI1_ARRAY_LEN_CONTACTORS] = {0};
 
@@ -27,16 +26,6 @@ void ZcRD_IncrementContactors(const uint8_t BitDataArray[])
 	{
 		for(Int8U j = 0; j < 8; j++)
 			ZcRD_ContactorsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
-	}
-}
-//-----------------------------
-
-void ZcRD_IncrementRelays(const uint8_t BitDataArray[])
-{
-	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
-	{
-		for(Int8U j = 0; j < 8; j++)
-			ZcRD_RelayGroupsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
 	}
 }
 //-----------------------------
@@ -75,7 +64,6 @@ void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
 	ZcRD_SaveCounters(BitDataArray, Node);
 	if(Node == RELAY)
 	{
-		ZcRD_IncrementRelays(BitDataArray);
 		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_SS_REL);
 	}
 	else

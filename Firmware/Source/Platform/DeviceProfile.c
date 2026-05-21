@@ -14,6 +14,7 @@
 #include "ZwNCAN.h"
 #include "ZwSCI.h"
 #include "SaveToFlash.h"
+#include "ZwNFLASH.h"
 
 // Types
 //
@@ -178,6 +179,11 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 			BOOT_LOADER_VARIABLE = BOOT_LOADER_REQUEST;
 			break;
 
+		case ACT_FLASH_DIAG_INIT_READ:
+			MemoryPointer = FLASH_DIAG_START_ADDR;
+			MemoryEndPointer = FLASH_DIAG_END_ADDR;
+			break;
+
 		case ACT_FLASH_CNT_INIT_READ:
 			STF_ResetStateMachine();
 			MemoryPointer = FLASH_COUNTER_START_ADDR;
@@ -189,11 +195,24 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 				DEVPROFILE_ResetEPReadState();
 				DEVPROFILE_ResetScopes(0);
 
-				for(CONTROL_DiagCounter = 0;CONTROL_DiagCounter < VALUES_DIAG_SIZE && MemoryPointer <= MemoryEndPointer;)
+				for(CONTROL_DiagCounter = 0; CONTROL_DiagCounter < VALUES_DIAG_SIZE && MemoryPointer <= MemoryEndPointer;)
 				{
 					Int32U value = STF_ReadCounter();
 					CONTROL_DiagData[CONTROL_DiagCounter++] = (float)value;
 					MemoryPointer += 4;
+				}
+			}
+			break;
+
+		case ACT_FLASH_DIAG_TO_EP:
+			{
+				DEVPROFILE_ResetEPReadState();
+				DEVPROFILE_ResetScopes(0);
+
+				for(CONTROL_DiagCounter = 0; CONTROL_DiagCounter < VALUES_DIAG_SIZE && MemoryPointer <= MemoryEndPointer;)
+				{
+					CONTROL_DiagData[CONTROL_DiagCounter++] = NFLASH_ReadWord16(MemoryPointer);
+					MemoryPointer += 2;
 				}
 			}
 			break;

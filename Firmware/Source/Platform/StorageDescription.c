@@ -1,9 +1,17 @@
 ﻿// Header
 #include "StorageDescription.h"
-#include "Global.h"
+#include "DataTable.h"
+#include "Controller.h"
 
 // Variables
-RecordDescription StorageDescription[] = {};
+RecordDescription StorageDescription[] =
+{
+	{"Device state",		DT_Int16U, 1},
+	{"Last action ID",		DT_Int16U, 1},
+	{"Last DUT position",	DT_Int16U, 1},
+	{"Last DUT case",		DT_Int16U, 1},
+	{"Fault reason",		DT_Int16U, 1},
+};
 
 #define SIZE_OF_POINTERS (sizeof(StorageDescription) / sizeof(StorageDescription[0]))
 Int32U TablePointers[SIZE_OF_POINTERS ? SIZE_OF_POINTERS : 1] = {0};
@@ -39,4 +47,3 @@ CounterDescription CounterStorageDescription[] =
 };
 CounterData CounterTablePointers[sizeof(CounterStorageDescription) / sizeof(CounterStorageDescription[0])] = {0};
 const Int16U CounterStorageSize = sizeof(CounterStorageDescription) / sizeof(CounterStorageDescription[0]);
-

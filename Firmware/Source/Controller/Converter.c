@@ -5,6 +5,7 @@
 // Header
 #include "Converter.h"
 //
+#include "Global.h"
 
 // Variables
 //
@@ -36,6 +37,8 @@ void Conv_SPIHexToArray(volatile uint8_t* SPI_Data, uint8_t Data_Length, uint64_
 
 float Conv_PressureADCVtoBar()
 {
-	return LL_MeasurePressureADCVoltage() * DataTable[REG_PRESSURE_ADC_K] + DataTable[REG_PRESSURE_ADC_OFFSET];
+	float voltageMv = LL_MeasurePressureADCVoltage() * ADC_PRESSURE_INPUT_GAIN;
+
+	return voltageMv * DataTable[REG_PRESSURE_ADC_K] + DataTable[REG_PRESSURE_ADC_OFFSET];
 }
 //-----------------------------
