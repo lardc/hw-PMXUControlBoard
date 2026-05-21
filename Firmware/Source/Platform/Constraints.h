@@ -30,6 +30,10 @@
 #define DUT_POS1						1
 #define DUT_POS2						2
 //
+#define REG_DUT_SCHEME_MIN				0
+#define REG_DUT_SCHEME_MAX				99
+#define REG_DUT_SCHEME_DFLT				0
+//
 #define ST_START_STAGE					0
 #define ST_STOP_STAGE					DSS_SelfTest_TOCU2
 

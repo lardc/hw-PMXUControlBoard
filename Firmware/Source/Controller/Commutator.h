@@ -12,14 +12,18 @@
 
 // Types
 //
+typedef enum __ModuleTypes
+{
+	// TODO: заполнить по схемам коммутации 303
+} ModuleTypes;
+
 typedef enum __CommutationState
 {
-	COMM_Def		= 0,
-	COMM_Ices		= 1,
-	COMM_Ucesat		= 2,
-	COMM_Uf			= 3,
-	COMM_Qg			= 4,
-	COMM_NoPE		= 5
+	COMM_Def			= 0,
+	COMM_IcesOrIrrm		= 1,
+	COMM_Ucesat			= 2,
+	COMM_Uf				= 3,
+	COMM_NoPE			= 4
 } CommutationState;
 
 // Variables
@@ -30,6 +34,8 @@ extern Int64U CT_SaveTimer;
 
 // Functions
 void COMM_SwitchToPE();
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase);
+Int32U COMM_CalcModuleType();
+bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme);
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme);
 
 #endif // __COMMUTATOR_H

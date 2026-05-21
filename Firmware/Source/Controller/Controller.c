@@ -206,18 +206,25 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		// Commutations
 		case ACT_COMM_PE:
-		case ACT_COMM_ICES:
+		case ACT_COMM_ICES_OR_IRRM:
 		case ACT_COMM_VCESAT:
 		case ACT_COMM_VF:
-		case ACT_COMM_QG:
 		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
-				COMM_Commutate(ActionID, DataTable[REG_DUT_POSITION], DataTable[REG_DEV_CASE]);
+				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION],
+						(DevType)DataTable[REG_DUT_CASE], (Int16U)DataTable[REG_DUT_SCHEME]))
+				{
+					*pUserError = ERR_OPERATION_BLOCKED;
+					break;
+				}
+
+				COMM_Commutate(ActionID, (Int16U)DataTable[REG_DUT_POSITION],
+						(DevType)DataTable[REG_DUT_CASE], (Int16U)DataTable[REG_DUT_SCHEME]);
 
 				LastActionID = ActionID;
 				LastDUTposition = DataTable[REG_DUT_POSITION];
-				LastDevCase = DataTable[REG_DEV_CASE];
+				LastDevCase = (DevType)DataTable[REG_DUT_CASE];
 
 				if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
@@ -429,7 +436,7 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 			return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
 			break;
 
-		case ACT_COMM_ICES:
+		case ACT_COMM_ICES_OR_IRRM:
 			switch(DevCase)
 			{
 				case SC_Type_MIHV:
@@ -517,37 +524,6 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 			}
 			break;
 
-		case ACT_COMM_QG:
-			switch(DevCase)
-			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					return CONTROL_CheckContactorsStates_macro(CT_Qg_SS);
-					break;
-
-				case SC_Type_MISV:
-					return CONTROL_CheckContactorsStates_macro(CT_Qg_Pos2);
-					break;
-
-				case SC_Type_MISM2_CH:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_MISM2_CH_1 : CT_Qg_MISM2_CH_2));
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-				case SC_Type_MDSV:
-				case SC_Type_MDSM:
-				case SC_Type_MDFA_MDF2_DD:
-				case SC_Type_MDAA:
-					return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
-					break;
-
-				default:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Qg_Pos1 : CT_Qg_Pos2));
-					break;
-			}
-			break;
 	}
 
 	return false;

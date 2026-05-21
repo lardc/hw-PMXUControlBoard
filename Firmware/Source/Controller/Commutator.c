@@ -17,10 +17,40 @@
 //
 CommutationState COMM_State = COMM_Def;
 Int32U CycleCounters[INNER_COMMUTATION_TABLE_SIZE] = {0};
-Int64U CT_SaveTimer = 0; // Последняя отметка времени автосохранения
+Int64U CT_SaveTimer = 0;
+
+// Forward declarations
+//
+static void COMM_DischargeBeforeIcesOrIrrm();
+static Int16U COMM_GetCommDelayMs();
 
 // Functions
 //
+static Int16U COMM_GetCommDelayMs()
+{
+	Int16U delay = (Int16U)DataTable[REG_CONTACTORS_COMM_DELAY_MS];
+
+	return delay ? delay : (Int16U)COMM_DELAY_MS;
+}
+// ----------------------------------------
+
+Int32U COMM_CalcModuleType()
+{
+	const Int32U CaseShift = 100;
+
+	return ((Int32U)DataTable[REG_DUT_CASE] * CaseShift + (Int32U)DataTable[REG_DUT_SCHEME]);
+}
+// ----------------------------------------
+
+static void COMM_DischargeBeforeIcesOrIrrm()
+{
+	const Int16U DischargeMs = 10;
+
+	COMM_SwitchToPE();
+	DELAY_MS(DischargeMs);
+}
+// ----------------------------------------
+
 void COMM_SwitchToPE()
 {
 	ZcRD_WriteSPI1Comm(CT_DFLT_Contactors, CONTACTOR);
@@ -30,8 +60,45 @@ void COMM_SwitchToPE()
 }
 // ----------------------------------------
 
-void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
+bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme)
 {
+	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
+
+	(void)ModuleType;
+	(void)DevCase;
+	(void)DUTScheme;
+
+	if(DUTPosition != DUT_POS1 && DUTPosition != DUT_POS2)
+		return false;
+
+	if(DUTScheme < REG_DUT_SCHEME_MIN || DUTScheme > REG_DUT_SCHEME_MAX)
+		return false;
+
+	switch(ActionID)
+	{
+		case ACT_COMM_PE:
+		case ACT_COMM_NO_PE:
+		case ACT_COMM_ICES_OR_IRRM:
+		case ACT_COMM_VCESAT:
+		case ACT_COMM_VF:
+			return true;
+
+		default:
+			return false;
+	}
+}
+// ----------------------------------------
+
+void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase, Int16U DUTScheme)
+{
+	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
+
+	(void)ModuleType;
+	(void)DUTScheme;
+
+	if(COMM_State == COMM_IcesOrIrrm && ActionID != ACT_COMM_ICES_OR_IRRM)
+		COMM_DischargeBeforeIcesOrIrrm();
+
 	FPledForcedLight = true;
 
 	switch(ActionID)
@@ -46,7 +113,7 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 			COMM_State = COMM_NoPE;
 			break;
 
-		case ACT_COMM_ICES:
+		case ACT_COMM_ICES_OR_IRRM:
 			switch(DevCase)
 			{
 				case SC_Type_MIHV:
@@ -78,7 +145,7 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 					break;
 			}
 
-			COMM_State = COMM_Ices;
+			COMM_State = COMM_IcesOrIrrm;
 			break;
 
 		case ACT_COMM_VCESAT:
@@ -112,7 +179,7 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vcesat_Pos1) : ZcRD_CommutateConfig_macro(CT_Vcesat_Pos2);
 					break;
 			}
-			if (COMM_State == COMM_NoPE)
+			if(COMM_State == COMM_NoPE)
 				break;
 
 			COMM_State = COMM_Ucesat;
@@ -152,47 +219,9 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 
 			COMM_State = COMM_Uf;
 			break;
-
-		case ACT_COMM_QG:
-			switch(DevCase)
-			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					ZcRD_CommutateConfig_macro(CT_Qg_SS);
-					break;
-
-				case SC_Type_MISV:
-					ZcRD_CommutateConfig_macro(CT_Qg_Pos2);
-					break;
-
-				case SC_Type_MISM2_CH:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Qg_MISM2_CH_2);
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-				case SC_Type_MDSV:
-				case SC_Type_MDSM:
-				case SC_Type_MDFA_MDF2_DD:
-				case SC_Type_MDAA:
-					ZcRD_CommutateConfig_macro(CT_NO_PE);
-					COMM_State = COMM_NoPE;
-					break;
-
-				default:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Qg_Pos1) : ZcRD_CommutateConfig_macro(CT_Qg_Pos2);
-					break;
-			}
-
-			if (COMM_State == COMM_NoPE)
-				break;
-
-			COMM_State = COMM_Qg;
-			break;
 	}
 
-	DELAY_MS(COMM_DELAY_MS);
+	DELAY_MS(COMM_GetCommDelayMs());
 	FPledForcedLight = false;
 }
 // ----------------------------------------
