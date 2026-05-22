@@ -27,7 +27,7 @@ uint64_t Conv_SPIArrayToHex(uint8_t SPI_Data[], uint8_t Data_Length)
 
 void Conv_SPIHexToArray(volatile uint8_t* SPI_Data, uint8_t Data_Length, uint64_t HexData)
 {
-	for(int i = 0; i <= Data_Length; i++)
+	for(int i = 0; i < Data_Length; i++)
 	{
 		SPI_Data[i] = HexData & 0xff;
 		HexData = HexData >> 8;

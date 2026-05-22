@@ -62,11 +62,6 @@
 
 #define REG_DBG									150	// Отладочный регистр
 //
-#define REG_LAST_CMD							152	// Код последней коммутации
-#define REG_LAST_POS							153	// Позиция DUT на момент последней коммутации
-#define REG_LAST_CASE							154	// Тип корпуса DUT
-#define REG_LAST_TYPE							155	// Схема DUT
-
 // Регистры только чтение
 #define REG_DEV_STATE							192	// Регистр состояния
 #define REG_FAULT_REASON						193	// Регистр Fault
@@ -81,6 +76,11 @@
 #define REG_PRESSURE							200	// Давление, Бар
 #define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
 #define REG_FAILED_CONTACTOR					202	// Номер контактора/реле, в котором обнаружен отказ
+
+#define REG_LAST_CMD							252	// Код последней коммутации
+#define REG_LAST_POS							253	// Позиция DUT на момент последней коммутации
+#define REG_LAST_CASE							254	// Тип корпуса DUT
+#define REG_LAST_TYPE							255	// Схема DUT
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
