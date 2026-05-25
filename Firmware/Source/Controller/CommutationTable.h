@@ -59,6 +59,14 @@ typedef struct __ContactorsStateTableItem
 #define PWR_L_TO_GND		0
 #define PWR_C_TO_GND		0
 #define PWR_H_TO_GND		0
+// LCTU
+#define LCTU_POS_TO_PWR_H	0
+#define LCTU_POS_TO_PWR_C	0
+#define LCTU_POS_TO_PWR_L	0
+
+#define LCTU_NEG_TO_PWR_H	0
+#define LCTU_NEG_TO_PWR_C	0
+#define LCTU_NEG_TO_PWR_L	0
 // Contactors
 // LCSU
 #define LCSU_POS_TO_PWR_H	0
@@ -68,14 +76,6 @@ typedef struct __ContactorsStateTableItem
 #define LCSU_NEG_TO_PWR_H	0
 #define LCSU_NEG_TO_PWR_C	0
 #define LCSU_NEG_TO_PWR_L	0
-// LCTU
-#define LCTU_POS_TO_PWR_H	0
-#define LCTU_POS_TO_PWR_C	0
-#define LCTU_POS_TO_PWR_L	0
-
-#define LCTU_NEG_TO_PWR_H	0
-#define LCTU_NEG_TO_PWR_C	0
-#define LCTU_NEG_TO_PWR_L	0
 
 static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {
 		{0, 0, 0, 0},									// 0	// Do not use
