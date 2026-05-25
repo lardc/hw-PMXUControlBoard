@@ -441,6 +441,7 @@ void CONTROL_SafetyIrqTick()
 
 bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition)
 {
+	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
 	switch(ActionID)
 	{
 		case ACT_COMM_PE:
@@ -480,34 +481,55 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 			break;
 
 		case ACT_COMM_VCESAT:
-			switch(DevCase)
+			if(DUTPosition == DUT_POS1)
 			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					return CONTROL_CheckContactorsStates_macro(CT_Vcesat_SS);
-					break;
-
-				case SC_Type_MISV:
-					return CONTROL_CheckContactorsStates_macro(CT_Vcesat_Pos2);
-					break;
-
-				case SC_Type_MISM2_CH:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_MISM2_CH_1 : CT_Vcesat_MISM2_CH_2));
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-				case SC_Type_MDSV:
-				case SC_Type_MDSM:
-				case SC_Type_MDFA_MDF2_DD:
-				case SC_Type_MDAA:
-					return CONTROL_CheckContactorsStates_macro(CT_DISCON_GND);
-					break;
-
-				default:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vcesat_Pos1 : CT_Vcesat_Pos2));
-					break;
+				switch(ModuleType)
+				{
+					case MIAA_CE:
+					case MIAA_HB:
+					case MIAA_LC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_LC:
+					case MIHA_HB:
+					case MIHA_LC:
+					case MIHM_SS:
+					case MIHV_SS:
+					case MISM_CH:
+					case MISM_DS:
+					case MISM_SS:
+					case MISV_SS:
+					case MIXM_HB:
+					case MIXM_LR_LRD:
+					case MIXV_HB:
+						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS_FIRST);
+						break;
+					default:
+						break;
+				}
+			}
+			else if(DUTPosition == DUT_POS2)
+			{
+				switch(ModuleType)
+				{
+					case MIAA_CE:
+						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS_SECOND_VAR_TWO);
+						break;
+					case MIAA_HB:
+					case MIAA_HC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_HC:
+					case MIHA_HB:
+					case MIHA_HC:
+					case MISM_DS:
+					case MIXM_HB:
+					case MIXV_HB:
+						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS_SECOND_VAR_ONE);
+						break;
+					default:
+						break;
+				}
 			}
 			break;
 
