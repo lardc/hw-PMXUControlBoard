@@ -248,7 +248,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				LastActionID = ActionID;
 				CONTROL_SaveLastRequest(ActionID);
 				LastDUTposition = DataTable[REG_DUT_POSITION];
-				LastDevCase = (ModuleTypes)DataTable[REG_DUT_CASE];
+				LastDevCase = COMM_CalcModuleType();
 
 				if(CONTROL_CheckContactors(LastActionID, LastDUTposition))
 					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
@@ -441,7 +441,6 @@ void CONTROL_SafetyIrqTick()
 
 bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 {
-	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
 	switch(ActionID)
 	{
 		case ACT_COMM_PE:
@@ -455,7 +454,7 @@ bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 		case ACT_COMM_VCESAT:
 			if(DUTPosition == DUT_POS1)
 			{
-				switch(ModuleType)
+				switch(LastDevCase)
 				{
 					case MIAA_CE:
 					case MIAA_HB:
@@ -482,7 +481,7 @@ bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 			}
 			else if(DUTPosition == DUT_POS2)
 			{
-				switch(ModuleType)
+				switch(LastDevCase)
 				{
 					case MIAA_CE:
 						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS_SECOND_VAR_TWO);
@@ -509,7 +508,7 @@ bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 		case ACT_COMM_ICES_OR_IRRM:
 			if(DUTPosition == DUT_POS1)
 			{
-				switch(ModuleType)
+				switch(LastDevCase)
 				{
 					case MIFA_SD:
 						if(ActionID == ACT_COMM_VF)
@@ -553,7 +552,7 @@ bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 			}
 			else if(DUTPosition == DUT_POS2)
 			{
-				switch(ModuleType)
+				switch(LastDevCase)
 				{
 					case MIAA_CE:
 						if(ActionID == ACT_COMM_VF)
