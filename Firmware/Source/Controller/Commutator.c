@@ -23,6 +23,8 @@ Int64U CT_SaveTimer = 0;
 //
 static void COMM_DischargeBeforeIcesOrIrrm();
 static Int16U COMM_GetCommDelayMs();
+bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module);
+bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module);
 
 // Functions
 //
@@ -62,7 +64,7 @@ void COMM_SwitchToPE()
 
 bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 {
-	ModuleTypes Module = (ModuleTypes)COMM_CalcModuleType();
+	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
 
 	if(Position != DUT_POS1 && Position != DUT_POS2)
 		return false;
@@ -71,65 +73,123 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 	{
 		case ACT_COMM_PE:
 			return true;  // допустимо без проверки корпуса
+
 		case ACT_COMM_NO_PE:
 		case ACT_COMM_VCESAT:
-			if(Position == DUT_POS1)
-			{
-				switch(Module)
-				{
-					case MIAA_CE:
-					case MIAA_HB:
-					case MIAA_LC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_LC:
-					case MIHA_HB:
-					case MIHA_LC:
-					case MIHM_SS:
-					case MIHV_SS:
-					case MISM_CH:
-					case MISM_DS:
-					case MISM_SS:
-					case MISV_SS:
-					case MIXM_HB:
-					case MIXM_LR_LRD:
-					case MIXV_HB:
-						return true;
-					default:
-						return false;
-				}
-			}
-			else if(Position == DUT_POS2)
-			{
-				switch(Module)
-				{
-					case MIAA_CE:
-					case MIAA_HB:
-					case MIAA_HC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_HC:
-					case MIHA_HB:
-					case MIHA_HC:
-					case MISM_DS:
-					case MIXM_HB:
-					case MIXV_HB:
-						return true;
-					default:
-						return false;
-				}
-			}
+			if(COMM_ValidateIGBT(Position,ModuleType))
+				return true;
+			return false;
+
+		case ACT_COMM_VF:
+			if(COMM_ValidateIGBT(Position, ModuleType) || COMM_ValidateDiode(Position, ModuleType))
+				return true;
 			return false;
 
 		case ACT_COMM_ICES_OR_IRRM:
-		case ACT_COMM_VF:
-			return true;
+			return false;
 
 		default:
 			return false;
 	}
 }
 // ----------------------------------------
+
+
+bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
+{
+	if(Position == DUT_POS1)
+	{
+		switch(Module)
+		{
+			case MIAA_CE:
+			case MIAA_HB:
+			case MIAA_LC:
+			case MIDA_HB:
+			case MIFA_HB:
+			case MIFA_LC:
+			case MIHA_HB:
+			case MIHA_LC:
+			case MIHM_SS:
+			case MIHV_SS:
+			case MISM_CH:
+			case MISM_DS:
+			case MISM_SS:
+			case MISV_SS:
+			case MIXM_HB:
+			case MIXM_LR_LRD:
+			case MIXV_HB:
+				return true;
+			default:
+				return false;
+		}
+	}
+	else if(Position == DUT_POS2)
+	{
+		switch(Module)
+		{
+			case MIAA_CE:
+			case MIAA_HB:
+			case MIAA_HC:
+			case MIDA_HB:
+			case MIFA_HB:
+			case MIFA_HC:
+			case MIHA_HB:
+			case MIHA_HC:
+			case MISM_DS:
+			case MIXM_HB:
+			case MIXV_HB:
+				return true;
+			default:
+				return false;
+		}
+	}
+	return false;
+}
+// ----------------------------------------
+
+bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module)
+{
+	if(Position == DUT_POS1)
+	{
+		switch(Module)
+		{
+			case MDAA_DD:
+			case MDDA_DD:
+			case MDFA_DD:
+			case MDSM_SD:
+			case MDSV_SD:
+			case MIAA_HC:
+			case MIFA_HC:
+			case MIFA_SD:
+			case MIHA_HC:
+				return true;
+			default:
+				return false;
+		}
+	}
+	else if(Position == DUT_POS2)
+	{
+		switch(Module)
+		{
+			case MDAA_DD:
+			case MDDA_DD:
+			case MDFA_DD:
+			case MDSM_SD:
+			case MDSV_SD:
+			case MIAA_LC:
+			case MIFA_LC:
+			case MIHA_LC:
+			case MISM_CH:
+			case MIXM_LR_LRD:
+				return true;
+			default:
+				return false;
+		}
+	}
+	return false;
+}
+// ----------------------------------------
+
 
 void COMM_Commutate(Int16U ActionID)
 {
@@ -194,6 +254,7 @@ void COMM_Commutate(Int16U ActionID)
 		case ACT_COMM_VCESAT:
 			COMM_State = COMM_Ucesat;
 
+			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
 			if(DUTPosition == DUT_POS1)
 			{
 				switch(Module)
@@ -247,38 +308,82 @@ void COMM_Commutate(Int16U ActionID)
 			break;
 
 		case ACT_COMM_VF:
-			switch(DevCase)
-			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					ZcRD_CommutateConfig_macro(CT_Vf_SS);
-					break;
-
-				case SC_Type_MISV:
-					ZcRD_CommutateConfig_macro(CT_Vf_Pos2);
-					break;
-
-				case SC_Type_MDSV:
-				case SC_Type_MISM2_CH:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Vf_MISM2_CH_2);
-					break;
-
-				case SC_Type_MDSM:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_MDSM_1) : ZcRD_CommutateConfig_macro(CT_Vf_MDSM_2);
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-					ZcRD_CommutateConfig_macro(CT_Vcesat_Pos2);
-					break;
-
-				default:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Vf_Pos1) : ZcRD_CommutateConfig_macro(CT_Vf_Pos2);
-					break;
-			}
-
 			COMM_State = COMM_Uf;
+
+			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
+			if(DUTPosition == DUT_POS1)
+			{
+				switch(Module)
+				{
+					case MIFA_SD:
+						ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_TWO);
+						break;
+					case MIAA_CE:
+					case MIAA_HB:
+					case MIAA_LC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_LC:
+					case MIHA_HB:
+					case MIHA_LC:
+					case MIHM_SS:
+					case MIHV_SS:
+					case MISM_CH:
+					case MISM_DS:
+					case MISM_SS:
+					case MISV_SS:
+					case MIXM_HB:
+					case MIXM_LR_LRD:
+					case MIXV_HB:
+					case MDAA_DD:
+					case MDDA_DD:
+					case MDFA_DD:
+					case MDSM_SD:
+					case MDSV_SD:
+					case MIAA_HC:
+					case MIFA_HC:
+					case MIHA_HC:
+						ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_ONE);
+						break;
+					default:
+						break;
+				}
+			}
+			else if(DUTPosition == DUT_POS2)
+			{
+				switch(Module)
+				{
+					case MIAA_CE:
+						ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_TWO);
+						break;
+					case MDSM_SD:
+					case MDSV_SD:
+					case MIXM_LR_LRD:
+						ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_THREE);
+						break;
+					case MIAA_HB:
+					case MIAA_HC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_HC:
+					case MIHA_HB:
+					case MIHA_HC:
+					case MISM_DS:
+					case MIXM_HB:
+					case MIXV_HB:
+					case MDAA_DD:
+					case MDDA_DD:
+					case MDFA_DD:
+					case MIAA_LC:
+					case MIFA_LC:
+					case MIHA_LC:
+					case MISM_CH:
+						ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_ONE);
+						break;
+					default:
+						break;
+				}
+			}
 			break;
 	}
 

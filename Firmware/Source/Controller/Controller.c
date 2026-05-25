@@ -534,33 +534,80 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 			break;
 
 		case ACT_COMM_VF:
-			switch(DevCase)
+			if(DUTPosition == DUT_POS1)
 			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					return CONTROL_CheckContactorsStates_macro(CT_Vf_SS);
-					break;
-
-				case SC_Type_MISV:
-					return CONTROL_CheckContactorsStates_macro(CT_Vf_Pos2);
-					break;
-
-				case SC_Type_MDSV:
-				case SC_Type_MISM2_CH:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_MISM2_CH_1 : CT_Vf_MISM2_CH_2));
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-					return CONTROL_CheckContactorsStates_macro(CT_Vcesat_Pos2);
-
-				default:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Vf_Pos1 : CT_Vf_Pos2));
-					break;
+				switch(ModuleType)
+				{
+					case MIFA_SD:
+						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_FIRST_VAR_TWO);
+						break;
+					case MIAA_CE:
+					case MIAA_HB:
+					case MIAA_LC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_LC:
+					case MIHA_HB:
+					case MIHA_LC:
+					case MIHM_SS:
+					case MIHV_SS:
+					case MISM_CH:
+					case MISM_DS:
+					case MISM_SS:
+					case MISV_SS:
+					case MIXM_HB:
+					case MIXM_LR_LRD:
+					case MIXV_HB:
+					case MDAA_DD:
+					case MDDA_DD:
+					case MDFA_DD:
+					case MDSM_SD:
+					case MDSV_SD:
+					case MIAA_HC:
+					case MIFA_HC:
+					case MIHA_HC:
+						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_FIRST_VAR_ONE);
+						break;
+					default:
+						break;
+				}
+			}
+			else if(DUTPosition == DUT_POS2)
+			{
+				switch(ModuleType)
+				{
+					case MIAA_CE:
+						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_TWO);
+						break;
+					case MDSM_SD:
+					case MDSV_SD:
+					case MIXM_LR_LRD:
+						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_THREE);
+						break;
+					case MIAA_HB:
+					case MIAA_HC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_HC:
+					case MIHA_HB:
+					case MIHA_HC:
+					case MISM_DS:
+					case MIXM_HB:
+					case MIXV_HB:
+					case MDAA_DD:
+					case MDDA_DD:
+					case MDFA_DD:
+					case MIAA_LC:
+					case MIFA_LC:
+					case MIHA_LC:
+					case MISM_CH:
+						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_ONE);
+						break;
+					default:
+						break;
+				}
 			}
 			break;
-
 	}
 
 	return false;
