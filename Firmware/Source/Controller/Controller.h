@@ -76,6 +76,7 @@ extern volatile float CONTROL_DiagData[VALUES_DIAG_SIZE];
 void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_SwitchToFault(Int16U Reason);
+void CONTROL_FinishedWithProblem(Int16U Problem);
 void CONTROL_SafetyIrqTick();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);

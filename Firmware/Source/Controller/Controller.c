@@ -121,6 +121,14 @@ void CONTROL_SwitchToFault(Int16U Reason)
 }
 //------------------------------------------
 
+void CONTROL_FinishedWithProblem(Int16U Problem)
+{
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+	DataTable[REG_PROBLEM] = Problem;
+	COMM_SwitchToPE();
+}
+//------------------------------------------
+
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState)
 {
 	CONTROL_State = NewState;
@@ -231,7 +239,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
-					*pUserError = ERR_OPERATION_BLOCKED;
+					CONTROL_FinishedWithProblem(PROBLEM_INCORRECT_DUT);
 					break;
 				}
 
@@ -440,7 +448,7 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 			break;
 
 		case ACT_COMM_NO_PE:
-			return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
+			return CONTROL_CheckContactorsStates_macro(CT_DISCON_GND);
 			break;
 
 		case ACT_COMM_ICES_OR_IRRM:
@@ -494,7 +502,7 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 				case SC_Type_MDSM:
 				case SC_Type_MDFA_MDF2_DD:
 				case SC_Type_MDAA:
-					return CONTROL_CheckContactorsStates_macro(CT_NO_PE);
+					return CONTROL_CheckContactorsStates_macro(CT_DISCON_GND);
 					break;
 
 				default:

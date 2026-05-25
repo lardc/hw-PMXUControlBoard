@@ -60,19 +60,66 @@ void COMM_SwitchToPE()
 }
 // ----------------------------------------
 
-bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition)
+bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 {
-	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
+	ModuleTypes Module = (ModuleTypes)COMM_CalcModuleType();
 
-	(void)ModuleType;
-
-	if(DUTPosition != DUT_POS1 && DUTPosition != DUT_POS2)
+	if(Position != DUT_POS1 && Position != DUT_POS2)
 		return false;
 
 	switch(ActionID)
 	{
 		case ACT_COMM_PE:
+			return true;  // допустимо без проверки корпуса
 		case ACT_COMM_NO_PE:
+			if(Position == DUT_POS1)
+			{
+				switch(Module)
+				{
+					case MIAA_CE:
+					case MIAA_HB:
+					case MIAA_LC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_LC:
+					case MIHA_HB:
+					case MIHA_LC:
+					case MIHM_SS:
+					case MIHV_SS:
+					case MISM_CH:
+					case MISM_DS:
+					case MISM_SS:
+					case MISV_SS:
+					case MIXM_HB:
+					case MIXM_LR_LRD:
+					case MIXV_HB:
+						return true;
+					default:
+						return false;
+				}
+			}
+			else if(Position == DUT_POS2)
+			{
+				switch(Module)
+				{
+					case MIAA_CE:
+					case MIAA_HB:
+					case MIAA_HC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_HC:
+					case MIHA_HB:
+					case MIHA_HC:
+					case MISM_DS:
+					case MIXM_HB:
+					case MIXV_HB:
+						return true;
+					default:
+						return false;
+				}
+			}
+			return false;
+
 		case ACT_COMM_ICES_OR_IRRM:
 		case ACT_COMM_VCESAT:
 		case ACT_COMM_VF:
@@ -87,9 +134,9 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U DUTPosition)
 void COMM_Commutate(Int16U ActionID)
 {
 	Int16U DUTPosition = DataTable[REG_DUT_POSITION];
-	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
+	ModuleTypes Module = (ModuleTypes)COMM_CalcModuleType();
 	DevType DevCase = 0; // заглушка
-	(void)ModuleType;
+	(void)Module;
 	(void)DevCase;
 
 	if(COMM_State == COMM_IcesOrIrrm && ActionID != ACT_COMM_ICES_OR_IRRM)
@@ -105,7 +152,7 @@ void COMM_Commutate(Int16U ActionID)
 			break;
 
 		case ACT_COMM_NO_PE:
-			ZcRD_CommutateConfig_macro(CT_NO_PE);
+			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
 			COMM_State = COMM_NoPE;
 			break;
 
@@ -167,7 +214,7 @@ void COMM_Commutate(Int16U ActionID)
 				case SC_Type_MDSM:
 				case SC_Type_MDFA_MDF2_DD:
 				case SC_Type_MDAA:
-					ZcRD_CommutateConfig_macro(CT_NO_PE);
+					ZcRD_CommutateConfig_macro(CT_DISCON_GND);
 					COMM_State = COMM_NoPE;
 					break;
 

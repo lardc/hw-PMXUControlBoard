@@ -55,6 +55,13 @@ typedef struct __ContactorsStateTableItem
 
 #define CT_SAVE_TIMEOUT			1800000 // Значение в мс (30 мин)
 
+//Inner Relays
+#define PWR_L_TO_GND		0
+#define PWR_C_TO_GND		0
+#define PWR_H_TO_GND		0
+
+
+// Коммутации от 301. Постепенно будут уходить и заменяться на коммутации от 303.
 // Inner Contactors commutations (Side1_Side2)
 // TOCU HP
 #define BUS1_TOCUN				7
@@ -138,6 +145,13 @@ static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE
 		{BIT5, REG2, BIT4, REG2}						// 12	// BUS3 to TOCU+
 };
 
+// Main Commutation to GND
+static const Int8U CT_DISCON_GND[] = {PWR_L_TO_GND, PWR_C_TO_GND, PWR_H_TO_GND};
+
+
+
+
+// 301 arrays
 // Default DataArrays
 //
 static const Int8U CT_DFLT_Relays[] = {0, 0};
@@ -148,10 +162,6 @@ static const Int8U CT_DFLT_Contactors[] = {0, 0};
 static const Int8U CT_AllContactors[] = {BUS1_TOCUN, BUS1_TOCUP, BUS2_TOCUN, BUS2_TOCUP, BUS3_TOCUN, BUS3_TOCUP, BUS1_LCSUN, BUS1_LCSUP,
 											BUS2_LCSUN, BUS2_LCSUP, BUS3_LCSUN, BUS3_LCSUP};
 static const Int8U CT_AllRelays[] = {BUS1_PE, BUS2_PE, BUS3_PE, BUS1_STN, BUS2_STP, BUS3_STP, BUS1_LCTUP, BUS3_LCTUP, BUS1_LCTUN, BUS2_LCTUN};
-
-// Main Commutations
-//
-static const Int8U CT_NO_PE[] = {BUS1_PE, BUS2_PE, BUS3_PE};
 
 // Direct commutation
 static const Int8U CT_Ices_Pos1[] = {BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
