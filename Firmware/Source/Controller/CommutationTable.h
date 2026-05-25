@@ -59,6 +59,7 @@ typedef struct __ContactorsStateTableItem
 #define PWR_L_TO_GND		0
 #define PWR_C_TO_GND		0
 #define PWR_H_TO_GND		0
+// Contactors
 // LCSU
 #define LCSU_POS_TO_PWR_H	0
 #define LCSU_POS_TO_PWR_C	0
@@ -75,44 +76,6 @@ typedef struct __ContactorsStateTableItem
 #define LCTU_NEG_TO_PWR_H	0
 #define LCTU_NEG_TO_PWR_C	0
 #define LCTU_NEG_TO_PWR_L	0
-
-// Коммутации от 301. Постепенно будут уходить и заменяться на коммутации от 303.
-// Inner Contactors commutations (Side1_Side2)
-// TOCU HP
-#define BUS1_TOCUN				7
-#define BUS1_TOCUP				8
-#define BUS2_TOCUN				3
-#define BUS2_TOCUP				4
-#define BUS3_TOCUN				11
-#define BUS3_TOCUP				12
-// LCSU
-#define BUS1_LCSUN				6
-#define BUS1_LCSUP				5
-#define BUS2_LCSUN				2
-#define BUS2_LCSUP				1
-#define BUS3_LCSUN				10
-#define BUS3_LCSUP				9
-
-
-// Inner Relays commutations (Side1_Side2_RelayNumber)
-// PE commutations
-#define BUS1_PE					20
-#define BUS2_PE					21
-#define BUS3_PE					22
-
-// Selftest source commutations
-#define BUS1_STN				19
-#define BUS2_STP				17
-#define BUS3_STP				18
-
-// LCTU commutations
-#define BUS1_LCTUP				13
-#define BUS3_LCTUP				14
-#define BUS1_LCTUN				16
-#define BUS2_LCTUN				15
-#define BUS3_LCTUN				23
-#define BUS2_LCTUP				24
-
 
 static InnerCommutationTableItem InnerCommutationTable[INNER_COMMUTATION_TABLE_SIZE] = {
 		{0, 0, 0, 0},									// 0	// Do not use
@@ -187,11 +150,5 @@ static const Int8U CT_ICES_POS_SECOND_VAR_THREE[] = {LCTU_POS_TO_PWR_C, LCTU_NEG
 //
 static const Int8U CT_DFLT_Relays[] = {0, 0};
 static const Int8U CT_DFLT_Contactors[] = {0, 0};
-
-// Common
-//
-static const Int8U CT_AllContactors[] = {BUS1_TOCUN, BUS1_TOCUP, BUS2_TOCUN, BUS2_TOCUP, BUS3_TOCUN, BUS3_TOCUP, BUS1_LCSUN, BUS1_LCSUP,
-											BUS2_LCSUN, BUS2_LCSUP, BUS3_LCSUN, BUS3_LCSUP};
-static const Int8U CT_AllRelays[] = {BUS1_PE, BUS2_PE, BUS3_PE, BUS1_STN, BUS2_STP, BUS3_STP, BUS1_LCTUP, BUS3_LCTUP, BUS1_LCTUN, BUS2_LCTUN};
 
 #endif // __COMMTABLE_H
