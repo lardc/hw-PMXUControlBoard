@@ -32,7 +32,7 @@ volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CONTROL_ContactorsCheck;
 Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
-DevType LastDevCase = SC_Type_MIAA;
+ModuleTypes LastDevCase = Module_None;
 bool FPledForcedLight = false;
 static bool PrevSafetyTrig = false;
 static volatile bool SafetyFlushPending = false;
@@ -49,7 +49,7 @@ void CONTROL_LogicProcess();
 void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
 void CONTROL_SafetyIrqTick();
-bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition);
+bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition);
 void CONTROL_CheckContactorsProcess();
 void CONTROL_InitStoragePointers();
 
@@ -248,9 +248,9 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				LastActionID = ActionID;
 				CONTROL_SaveLastRequest(ActionID);
 				LastDUTposition = DataTable[REG_DUT_POSITION];
-				LastDevCase = (DevType)DataTable[REG_DUT_CASE];
+				LastDevCase = (ModuleTypes)DataTable[REG_DUT_CASE];
 
-				if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
+				if(CONTROL_CheckContactors(LastActionID, LastDUTposition))
 					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 				else
 				{
@@ -296,7 +296,7 @@ void CONTROL_CheckContactorsProcess()
 {
 	if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 	{
-		if(!CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
+		if(!CONTROL_CheckContactors(LastActionID, LastDUTposition))
 		{
 			CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
@@ -439,7 +439,7 @@ void CONTROL_SafetyIrqTick()
 }
 //-----------------------------------------------
 
-bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPosition)
+bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
 {
 	ModuleTypes ModuleType = (ModuleTypes)COMM_CalcModuleType();
 	switch(ActionID)
@@ -450,34 +450,6 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 
 		case ACT_COMM_NO_PE:
 			return CONTROL_CheckContactorsStates_macro(CT_DISCON_GND);
-			break;
-
-		case ACT_COMM_ICES_OR_IRRM:
-			switch(DevCase)
-			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					return CONTROL_CheckContactorsStates_macro(CT_Ices_SS);
-					break;
-
-				case SC_Type_MISV:
-					return CONTROL_CheckContactorsStates_macro(CT_Ices_Pos2);
-					break;
-
-				case SC_Type_MDSV:
-				case SC_Type_MISM2_CH:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_MISM2_CH_1 : CT_Ices_MISM2_CH_2));
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-					return CONTROL_CheckContactorsStates_macro(CT_Ices_Pos2_Inverse);
-
-				default:
-					return CONTROL_CheckContactorsStates_macro(((DUTPosition == DUT_POS1) ? CT_Ices_Pos1 : CT_Ices_Pos2));
-					break;
-			}
 			break;
 
 		case ACT_COMM_VCESAT:
@@ -534,12 +506,16 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 			break;
 
 		case ACT_COMM_VF:
+		case ACT_COMM_ICES_OR_IRRM:
 			if(DUTPosition == DUT_POS1)
 			{
 				switch(ModuleType)
 				{
 					case MIFA_SD:
-						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_FIRST_VAR_TWO);
+						if(ActionID == ACT_COMM_VF)
+							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_FIRST_VAR_TWO);
+						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS_FIRST_VAR_TWO);
 						break;
 					case MIAA_CE:
 					case MIAA_HB:
@@ -566,7 +542,10 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 					case MIAA_HC:
 					case MIFA_HC:
 					case MIHA_HC:
-						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_FIRST_VAR_ONE);
+						if(ActionID == ACT_COMM_VF)
+							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_FIRST_VAR_ONE);
+						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS_FIRST_VAR_ONE);
 						break;
 					default:
 						break;
@@ -577,12 +556,18 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 				switch(ModuleType)
 				{
 					case MIAA_CE:
-						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_TWO);
+						if(ActionID == ACT_COMM_VF)
+							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_TWO);
+						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS_SECOND_VAR_TWO);
 						break;
 					case MDSM_SD:
 					case MDSV_SD:
 					case MIXM_LR_LRD:
-						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_THREE);
+						if(ActionID == ACT_COMM_VF)
+							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_THREE);
+						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS_SECOND_VAR_THREE);
 						break;
 					case MIAA_HB:
 					case MIAA_HC:
@@ -601,7 +586,10 @@ bool CONTROL_CheckContactors(DevType DevCase, Int16U ActionID, Int16U DUTPositio
 					case MIFA_LC:
 					case MIHA_LC:
 					case MISM_CH:
-						return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_ONE);
+						if(ActionID == ACT_COMM_VF)
+							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS_SECOND_VAR_ONE);
+						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS_SECOND_VAR_ONE);
 						break;
 					default:
 						break;

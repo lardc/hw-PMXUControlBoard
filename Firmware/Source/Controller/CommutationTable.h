@@ -67,6 +67,14 @@ typedef struct __ContactorsStateTableItem
 #define LCSU_NEG_TO_PWR_H	0
 #define LCSU_NEG_TO_PWR_C	0
 #define LCSU_NEG_TO_PWR_L	0
+// LCTU
+#define LCTU_POS_TO_PWR_H	0
+#define LCTU_POS_TO_PWR_C	0
+#define LCTU_POS_TO_PWR_L	0
+
+#define LCTU_NEG_TO_PWR_H	0
+#define LCTU_NEG_TO_PWR_C	0
+#define LCTU_NEG_TO_PWR_L	0
 
 // Коммутации от 301. Постепенно будут уходить и заменяться на коммутации от 303.
 // Inner Contactors commutations (Side1_Side2)
@@ -167,6 +175,13 @@ static const Int8U CT_UFW_POS_SECOND_VAR_ONE[] = {LCSU_POS_TO_PWR_C, LCSU_NEG_TO
 static const Int8U CT_UFW_POS_SECOND_VAR_TWO[] = {LCSU_POS_TO_PWR_L, LCSU_NEG_TO_PWR_H}; //Orange
 static const Int8U CT_UFW_POS_SECOND_VAR_THREE[] = {LCSU_POS_TO_PWR_H, LCSU_NEG_TO_PWR_C}; // Purple
 
+// ICES_OR_IRMM commutations
+static const Int8U CT_ICES_POS_FIRST_VAR_ONE[] = {LCTU_POS_TO_PWR_C, LCTU_NEG_TO_PWR_L}; //Green
+static const Int8U CT_ICES_POS_FIRST_VAR_TWO[] = {LCTU_POS_TO_PWR_H, LCTU_NEG_TO_PWR_C}; // Blue
+static const Int8U CT_ICES_POS_SECOND_VAR_ONE[] = {LCTU_POS_TO_PWR_H, LCTU_NEG_TO_PWR_C}; // Blue
+static const Int8U CT_ICES_POS_SECOND_VAR_TWO[] = {LCTU_POS_TO_PWR_H, LCTU_NEG_TO_PWR_L}; //Orange
+static const Int8U CT_ICES_POS_SECOND_VAR_THREE[] = {LCTU_POS_TO_PWR_C, LCTU_NEG_TO_PWR_H}; // Purple
+
 // 301 arrays
 // Default DataArrays
 //
@@ -178,21 +193,5 @@ static const Int8U CT_DFLT_Contactors[] = {0, 0};
 static const Int8U CT_AllContactors[] = {BUS1_TOCUN, BUS1_TOCUP, BUS2_TOCUN, BUS2_TOCUP, BUS3_TOCUN, BUS3_TOCUP, BUS1_LCSUN, BUS1_LCSUP,
 											BUS2_LCSUN, BUS2_LCSUP, BUS3_LCSUN, BUS3_LCSUP};
 static const Int8U CT_AllRelays[] = {BUS1_PE, BUS2_PE, BUS3_PE, BUS1_STN, BUS2_STP, BUS3_STP, BUS1_LCTUP, BUS3_LCTUP, BUS1_LCTUN, BUS2_LCTUN};
-
-// Direct commutation
-static const Int8U CT_Ices_Pos1[] = {BUS1_LCTUP, BUS2_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-static const Int8U CT_Ices_Pos2[] = {BUS3_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-static const Int8U CT_Ices_Pos2_Inverse[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-
-// Commutation for single switch devices (MIHV, MIHM, MISM2-SS-SD)
-static const Int8U CT_Ices_SS[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-
-// Commutation for MISM2-CH
-static const Int8U CT_Ices_MISM2_CH_1[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-static const Int8U CT_Ices_MISM2_CH_2[] = {BUS2_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-
-// Commutation for MDSM
-static const Int8U CT_Ices_MDSM_1[] = {BUS1_LCTUP, BUS3_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
-static const Int8U CT_Ices_MDSM_2[] = {BUS2_LCTUP, BUS1_LCTUN, BUS1_PE, BUS2_PE, BUS3_PE};
 
 #endif // __COMMTABLE_H

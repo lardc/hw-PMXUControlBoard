@@ -27,39 +27,6 @@ typedef enum __DeviceSubState
 	DSS_None = 0
 } DeviceSubState;
 
-typedef enum __DevType
-{
-	SC_Type_A2 = 3101,
-	SC_Type_B1 = 3106,
-	SC_Type_C1 = 3102,
-	SC_Type_D0 = 3105,
-	SC_Type_E0 = 3103,
-	SC_Type_F1 = 3104,
-	SC_Type_ADAP = 3107,
-	SC_Type_E2M = 3108,
-//
-	SC_Type_MIAA = 3001,
-	SC_Type_MIDA = 3002,
-	SC_Type_MIFA = 3003,
-	SC_Type_MIHA = 3004,
-	SC_Type_MIHM = 3005,
-	SC_Type_MIHV = 3006,
-	SC_Type_MISM = 3007,
-	SC_Type_MISV = 3008,
-	SC_Type_MIXM = 3009,
-	SC_Type_MIXV = 3010,
-	// 2011
-	SC_Type_MISM2_CH = 3012,
-	SC_Type_MISM2_SS_SD = 3014,
-	SC_Type_MIADAP = 3015,
-	SC_Type_MDAA = 3016,
-	SC_Type_MDFA_MDF2_DD = 3017,
-	SC_Type_MDSM = 3018,
-	SC_Type_MDSV = 3019,
-	SC_Type_MDFA_MDF2_SD = 3020,
-	SC_Type_MDA2 = 3021
-} DevType;
-
 // Variables
 //
 extern volatile Int64U CONTROL_TimeCounter;

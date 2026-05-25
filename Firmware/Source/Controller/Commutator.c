@@ -81,11 +81,9 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 			return false;
 
 		case ACT_COMM_VF:
+		case ACT_COMM_ICES_OR_IRRM:
 			if(COMM_ValidateIGBT(Position, ModuleType) || COMM_ValidateDiode(Position, ModuleType))
 				return true;
-			return false;
-
-		case ACT_COMM_ICES_OR_IRRM:
 			return false;
 
 		default:
@@ -190,14 +188,10 @@ bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module)
 }
 // ----------------------------------------
 
-
 void COMM_Commutate(Int16U ActionID)
 {
 	Int16U DUTPosition = DataTable[REG_DUT_POSITION];
 	ModuleTypes Module = (ModuleTypes)COMM_CalcModuleType();
-	DevType DevCase = 0; // заглушка
-	(void)Module;
-	(void)DevCase;
 
 	if(COMM_State == COMM_IcesOrIrrm && ActionID != ACT_COMM_ICES_OR_IRRM)
 		COMM_DischargeBeforeIcesOrIrrm();
@@ -212,43 +206,103 @@ void COMM_Commutate(Int16U ActionID)
 			break;
 
 		case ACT_COMM_NO_PE:
-			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
 			COMM_State = COMM_NoPE;
+			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
 			break;
 
 		case ACT_COMM_ICES_OR_IRRM:
-			switch(DevCase)
+		case ACT_COMM_VF:
+			COMM_State = (ActionID == ACT_COMM_ICES_OR_IRRM) ? COMM_IcesOrIrrm : COMM_Uf;
+
+			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
+			if(DUTPosition == DUT_POS1)
 			{
-				case SC_Type_MIHV:
-				case SC_Type_MIHM:
-				case SC_Type_MISM2_SS_SD:
-					ZcRD_CommutateConfig_macro(CT_Ices_SS);
-					break;
-
-				case SC_Type_MISV:
-					ZcRD_CommutateConfig_macro(CT_Ices_Pos2);
-					break;
-
-				case SC_Type_MDSV:
-				case SC_Type_MISM2_CH:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_MISM2_CH_1) : ZcRD_CommutateConfig_macro(CT_Ices_MISM2_CH_2);
-					break;
-
-				case SC_Type_MDSM:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_MDSM_1) : ZcRD_CommutateConfig_macro(CT_Ices_MDSM_2);
-					break;
-
-				case SC_Type_MDFA_MDF2_SD:
-				case SC_Type_MDA2:
-					ZcRD_CommutateConfig_macro(CT_Ices_Pos2_Inverse);
-					break;
-
-				default:
-					(DUTPosition == DUT_POS1) ? ZcRD_CommutateConfig_macro(CT_Ices_Pos1) : ZcRD_CommutateConfig_macro(CT_Ices_Pos2);
-					break;
+				switch(Module)
+				{
+					case MIFA_SD:
+						if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							ZcRD_CommutateConfig_macro(CT_ICES_POS_FIRST_VAR_TWO);
+						else if(ActionID == ACT_COMM_VF)
+							ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_TWO);
+						break;
+					case MIAA_CE:
+					case MIAA_HB:
+					case MIAA_LC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_LC:
+					case MIHA_HB:
+					case MIHA_LC:
+					case MIHM_SS:
+					case MIHV_SS:
+					case MISM_CH:
+					case MISM_DS:
+					case MISM_SS:
+					case MISV_SS:
+					case MIXM_HB:
+					case MIXM_LR_LRD:
+					case MIXV_HB:
+					case MDAA_DD:
+					case MDDA_DD:
+					case MDFA_DD:
+					case MDSM_SD:
+					case MDSV_SD:
+					case MIAA_HC:
+					case MIFA_HC:
+					case MIHA_HC:
+						if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							ZcRD_CommutateConfig_macro(CT_ICES_POS_FIRST_VAR_ONE);
+						else if(ActionID == ACT_COMM_VF)
+							ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_ONE);
+						break;
+					default:
+						break;
+				}
 			}
-
-			COMM_State = COMM_IcesOrIrrm;
+			else if(DUTPosition == DUT_POS2)
+			{
+				switch(Module)
+				{
+					case MIAA_CE:
+						if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							ZcRD_CommutateConfig_macro(CT_ICES_POS_SECOND_VAR_TWO);
+						else if(ActionID == ACT_COMM_VF)
+							ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_TWO);
+						break;
+					case MDSM_SD:
+					case MDSV_SD:
+					case MIXM_LR_LRD:
+						if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							ZcRD_CommutateConfig_macro(CT_ICES_POS_SECOND_VAR_THREE);
+						else if(ActionID == ACT_COMM_VF)
+							ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_THREE);
+						break;
+					case MIAA_HB:
+					case MIAA_HC:
+					case MIDA_HB:
+					case MIFA_HB:
+					case MIFA_HC:
+					case MIHA_HB:
+					case MIHA_HC:
+					case MISM_DS:
+					case MIXM_HB:
+					case MIXV_HB:
+					case MDAA_DD:
+					case MDDA_DD:
+					case MDFA_DD:
+					case MIAA_LC:
+					case MIFA_LC:
+					case MIHA_LC:
+					case MISM_CH:
+						if(ActionID == ACT_COMM_ICES_OR_IRRM)
+							ZcRD_CommutateConfig_macro(CT_ICES_POS_SECOND_VAR_ONE);
+						else if(ActionID == ACT_COMM_VF)
+							ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_ONE);
+						break;
+					default:
+						break;
+				}
+			}
 			break;
 
 		case ACT_COMM_VCESAT:
@@ -300,85 +354,6 @@ void COMM_Commutate(Int16U ActionID)
 					case MIXM_HB:
 					case MIXV_HB:
 						ZcRD_CommutateConfig_macro(CT_UCESAT_POS_SECOND_VAR_ONE);
-						break;
-					default:
-						break;
-				}
-			}
-			break;
-
-		case ACT_COMM_VF:
-			COMM_State = COMM_Uf;
-
-			ZcRD_CommutateConfig_macro(CT_DISCON_GND);
-			if(DUTPosition == DUT_POS1)
-			{
-				switch(Module)
-				{
-					case MIFA_SD:
-						ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_TWO);
-						break;
-					case MIAA_CE:
-					case MIAA_HB:
-					case MIAA_LC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_LC:
-					case MIHA_HB:
-					case MIHA_LC:
-					case MIHM_SS:
-					case MIHV_SS:
-					case MISM_CH:
-					case MISM_DS:
-					case MISM_SS:
-					case MISV_SS:
-					case MIXM_HB:
-					case MIXM_LR_LRD:
-					case MIXV_HB:
-					case MDAA_DD:
-					case MDDA_DD:
-					case MDFA_DD:
-					case MDSM_SD:
-					case MDSV_SD:
-					case MIAA_HC:
-					case MIFA_HC:
-					case MIHA_HC:
-						ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_ONE);
-						break;
-					default:
-						break;
-				}
-			}
-			else if(DUTPosition == DUT_POS2)
-			{
-				switch(Module)
-				{
-					case MIAA_CE:
-						ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_TWO);
-						break;
-					case MDSM_SD:
-					case MDSV_SD:
-					case MIXM_LR_LRD:
-						ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_THREE);
-						break;
-					case MIAA_HB:
-					case MIAA_HC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_HC:
-					case MIHA_HB:
-					case MIHA_HC:
-					case MISM_DS:
-					case MIXM_HB:
-					case MIXV_HB:
-					case MDAA_DD:
-					case MDDA_DD:
-					case MDFA_DD:
-					case MIAA_LC:
-					case MIFA_LC:
-					case MIHA_LC:
-					case MISM_CH:
-						ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_ONE);
 						break;
 					default:
 						break;
