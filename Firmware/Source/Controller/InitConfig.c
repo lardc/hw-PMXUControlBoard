@@ -51,7 +51,6 @@ void INITCFG_ConfigIO()
 	GPIO_InitAltFunction(GPIO_ALT_SPI2_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI2_DAT, AltFn_5);
 }
-
 //------------------------------------------------
 
 void INITCFG_ConfigExtInterrupt()
@@ -66,6 +65,15 @@ void INITCFG_ConfigUART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigCAN()
+{
+	RCC_CAN_Clk_EN(CAN_1_ClkEN);
+	NCAN_Init(SYSCLK, CAN_BAUDRATE, FALSE);
+	NCAN_FIFOInterrupt(TRUE);
+	NCAN_FilterInit(0, CAN_SLAVE_FILTER_ID, CAN_MASTER_FILTER_ID);
 }
 //------------------------------------------------
 
