@@ -14,7 +14,7 @@
 
 // Variables
 //
-volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0,0,0,0,0,0,0};
+volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0};
 static uint8_t PrevRelayState[SPI1_ARRAY_LEN_RELAYS] = {0};
 static uint8_t PrevContactorState[SPI1_ARRAY_LEN_CONTACTORS] = {0};
 
