@@ -240,6 +240,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
 					CONTROL_FinishedWithProblem(PROBLEM_INCORRECT_DUT);
+					LastActionID = ACT_COMM_PE;
 					break;
 				}
 
