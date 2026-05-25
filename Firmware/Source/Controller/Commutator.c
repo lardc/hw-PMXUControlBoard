@@ -76,15 +76,11 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 
 		case ACT_COMM_NO_PE:
 		case ACT_COMM_VCESAT:
-			if(COMM_ValidateIGBT(Position,ModuleType))
-				return true;
-			return false;
+			return COMM_ValidateIGBT(Position,ModuleType);
 
 		case ACT_COMM_VF:
 		case ACT_COMM_ICES_OR_IRRM:
-			if(COMM_ValidateIGBT(Position, ModuleType) || COMM_ValidateDiode(Position, ModuleType))
-				return true;
-			return false;
+			return COMM_ValidateIGBT(Position, ModuleType) || COMM_ValidateDiode(Position, ModuleType);
 
 		default:
 			return false;

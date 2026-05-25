@@ -22,10 +22,13 @@ static uint8_t PrevContactorState[SPI1_ARRAY_LEN_CONTACTORS] = {0};
 //
 void ZcRD_IncrementContactors(const uint8_t BitDataArray[])
 {
-	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
+	// Счётчик i соответствует контактору с ID (i + 1)
+	for (Int8U i = 0; i < NUM_CONTACTOR_COMMUTATIONS; i++)
 	{
-		for(Int8U j = 0; j < 8; j++)
-			ZcRD_ContactorsCommCounter[i * 8 + j] += (BitDataArray[i] >> j) & 0x1;
+		const Int8U id = i + 1;
+
+		if (BitDataArray[InnerCommutationTable[id].RegNum] & InnerCommutationTable[id].Bit)
+			ZcRD_ContactorsCommCounter[i]++;
 	}
 }
 //-----------------------------
@@ -116,6 +119,9 @@ void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
 
 	for(uint8_t i = 0; i < Length; i++)
 	{
+		if (CommArray[i] == 0 || CommArray[i] > INNER_COMMUTATION_LAST_ID)
+			continue;
+
 		if(InnerCommutationTable[(uint8_t)CommArray[i]].Node == RELAY)
 			ZcRD_OutputValuesCompose((uint8_t)CommArray[i], TRUE, &RelayArray[0]);
 		else
@@ -133,6 +139,9 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 	Int8U ContactorsStateArray[SPI2_ARRAY_LEN];
 	Int8U ErrorNum = COMM_CHECK_NO_ERROR;
 
+	for (Int8U i = 0; i < SPI2_ARRAY_LEN; i++)
+		ContactorsStateArray[i] = 0;
+
 	// Generate default contactors state
 	for(Int8U i = 0; i < CONTACTORS_STATE_TABLE_SIZE; i++)
 	{
@@ -143,7 +152,7 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 	// Generate destination contactors state
 	for(uint8_t i = 0; i < Length; i++)
 	{
-		if(CommArray[i] && CommArray[i] <= CONTACTORS_STATE_TABLE_SIZE)
+		if(CommArray[i] && CommArray[i] < CONTACTORS_STATE_TABLE_SIZE)
 		{
 			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
 			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
@@ -161,12 +170,12 @@ Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
 		{
 			for(Int8U j = 0; j < BITS_PER_REG; j++)
 			{
-				ErrorNum = j;
-
-				if((ContactorsStateArray[i] >> 1) == (SPI2Data[i] >> 1))
+				if(((ContactorsStateArray[i] >> j) & 0x1) != ((SPI2Data[i] >> j) & 0x1))
+				{
+					ErrorNum = j + (i * BITS_PER_REG);
 					break;
+				}
 			}
-			ErrorNum += (i * BITS_PER_REG);
 			break;
 		}
 	}
