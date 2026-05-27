@@ -217,9 +217,9 @@ void COMM_Commutate(Int16U ActionID)
 				{
 					case MIFA_SD:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							ZcRD_CommutateConfig_macro(CT_ICES_POS_FIRST_VAR_TWO);
+							ZcRD_CommutateConfig_macro(CT_ICES_POS1_GROUP_BLUE);
 						else if(ActionID == ACT_COMM_VF)
-							ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_TWO);
+							ZcRD_CommutateConfig_macro(CT_UFW_POS1_GROUP_BLUE);
 						break;
 					case MIAA_CE:
 					case MIAA_HB:
@@ -247,9 +247,9 @@ void COMM_Commutate(Int16U ActionID)
 					case MIFA_HC:
 					case MIHA_HC:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							ZcRD_CommutateConfig_macro(CT_ICES_POS_FIRST_VAR_ONE);
+							ZcRD_CommutateConfig_macro(CT_ICES_POS1_GROUP_GREEN);
 						else if(ActionID == ACT_COMM_VF)
-							ZcRD_CommutateConfig_macro(CT_UFW_POS_FIRST_VAR_ONE);
+							ZcRD_CommutateConfig_macro(CT_UFW_POS1_GROUP_GREEN);
 						break;
 					default:
 						break;
@@ -261,17 +261,17 @@ void COMM_Commutate(Int16U ActionID)
 				{
 					case MIAA_CE:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							ZcRD_CommutateConfig_macro(CT_ICES_POS_SECOND_VAR_TWO);
+							ZcRD_CommutateConfig_macro(CT_ICES_POS2_GROUP_ORANGE);
 						else if(ActionID == ACT_COMM_VF)
-							ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_TWO);
+							ZcRD_CommutateConfig_macro(CT_UFW_POS2_GROUP_ORANGE);
 						break;
 					case MDSM_SD:
 					case MDSV_SD:
 					case MIXM_LR_LRD:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							ZcRD_CommutateConfig_macro(CT_ICES_POS_SECOND_VAR_THREE);
+							ZcRD_CommutateConfig_macro(CT_ICES_POS2_GROUP_PURPLE);
 						else if(ActionID == ACT_COMM_VF)
-							ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_THREE);
+							ZcRD_CommutateConfig_macro(CT_UFW_POS2_GROUP_PURPLE);
 						break;
 					case MIAA_HB:
 					case MIAA_HC:
@@ -291,9 +291,9 @@ void COMM_Commutate(Int16U ActionID)
 					case MIHA_LC:
 					case MISM_CH:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							ZcRD_CommutateConfig_macro(CT_ICES_POS_SECOND_VAR_ONE);
+							ZcRD_CommutateConfig_macro(CT_ICES_POS2_GROUP_BLUE);
 						else if(ActionID == ACT_COMM_VF)
-							ZcRD_CommutateConfig_macro(CT_UFW_POS_SECOND_VAR_ONE);
+							ZcRD_CommutateConfig_macro(CT_UFW_POS2_GROUP_BLUE);
 						break;
 					default:
 						break;
@@ -326,7 +326,7 @@ void COMM_Commutate(Int16U ActionID)
 					case MIXM_HB:
 					case MIXM_LR_LRD:
 					case MIXV_HB:
-						ZcRD_CommutateConfig_macro(CT_UCESAT_POS_FIRST);
+						ZcRD_CommutateConfig_macro(CT_UCESAT_POS1_GROUP_GREEN);
 						break;
 					default:
 						break;
@@ -337,7 +337,7 @@ void COMM_Commutate(Int16U ActionID)
 				switch(Module)
 				{
 					case MIAA_CE:
-						ZcRD_CommutateConfig_macro(CT_UCESAT_POS_SECOND_VAR_TWO);
+						ZcRD_CommutateConfig_macro(CT_UCESAT_POS2_GROUP_ORANGE);
 						break;
 					case MIAA_HB:
 					case MIAA_HC:
@@ -349,7 +349,7 @@ void COMM_Commutate(Int16U ActionID)
 					case MISM_DS:
 					case MIXM_HB:
 					case MIXV_HB:
-						ZcRD_CommutateConfig_macro(CT_UCESAT_POS_SECOND_VAR_ONE);
+						ZcRD_CommutateConfig_macro(CT_UCESAT_POS2_GROUP_BLUE);
 						break;
 					default:
 						break;
