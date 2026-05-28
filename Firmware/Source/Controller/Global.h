@@ -17,6 +17,7 @@
 #define COMM_DELAY_MS							500		// Время ожидания комммутации
 #define TIME_FP_LED_ON_STATE					500		// Время свечения внешнего индикатора, мс
 #define SAFETY_DELAY							200		// Время задержки отключения коммутации
+#define TIME_SPI_DELAY_US						5		// Время задержки SPI
 
 // Параметры измерения
 #define ADC_REF_VOLTAGE							3300.0f	// Опорное напряжение АЦП (мВ)
