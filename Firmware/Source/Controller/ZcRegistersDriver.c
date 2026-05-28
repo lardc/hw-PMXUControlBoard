@@ -6,179 +6,116 @@
 #include "ZcRegistersDriver.h"
 //
 #include "SysConfig.h"
+#include "CommutationTable.h"
 #include "LowLevel.h"
 #include "Delay.h"
 #include "DataTable.h"
-#include "Converter.h"
-#include "Commutator.h"
+
+// Диапазоны регистров в общем массиве CurrentOutputValues[NUM_REGS_TOTAL].
+// Порядок согласован с REG_* в CommutationTable.c
+#define ZCRD_CONTACTORS_REG_FIRST		0
+#define ZCRD_CONTACTORS_REG_COUNT		NUM_REGS_CONTACTORS
+//
+#define ZCRD_RELAYS_REG_FIRST			(ZCRD_CONTACTORS_REG_FIRST + ZCRD_CONTACTORS_REG_FIRST)
+#define ZCRD_RELAYS_REG_COUNT			NUM_REGS_RELAYS
+
+// Индексы CS для LL_SPI_LatchBoard
+#define ZCRD_CS_CONTACTORS				0
+#define ZCRD_CS_RELAYS					1
 
 // Variables
 //
-volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS] = {0,0,0,0,0,0};
-static uint8_t PrevRelayState[SPI1_ARRAY_LEN_RELAYS] = {0};
-static uint8_t PrevContactorState[SPI1_ARRAY_LEN_CONTACTORS] = {0};
+static uint8_t CurrentOutputValues[NUM_REGS_TOTAL] = {0};
+
+// Functions prototypes
+//
+static void ZcRD_ShiftAndLatch(Int8U CS, Int8U FirstReg, Int8U RegCount);
+static Int8U ZcRD_GetRegNum(Int8U ID);
+static Int8U ZcRD_GetBitmask(Int8U ID);
 
 // Functions
 //
-void ZcRD_IncrementContactors(const uint8_t BitDataArray[])
+void ZcRD_RegisterReset()
 {
-	// Счётчик i соответствует контактору с ID (i + 1)
-	for (Int8U i = 0; i < NUM_CONTACTOR_COMMUTATIONS; i++)
-	{
-		const Int8U id = i + 1;
-
-		if (BitDataArray[InnerCommutationTable[id].RegNum] & InnerCommutationTable[id].Bit)
-			ZcRD_ContactorsCommCounter[i]++;
-	}
+	// Set values to zero
+	ZcRD_OutputValuesReset();
+	ZcRD_RegisterFlushWrite();
+	DELAY_US(COMM_DELAY_MS * 1000L);
 }
-//-----------------------------
+// ----------------------------------------
 
-void ZcRD_SaveCounters(const uint8_t BitDataArray[], Int8U Node)
+static Int8U ZcRD_GetRegNum(Int8U ID)
 {
-	uint8_t *PrevElement = (Node == RELAY) ? PrevRelayState : PrevContactorState;
+	return ID / 8;
+}
+// ----------------------------------------
 
-	// Инкремент счётчиков только при изменении соответствующего бита
-	for (Int16U i = 1; i < INNER_COMMUTATION_TABLE_SIZE; i++)
+static Int8U ZcRD_GetBitmask(Int8U ID)
+{
+	return 1 << (ID % 8);
+}
+// ----------------------------------------
+
+void ZcRD_OutputValuesComposeArray(const Int8U* Array, Int8U ArrayLength)
+{
+	for(int i = 0; i < ArrayLength; i++)
+		ZcRD_OutputValuesCompose(Array[i], true);
+}
+// ----------------------------------------
+
+void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn)
+{
+	Int8U RegNum = ZcRD_GetRegNum(TableID);
+	Int8U BitMask = ZcRD_GetBitmask(TableID);
+
+	if(TurnOn)
+		CurrentOutputValues[RegNum] |= BitMask;
+	else
+		CurrentOutputValues[RegNum] &= ~BitMask;
+}
+// ----------------------------------------
+
+void ZcRD_OutputValuesReset()
+{
+	for (uint8_t i = 0; i < NUM_REGS_TOTAL; ++i)
+		CurrentOutputValues[i] = 0;
+}
+// ----------------------------------------
+
+void ZcRD_RegisterFlushWrite()
+{
+	static uint8_t PrevCurrentOutputValues[NUM_REGS_TOTAL] = {0};
+
+	// Аппаратный SPI1, два независимых CS — каждая ветка выгружается отдельной транзакцией.
+	// SFT_ENABLE во время штатной выгрузки не трогаем: выход сдвигового регистра меняется
+	// только в момент защёлки (CS-импульс). OE управляется аппаратно контуром безопасности.
+	ZcRD_ShiftAndLatch(ZCRD_CS_CONTACTORS, ZCRD_CONTACTORS_REG_FIRST, ZCRD_CONTACTORS_REG_COUNT);
+	ZcRD_ShiftAndLatch(ZCRD_CS_RELAYS, ZCRD_RELAYS_REG_FIRST, ZCRD_RELAYS_REG_COUNT);
+
+	// Учёт ресурса: инкремент счётчика при каждом изменении состояния бита.
+	for(Int16U i = 0; i < COMMUTATION_TABLE_SIZE; ++i)
 	{
-		if (InnerCommutationTable[i].Node != Node)
-			continue;
+		Int8U RegNum = ZcRD_GetRegNum(i);
+		Int8U BitMask = ZcRD_GetBitmask(i);
 
-		if ((PrevElement[InnerCommutationTable[i].RegNum] & InnerCommutationTable[i].Bit) !=
-			 (BitDataArray[InnerCommutationTable[i].RegNum] & InnerCommutationTable[i].Bit) )
+		if((PrevCurrentOutputValues[RegNum] & BitMask) != (CurrentOutputValues[RegNum] & BitMask)
+				&& (PrevCurrentOutputValues[RegNum] & BitMask) == 0)
 			CycleCounters[i]++;
 	}
 
-	// Обновление предыдущего состояния соответствующего узла
-	if (Node == RELAY)
-	{
-		for (Int16U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
-			PrevRelayState[i] = BitDataArray[i];
-	}
-	else
-	{
-		for (Int16U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
-			PrevContactorState[i] = BitDataArray[i];
-	}
-}
-//-----------------------------
-
-void ZcRD_ApplySafetyReset(void)
-{
-	Int16U i;
-
-	LL_SafetyResetSPI1();
-
-	for (i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
-		PrevRelayState[i] = 0;
-
-	for (i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
-		PrevContactorState[i] = 0;
-}
-//-----------------------------
-
-void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node)
-{
-	ZcRD_SaveCounters(BitDataArray, Node);
-	if(Node == RELAY)
-	{
-		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_RELAYS, GPIO_SPI1_SS_REL);
-	}
-	else
-	{
-		ZcRD_IncrementContactors(BitDataArray);
-		LL_WriteSPI1((uint8_t *)BitDataArray, SPI1_ARRAY_LEN_CONTACTORS, GPIO_SPI1_SS_CONT);
-	}
-}
-//-----------------------------
-
-void ZcRD_ReadSPI2(volatile uint8_t* SPI_Data)
-{
-	LL_ReadSPI2(&SPI_Data[0]);
-}
-//-----------------------------
-
-void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int8U* BitDataArray)
-{
-	if(TurnOn)
-		BitDataArray[InnerCommutationTable[TableID].RegNum] |= InnerCommutationTable[TableID].Bit;
-	else
-		BitDataArray[InnerCommutationTable[TableID].RegNum] &= ~InnerCommutationTable[TableID].Bit;
+	for(Int16U i = 0; i < NUM_REGS_TOTAL; ++i)
+		PrevCurrentOutputValues[i] = CurrentOutputValues[i];
+	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
 
-void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length)
+static void ZcRD_ShiftAndLatch(Int8U CS, Int8U FirstReg, Int8U RegCount)
 {
-	Int8U RelayArray[SPI1_ARRAY_LEN_RELAYS];
-	Int8U ContactorArray[SPI1_ARRAY_LEN_CONTACTORS];
+	// Байты выгружаются от последнего регистра к первому — чипы каскадированы,
+	// и первая отправленная порция окажется в самом дальнем регистре.
+	for (int8_t i = (int8_t)(FirstReg + RegCount) - 1; i >= (int8_t)FirstReg; i--)
+		LL_SPI_WriteByte(CurrentOutputValues[i]);
 
-	for(Int8U i = 0; i < SPI1_ARRAY_LEN_RELAYS; i++)
-		RelayArray[i] = CT_DFLT_Relays[i];
-
-	for(Int8U i = 0; i < SPI1_ARRAY_LEN_CONTACTORS; i++)
-		ContactorArray[i] = CT_DFLT_Contactors[i];
-
-	for(uint8_t i = 0; i < Length; i++)
-	{
-		if (CommArray[i] == 0 || CommArray[i] > INNER_COMMUTATION_LAST_ID)
-			continue;
-
-		if(InnerCommutationTable[(uint8_t)CommArray[i]].Node == RELAY)
-			ZcRD_OutputValuesCompose((uint8_t)CommArray[i], TRUE, &RelayArray[0]);
-		else
-			ZcRD_OutputValuesCompose((uint8_t)CommArray[i], TRUE, &ContactorArray[0]);
-	}
-
-	ZcRD_WriteSPI1Comm(RelayArray, RELAY);
-	ZcRD_WriteSPI1Comm(ContactorArray, CONTACTOR);
-}
-// ----------------------------------------
-
-Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length)
-{
-	Int8U SPI2Data[SPI2_ARRAY_LEN];
-	Int8U ContactorsStateArray[SPI2_ARRAY_LEN];
-	Int8U ErrorNum = COMM_CHECK_NO_ERROR;
-
-	for (Int8U i = 0; i < SPI2_ARRAY_LEN; i++)
-		ContactorsStateArray[i] = 0;
-
-	// Generate default contactors state
-	for(Int8U i = 0; i < CONTACTORS_STATE_TABLE_SIZE; i++)
-	{
-		ContactorsStateArray[ContactorsStateTable[i].RegNumClose] &= ~ContactorsStateTable[i].BitClose;
-		ContactorsStateArray[ContactorsStateTable[i].RegNumOpen] |= ContactorsStateTable[i].BitOpen;
-	}
-
-	// Generate destination contactors state
-	for(uint8_t i = 0; i < Length; i++)
-	{
-		if(CommArray[i] && CommArray[i] < CONTACTORS_STATE_TABLE_SIZE)
-		{
-			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumClose] |= ContactorsStateTable[CommArray[i]].BitClose;
-			ContactorsStateArray[ContactorsStateTable[CommArray[i]].RegNumOpen] &= ~ContactorsStateTable[CommArray[i]].BitOpen;
-		}
-	}
-
-	// Read current state
-	LL_ReadSPI2(&SPI2Data[0]);
-
-	// Compare destination and current states
-	for(Int8U i = 0; i < SPI2_ARRAY_LEN; i++)
-	{
-		// Found number of fault commutation
-		if(ContactorsStateArray[i] != SPI2Data[i])
-		{
-			for(Int8U j = 0; j < BITS_PER_REG; j++)
-			{
-				if(((ContactorsStateArray[i] >> j) & 0x1) != ((SPI2Data[i] >> j) & 0x1))
-				{
-					ErrorNum = j + (i * BITS_PER_REG);
-					break;
-				}
-			}
-			break;
-		}
-	}
-	return ErrorNum;
+	LL_SPI_LatchBoard(CS);
 }
 // ----------------------------------------

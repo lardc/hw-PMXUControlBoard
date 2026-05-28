@@ -7,23 +7,32 @@
 
 // Include
 #include "stdinc.h"
-#include "stdio.h"
-#include "CommutationTable.h"
 
-//
-#define ZcRD_CommutateConfig_macro(arr)		(ZcRD_CommutateConfig(arr, sizeof(arr) / sizeof(arr[0])))
-#define ZcRD_CommutationCheck_macro(arr)	(ZcRD_CommutationCheck(arr, sizeof(arr) / sizeof(arr[0])))
-//
-extern volatile Int32U ZcRD_ContactorsCommCounter[NUM_CONTACTOR_COMMUTATIONS];
+// Macros
+// Заполнение массива битовыми масками
+#define __ZcRD_CommutateConfig_macro(arr) \
+	ZcRD_OutputValuesComposeArray((arr), sizeof(arr) / sizeof((arr)[0]))
+
+// Включение выбранной коммутации
+#define ZcRD_Commutate_macro(arr) do { \
+	ZcRD_RegisterReset(); \
+	__ZcRD_CommutateConfig_macro(__CT_DISCON_PE); \
+	if(arr != NULL) \
+		__ZcRD_CommutateConfig_macro(arr); \
+	ZcRD_RegisterFlushWrite(); \
+} while(0)
+
+
 // Functions
 //
-void ZcRD_IncrementContactors(const uint8_t BitDataArray[]);
-void ZcRD_SaveCounters(const uint8_t BitDataArray[], Int8U Node);
-void ZcRD_WriteSPI1Comm(const uint8_t BitDataArray[], Int8U Node);
-void ZcRD_ApplySafetyReset(void);
-void ZcRD_ReadSPI2(volatile uint8_t* SPI_Data);
-void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn, Int8U* BitDataArray);
-void ZcRD_CommutateConfig(const Int8U CommArray[], Int8U Length);
-Int8U ZcRD_CommutationCheck(Int8U CommArray[], Int8U Length);
+// Reset output register to zero
+void ZcRD_RegisterReset();
+// Write cache to physical register
+void ZcRD_RegisterFlushWrite();
+// Compose cached values
+void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn);
+void ZcRD_OutputValuesComposeArray(const Int8U* Array, Int8U ArrayLength);
+// Reset cached values to zero
+void ZcRD_OutputValuesReset();
 
 #endif // __ZBIOEXPANSION_H
