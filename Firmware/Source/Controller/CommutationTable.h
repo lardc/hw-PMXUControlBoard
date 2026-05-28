@@ -8,6 +8,30 @@
 // Include
 #include "stdinc.h"
 
+// Constants
+#define NUM_REGS_CONTACTORS			2	// 2 сдвиговых регистра на SPI_SS
+#define NUM_REGS_RELAYS				2	// 2 сдвиговых регистра на SPI_SS_REL
+
+#define NUM_REGS_TOTAL				(NUM_REGS_CONTACTORS + NUM_REGS_RELAYS)
+
+#define COMMUTATION_TABLE_SIZE		(NUM_REGS_TOTAL * 8)
+#define CONTACTOR_TABLE_SIZE		(NUM_REGS_CONTACTORS * 8)
+
+// Types
+typedef struct __ContactorSensorState
+{
+	Int8U Index;
+	Int8U SensorRegNumClose;
+	Int8U SensorBitClose;
+	Int8U SensorRegNumOpen;
+	Int8U SensorBitOpen;
+	bool IsClosed;
+} ContactorSensorState;
+
+// Variables
+extern Int32U CycleCounters[];
+extern ContactorSensorState SensorsState[];
+extern const Int16U SensorsStateLength;
 
 // Types
 typedef enum __ContactType
@@ -55,9 +79,9 @@ typedef struct __ContactorsStateTableItem
 #define CT_SAVE_TIMEOUT			1800000 // Значение в мс (30 мин)
 
 //Inner Relays
-#define PWR_L_TO_GND		0
-#define PWR_C_TO_GND		0
-#define PWR_H_TO_GND		0
+#define PWR_L_TO_PE		0
+#define PWR_C_TO_PE		0
+#define PWR_H_TO_PE		0
 // LCTU
 #define LCTU_PLUS_TO_PWR_H	0
 #define LCTU_PLUS_TO_PWR_C	0
@@ -122,8 +146,9 @@ static ContactorsStateTableItem ContactorsStateTable[CONTACTORS_STATE_TABLE_SIZE
 		//{BIT5, REG2, BIT4, REG2}						// 12	// BUS3 to TOCU+
 };
 
-// Main Commutation to GND
-static const Int8U CT_DISCON_GND[] = {PWR_L_TO_GND, PWR_C_TO_GND, PWR_H_TO_GND};
+// Disconnect PE
+static const Int8U __CT_DISCON_PE[] = {PWR_L_TO_PE, PWR_C_TO_PE, PWR_H_TO_PE};
+#define CT_DISCON_PE	NULL		// Дефайн-заглушка
 
 // UCE_SAT commutations
 static const Int8U CT_UCESAT_POS1_GROUP_GREEN[] = {LCSU_PLUS_TO_PWR_C, LCSU_MINUS_TO_PWR_L};
@@ -143,11 +168,5 @@ static const Int8U CT_ICES_POS1_GROUP_BLUE[] = {LCTU_PLUS_TO_PWR_H, LCTU_MINUS_T
 static const Int8U CT_ICES_POS2_GROUP_BLUE[] = {LCTU_PLUS_TO_PWR_H, LCTU_MINUS_TO_PWR_C};
 static const Int8U CT_ICES_POS2_GROUP_ORANGE[] = {LCTU_PLUS_TO_PWR_H, LCTU_MINUS_TO_PWR_L};
 static const Int8U CT_ICES_POS2_GROUP_PURPLE[] = {LCTU_PLUS_TO_PWR_C, LCTU_MINUS_TO_PWR_H};
-
-// 301 arrays
-// Default DataArrays
-//
-static const Int8U CT_DFLT_Relays[] = {0, 0};
-static const Int8U CT_DFLT_Contactors[] = {0, 0};
 
 #endif // __COMMTABLE_H
