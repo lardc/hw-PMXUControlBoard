@@ -16,7 +16,6 @@
 // Variables
 //
 CommutationState COMM_State = COMM_Def;
-Int64U CT_SaveTimer = 0;
 
 // Forward declarations
 //

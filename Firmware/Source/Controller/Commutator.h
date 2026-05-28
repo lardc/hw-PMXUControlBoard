@@ -55,7 +55,6 @@ typedef enum __CommutationState
 // Variables
 //
 extern CommutationState COMM_State;
-extern Int64U CT_SaveTimer;
 
 // Functions
 void COMM_SwitchToPE();
