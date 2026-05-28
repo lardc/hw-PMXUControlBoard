@@ -49,7 +49,7 @@ void CONTROL_LogicProcess();
 void CONTROL_PressureCheck();
 void CONTROL_SafetyCheck();
 void CONTROL_SafetyIrqTick();
-bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition);
+bool CONTROL_CheckContactors();
 void CONTROL_CheckContactorsProcess();
 void CONTROL_InitStoragePointers();
 
@@ -114,7 +114,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 {
 	CONTROL_SaveLastRequest(LastActionID);
 	COMM_SwitchToPE();
-	LL_SetStateSFT_ENABLE(true);
+	LL_SafetyForceRelaysOff(true);
 	LastActionID = ACT_COMM_PE;
 	CONTROL_SetDeviceState(DS_Fault, DSS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
@@ -178,7 +178,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_None)
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				LL_SetStateSFT_ENABLE(false);
+				LL_SafetyForceRelaysOff(false);
 				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
 			}
 			else if(CONTROL_State != DS_Enabled)
@@ -202,7 +202,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Fault)
 			{
 				COMM_SwitchToPE();
-				LL_SetStateSFT_ENABLE(false);
+				LL_SafetyForceRelaysOff(false);
 				CONTROL_SetDeviceState(DS_None, DSS_None);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
@@ -306,35 +306,6 @@ void CONTROL_CheckContactorsProcess()
 }
 //-----------------------------------------------
 
-bool CONTROL_CheckContactorsStates(const Int8U CommArray[], Int8U Length)
-{
-	Int8U ErrorCode = ZcRD_CommutationCheck((Int8U *)CommArray, Length);
-
-	if(ErrorCode != COMM_CHECK_NO_ERROR)
-	{
-		DataTable[REG_FAILED_CONTACTOR] = ErrorCode;
-		return false;
-	}
-
-	return true;
-}
-//-----------------------------------------------
-
-void CONTROL_CheckContactorsCounter()
-{
-	for(Int8U i = 0; i < NUM_CONTACTOR_COMMUTATIONS; i++)
-	{
-		if(ZcRD_ContactorsCommCounter[i] >= DataTable[REG_MAX_CONT_COMMUTATIONS])
-		{
-			ZcRD_ContactorsCommCounter[i] = 0;
-			CONTROL_ContactorsCheck = TRUE;
-			DataTable[REG_PROBLEM] = i + 1;
-			return;
-		}
-	}
-}
-//-----------------------------------------------
-
 void CONTROL_UpdateWatchDog()
 {
 	if(BOOT_LOADER_VARIABLE != BOOT_LOADER_REQUEST)
@@ -413,9 +384,8 @@ void CONTROL_SafetyCheck()
 	{
 		SafetyFlushPending = false;
 
-		LL_SetStateSFT_ENABLE(true);
-		ZcRD_ApplySafetyReset();
-		COMM_State = COMM_Def;
+		LL_SafetyForceRelaysOff(true);
+		COMM_SwitchToPE();
 		LastActionID = ACT_COMM_PE;
 
 		if(DataTable[REG_SAFETY_ACTIVE])
@@ -440,164 +410,8 @@ void CONTROL_SafetyIrqTick()
 }
 //-----------------------------------------------
 
-bool CONTROL_CheckContactors(Int16U ActionID, Int16U DUTPosition)
+bool CONTROL_CheckContactors()
 {
-	switch(ActionID)
-	{
-		case ACT_COMM_PE:
-			return CONTROL_CheckContactorsStates_macro(CT_DFLT_Contactors);
-			break;
-
-		case ACT_COMM_NO_PE:
-			return CONTROL_CheckContactorsStates_macro(CT_DISCON_GND);
-			break;
-
-		case ACT_COMM_VCESAT:
-			if(DUTPosition == DUT_POS1)
-			{
-				switch(LastDevCase)
-				{
-					case MIAA_CE:
-					case MIAA_HB:
-					case MIAA_LC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_LC:
-					case MIHA_HB:
-					case MIHA_LC:
-					case MIHM_SS:
-					case MIHV_SS:
-					case MISM_CH:
-					case MISM_DS:
-					case MISM_SS:
-					case MISV_SS:
-					case MIXM_HB:
-					case MIXM_LR_LRD:
-					case MIXV_HB:
-						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS1_GROUP_GREEN);
-						break;
-					default:
-						break;
-				}
-			}
-			else if(DUTPosition == DUT_POS2)
-			{
-				switch(LastDevCase)
-				{
-					case MIAA_CE:
-						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS2_GROUP_ORANGE);
-						break;
-					case MIAA_HB:
-					case MIAA_HC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_HC:
-					case MIHA_HB:
-					case MIHA_HC:
-					case MISM_DS:
-					case MIXM_HB:
-					case MIXV_HB:
-						return CONTROL_CheckContactorsStates_macro(CT_UCESAT_POS2_GROUP_BLUE);
-						break;
-					default:
-						break;
-				}
-			}
-			break;
-
-		case ACT_COMM_VF:
-		case ACT_COMM_ICES_OR_IRRM:
-			if(DUTPosition == DUT_POS1)
-			{
-				switch(LastDevCase)
-				{
-					case MIFA_SD:
-						if(ActionID == ACT_COMM_VF)
-							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS1_GROUP_BLUE);
-						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS1_GROUP_BLUE);
-						break;
-					case MIAA_CE:
-					case MIAA_HB:
-					case MIAA_LC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_LC:
-					case MIHA_HB:
-					case MIHA_LC:
-					case MIHM_SS:
-					case MIHV_SS:
-					case MISM_CH:
-					case MISM_DS:
-					case MISM_SS:
-					case MISV_SS:
-					case MIXM_HB:
-					case MIXM_LR_LRD:
-					case MIXV_HB:
-					case MDAA_DD:
-					case MDDA_DD:
-					case MDFA_DD:
-					case MDSM_SD:
-					case MDSV_SD:
-					case MIAA_HC:
-					case MIFA_HC:
-					case MIHA_HC:
-						if(ActionID == ACT_COMM_VF)
-							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS1_GROUP_GREEN);
-						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS1_GROUP_GREEN);
-						break;
-					default:
-						break;
-				}
-			}
-			else if(DUTPosition == DUT_POS2)
-			{
-				switch(LastDevCase)
-				{
-					case MIAA_CE:
-						if(ActionID == ACT_COMM_VF)
-							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS2_GROUP_ORANGE);
-						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS2_GROUP_ORANGE);
-						break;
-					case MDSM_SD:
-					case MDSV_SD:
-					case MIXM_LR_LRD:
-						if(ActionID == ACT_COMM_VF)
-							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS2_GROUP_PURPLE);
-						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS2_GROUP_PURPLE);
-						break;
-					case MIAA_HB:
-					case MIAA_HC:
-					case MIDA_HB:
-					case MIFA_HB:
-					case MIFA_HC:
-					case MIHA_HB:
-					case MIHA_HC:
-					case MISM_DS:
-					case MIXM_HB:
-					case MIXV_HB:
-					case MDAA_DD:
-					case MDDA_DD:
-					case MDFA_DD:
-					case MIAA_LC:
-					case MIFA_LC:
-					case MIHA_LC:
-					case MISM_CH:
-						if(ActionID == ACT_COMM_VF)
-							return CONTROL_CheckContactorsStates_macro(CT_UFW_POS2_GROUP_BLUE);
-						else if(ActionID == ACT_COMM_ICES_OR_IRRM)
-							return CONTROL_CheckContactorsStates_macro(CT_ICES_POS2_GROUP_BLUE);
-						break;
-					default:
-						break;
-				}
-			}
-			break;
-	}
-
 	return false;
 }
 //-----------------------------------------------
