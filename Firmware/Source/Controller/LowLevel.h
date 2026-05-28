@@ -13,12 +13,10 @@ void LL_ToggleFPLed();
 bool LL_IsSafetyTrig();
 //
 // OE сдвиговых регистров SPI1 через GPIO_SFT_ENABLE.
-// Enable=false → пин притянут к GND (OE разрешён); Enable=true → high-Z (OE запрещён)
-void LL_SetStateSFT_ENABLE(bool Enable);
-//
-void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting GPIO_SS);
-void LL_SafetyResetSPI1();
-void LL_ReadSPI2(volatile uint8_t* SPI_Data);
+// State=false → пин притянут к GND (OE разрешён); State=true → high-Z (OE запрещён)
+void LL_SafetyForceRelaysOff(bool State);
+void LL_SPI_WriteByte(Int8U Data);
+void LL_SPI_ReadArray(pInt8U Array, Int8U Len);
 float LL_MeasurePressureADCVoltage();
 
 #endif //__LOWLEVEL_H

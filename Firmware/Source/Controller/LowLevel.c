@@ -32,54 +32,27 @@ bool LL_IsSafetyTrig()
 }
 //-----------------------------
 
-void LL_SetStateSFT_ENABLE(bool Enable)
+void LL_SafetyForceRelaysOff(bool State)
 {
-	GPIO_SetState(GPIO_SFT_ENABLE, Enable);
+	GPIO_SetState(GPIO_SFT_ENABLE, State);
 }
 //-----------------------------
 
-void LL_WriteSPI1(uint8_t SPI_Data[], uint8_t Data_Length, GPIO_PortPinSetting GPIO_SS)
+void LL_SPI_WriteByte(Int8U Data)
 {
-	LL_SetStateSFT_ENABLE(true);
-	GPIO_SetState(GPIO_SS, false);
-	for(int i = Data_Length - 1; i >= 0; i--)
-		SPI_WriteByte8b(SPI1, SPI_Data[i]);
-	GPIO_SetState(GPIO_SS, true);
-	DELAY_US(1);
-	GPIO_SetState(GPIO_SS, false);
-	LL_SetStateSFT_ENABLE(false);
+	SPI_WriteByte8b(SPI1, Data);
 }
 //-----------------------------
 
-void LL_SafetyResetSPI1()
-{
-	LL_SetStateSFT_ENABLE(true);
-
-	GPIO_SetState(GPIO_SPI1_SS_REL, false);
-	for(int i = SPI1_ARRAY_LEN_RELAYS - 1; i >= 0; i--)
-		SPI_WriteByte8b(SPI1, 0);
-	GPIO_SetState(GPIO_SPI1_SS_REL, true);
-	DELAY_US(1);
-	GPIO_SetState(GPIO_SPI1_SS_REL, false);
-
-	GPIO_SetState(GPIO_SPI1_SS_CONT, false);
-	for(int i = SPI1_ARRAY_LEN_CONTACTORS - 1; i >= 0; i--)
-		SPI_WriteByte8b(SPI1, 0);
-	GPIO_SetState(GPIO_SPI1_SS_CONT, true);
-	DELAY_US(1);
-	GPIO_SetState(GPIO_SPI1_SS_CONT, false);
-}
-//-----------------------------
-
-void LL_ReadSPI2(volatile uint8_t* SPI_Data)
+void LL_SPI_ReadArray(pInt8U Array, Int8U Len)
 {
 	GPIO_SetState(GPIO_SPI2_LD, false);
 	DELAY_US(1);
 	GPIO_SetState(GPIO_SPI2_LD, true);
 
 	GPIO_SetState(GPIO_SPI2_OE, false);
-	for(int i = 0; i < SPI2_ARRAY_LEN; i++)
-		SPI_Data[i] = SPI_ReadByte8b(SPI2);
+	for(int i = 0; i < Len; i++)
+		Array[i] = SPI_ReadByte8b(SPI2);
 
 	GPIO_SetState(GPIO_SPI2_OE, true);
 }
