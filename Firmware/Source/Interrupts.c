@@ -51,20 +51,3 @@ void TIM7_IRQHandler()
 	}
 }
 //-----------------------------------------
-
-void TIM8_IRQHandler()
-{
-	if(TIM_StatusCheck(TIM8))
-	{
-		CONTROL_CheckContactorsCounter();
-		TIM_StatusClear(TIM8);
-	}
-}
-//-----------------------------------------
-
-void EXTI9_5_IRQHandler()
-{
-	//
-	EXTI_FlagReset(EXTI_6);
-}
-//-----------------------------------------

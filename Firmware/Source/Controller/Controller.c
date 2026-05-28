@@ -29,7 +29,6 @@ volatile DeviceSubState CONTROL_SubState = DSS_None;
 static Boolean CycleActive = false;
 static Boolean RequestSaveToFlash = FALSE;
 volatile Int64U CONTROL_TimeCounter = 0;
-static Boolean CONTROL_ContactorsCheck;
 Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
 ModuleTypes LastDevCase = Module_None;
@@ -82,6 +81,8 @@ void CONTROL_Init()
 
 void CONTROL_Idle()
 {
+	static Int64U CT_SaveTimer = 0;
+
 	if (CONTROL_TimeCounter - CT_SaveTimer >= CT_SAVE_TIMEOUT)
 	{
 		STF_SaveCounterData();

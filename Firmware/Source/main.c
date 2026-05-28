@@ -17,9 +17,6 @@ int main()
 	// Настройка CAN (BCCI)
 	INITCFG_ConfigCAN();
 
-	// Настройка внешних прерываний
-	INITCFG_ConfigExtInterrupt();
-
 	// Настройка UART
 	INITCFG_ConfigUART();
 	

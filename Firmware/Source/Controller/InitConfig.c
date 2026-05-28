@@ -44,20 +44,12 @@ void INITCFG_ConfigIO()
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_UART1_RX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_UART1_TX, AltFn_7);
-	GPIO_InitAltFunction(GPIO_ALT_CAN1_RX, AltFn_9);
-	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX, AltFn_9);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_RX,  AltFn_9);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX,  AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_DAT, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI2_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI2_DAT, AltFn_5);
-}
-//------------------------------------------------
-
-void INITCFG_ConfigExtInterrupt()
-{
-	// Вход контура безопасности 
-	EXTI_Config(EXTI_PA, EXTI_6, RISE_TRIG, 0);
-	EXTI_EnableInterrupt(EXTI9_5_IRQn, 0, true);
 }
 //------------------------------------------------
 
@@ -83,15 +75,6 @@ void INITCFG_ConfigTimer7()
 	TIM_Config(TIM7, SYSCLK, TIMER7_uS);
 	TIM_Interupt(TIM7, 2, true);
 	TIM_Start(TIM7);
-}
-//------------------------------------------------
-
-void INITCFG_ConfigTimer8()
-{
-	TIM_Clock_En(TIM_8);
-	TIM_Config(TIM8, SYSCLK, TIMER8_uS);
-	TIM_Interupt(TIM8, 3, true);
-	TIM_Start(TIM8);
 }
 //------------------------------------------------
 
