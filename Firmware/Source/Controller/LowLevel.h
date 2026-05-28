@@ -17,6 +17,8 @@ bool LL_IsSafetyTrig();
 void LL_SafetyForceRelaysOff(bool State);
 void LL_SPI_WriteByte(Int8U Data);
 void LL_SPI_ReadArray(pInt8U Array, Int8U Len);
+void LL_SPI_LatchBoard(Int8U BoardIdx);
+void LL_SPI_TestSS(Int8U BoardIdx);
 float LL_MeasurePressureADCVoltage();
 
 #endif //__LOWLEVEL_H

@@ -44,6 +44,35 @@ void LL_SPI_WriteByte(Int8U Data)
 }
 //-----------------------------
 
+void LL_SPI_LatchBoardTemplate(Int8U BoardIdx, Int32U PulseLen)
+{
+	GPIO_PortPinSetting SS;
+	switch(BoardIdx)
+	{
+		case 0:  SS = GPIO_SPI1_SS_CONT; break;
+		case 1:  SS = GPIO_SPI1_SS_REL; break;
+	}
+
+	DELAY_US(TIME_SPI_DELAY);
+	GPIO_SetState(SS, false);
+	(PulseLen > 1000) ? DELAY_MS(PulseLen / 1000) : DELAY_US(PulseLen);
+	GPIO_SetState(SS, true);
+	DELAY_US(TIME_SPI_DELAY);
+}
+//-----------------------------
+
+void LL_SPI_LatchBoard(Int8U BoardIdx)
+{
+	LL_SPI_LatchBoardTemplate(BoardIdx, TIME_SPI_DELAY);
+}
+//-----------------------------
+
+void LL_SPI_TestSS(Int8U BoardIdx)
+{
+	LL_SPI_LatchBoardTemplate(BoardIdx, 100000);
+}
+//-----------------------------
+
 void LL_SPI_ReadArray(pInt8U Array, Int8U Len)
 {
 	GPIO_SetState(GPIO_SPI2_LD, false);
