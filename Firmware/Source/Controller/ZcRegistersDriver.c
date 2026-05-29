@@ -40,7 +40,6 @@ void ZcRD_RegisterReset()
 	// Set values to zero
 	ZcRD_OutputValuesReset();
 	ZcRD_RegisterFlushWrite();
-	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
 
@@ -72,13 +71,25 @@ void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn)
 		CurrentOutputValues[RegNum] |= BitMask;
 	else
 		CurrentOutputValues[RegNum] &= ~BitMask;
+
+	for(uint8_t i = 0; i < SensorsStateLength; i++)
+	{
+		if(SensorsState[i].Index == TableID)
+		{
+			SensorsState[i].IsClosed = TurnOn;
+			break;
+		}
+	}
 }
 // ----------------------------------------
 
 void ZcRD_OutputValuesReset()
 {
-	for (uint8_t i = 0; i < NUM_REGS_TOTAL; ++i)
+	for(uint8_t i = 0; i < NUM_REGS_TOTAL; i++)
 		CurrentOutputValues[i] = 0;
+
+	for(uint8_t i = 0; i < SensorsStateLength; i++)
+		SensorsState[i].IsClosed = false;
 }
 // ----------------------------------------
 

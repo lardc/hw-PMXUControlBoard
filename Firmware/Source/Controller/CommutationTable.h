@@ -22,11 +22,11 @@
 // Types
 typedef struct __ContactorSensorState
 {
-	Int8U Index;
-	Int8U SensorRegNumClose;
-	Int8U SensorBitClose;
-	Int8U SensorRegNumOpen;
-	Int8U SensorBitOpen;
+	const Int8U Index;
+	const Int8U SensorRegNumClose;
+	const Int8U SensorBitClose;
+	const Int8U SensorRegNumOpen;
+	const Int8U SensorBitOpen;
 	bool IsClosed;
 } ContactorSensorState;
 
