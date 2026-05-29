@@ -158,7 +158,7 @@ void CONTROL_InitStoragePointers()
 {
 	Int16U idx = 0;
 
-	for (Int16U i = 0; i < INNER_COMMUTATION_TABLE_SIZE; ++i)
+	for (Int16U i = 0; i < NUM_REGS_TOTAL; ++i)
 		STF_AssignCounterPointer(i, (Int32U)&CycleCounters[i]);
 
 	STF_AssignPointer(idx++, (Int32U)&CONTROL_State);
