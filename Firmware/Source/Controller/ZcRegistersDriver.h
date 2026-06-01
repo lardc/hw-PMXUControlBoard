@@ -34,5 +34,7 @@ void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn);
 void ZcRD_OutputValuesComposeArray(const Int8U* Array, Int8U ArrayLength);
 // Reset cached values to zero
 void ZcRD_OutputValuesReset();
+// Сверка датчиков SPI2 с IsClosed; 0 — ок, иначе битовая маска (бит = Index контактора)
+Int32U ZcRD_CommutationCheck();
 
 #endif // __ZBIOEXPANSION_H
