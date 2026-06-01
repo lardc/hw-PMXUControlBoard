@@ -33,7 +33,6 @@ Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
 ModuleTypes LastDevCase = Module_None;
 bool FPledForcedLight = false;
-static bool PrevSafetyTrig = false;
 static volatile bool SafetyFlushPending = false;
 static Int64U Timeout = 0;
 volatile Int16U CONTROL_DiagCounter = 0;
@@ -425,10 +424,14 @@ void CONTROL_SafetyCheck()
 
 void CONTROL_SafetyIrqTick()
 {
+	static bool PrevSafetyTrig = false;
 	bool SafetyTrig = LL_IsSafetyTrig();
 
 	if(SafetyTrig && !PrevSafetyTrig)
+	{
 		SafetyFlushPending = true;
+		LL_SafetyForceRelaysOff(true);
+	}
 
 	PrevSafetyTrig = SafetyTrig;
 }
