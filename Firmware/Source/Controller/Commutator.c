@@ -202,8 +202,6 @@ void COMM_Commutate(Int16U ActionID)
 		case ACT_COMM_ICES_OR_IRRM:
 		case ACT_COMM_VF:
 			COMM_State = (ActionID == ACT_COMM_ICES_OR_IRRM) ? COMM_IcesOrIrrm : COMM_Uf;
-
-			ZcRD_Commutate_macro(CT_DISCON_PE);
 			if(DUTPosition == DUT_POS1)
 			{
 				switch(Module)
@@ -296,8 +294,6 @@ void COMM_Commutate(Int16U ActionID)
 
 		case ACT_COMM_VCESAT:
 			COMM_State = COMM_Ucesat;
-
-			ZcRD_Commutate_macro(CT_DISCON_PE);
 			if(DUTPosition == DUT_POS1)
 			{
 				switch(Module)
