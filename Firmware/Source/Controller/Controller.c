@@ -304,12 +304,15 @@ void CONTROL_CheckContactorsProcess()
 
 		case CP_CheckSetTimer:
 			Timeout = CONTROL_TimeCounter + TIME_CONTACTOR_TIMEOUT;
-			CONTROL_ContactorState = CP_CheckTimed;
+			CONTROL_SetDeviceSubState(CP_CheckTimed);
 			break;
 
 		case CP_CheckTimed:
 			if(CONTROL_CheckContactors())
+			{
 				CONTROL_SetDeviceSubState(CP_IdleCheck);
+				break;
+			}
 
 			if(CONTROL_TimeCounter >= Timeout)
 			{
@@ -442,7 +445,10 @@ bool CONTROL_CheckContactors()
 	Int32U Mask = ZcRD_CommutationCheck();
 
 	if(Mask == 0)
+	{
+		DataTable[REG_FAILED_CONTACTOR] = 0;
 		return true;
+	}
 
 	DataTable[REG_FAILED_CONTACTOR] = (float)Mask;
 
