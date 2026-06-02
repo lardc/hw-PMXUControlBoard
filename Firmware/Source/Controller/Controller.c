@@ -34,7 +34,6 @@ Int16U LastDUTposition = DUT_POS1;
 ModuleTypes LastDevCase = Module_None;
 bool FPledForcedLight = false;
 static volatile bool SafetyFlushPending = false;
-static Int64U Timeout = 0;
 volatile Int16U CONTROL_DiagCounter = 0;
 //
 volatile float CONTROL_DiagData[VALUES_DIAG_SIZE];
@@ -289,6 +288,7 @@ void CONTROL_LogicProcess()
 
 void CONTROL_CheckContactorsProcess()
 {
+	static Int64U Timeout = 0;
 	switch(CONTROL_ContactorState)
 	{
 		case CP_IdleCheck:
@@ -309,20 +309,11 @@ void CONTROL_CheckContactorsProcess()
 
 		case CP_CheckTimed:
 			if(CONTROL_CheckContactors())
-			{
 				CONTROL_SetDeviceSubState(CP_IdleCheck);
-				break;
-			}
-
-			if(CONTROL_TimeCounter >= Timeout)
+			else if(CONTROL_TimeCounter >= Timeout)
 			{
-				if(CONTROL_CheckContactors())
-					CONTROL_SetDeviceSubState(CP_IdleCheck);
-				else
-				{
-					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-				}
+				CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 			}
 			break;
 
@@ -444,15 +435,7 @@ void CONTROL_SafetyIrqTick()
 bool CONTROL_CheckContactors()
 {
 	Int32U Mask = ZcRD_CommutationCheck();
-
-	if(Mask == 0)
-	{
-		DataTable[REG_FAILED_CONTACTOR] = 0;
-		return true;
-	}
-
-	DataTable[REG_FAILED_CONTACTOR] = (float)Mask;
-
-	return false;
+	DataTable[REG_FAILED_CONTACTOR] = Mask;
+	return Mask == 0;
 }
 //-----------------------------------------------

@@ -77,6 +77,10 @@
 #define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
 #define REG_FAILED_CONTACTOR					202	// Битовая маска контакторов ПЦ в неверном положении (бит = Index)
 
+#define REG_SENSOR_SPI2_BYTE0					203	// Сырой байт 0 сдвигового регистра SPI2 (датчики ПЦ)
+#define REG_SENSOR_SPI2_BYTE1					204	// Сырой байт 1 SPI2
+#define REG_SENSOR_SPI2_BYTE2					205	// Сырой байт 2 SPI2
+
 #define REG_LAST_CMD							252	// Код последней коммутации
 #define REG_LAST_POS							253	// Позиция DUT на момент последней коммутации
 #define REG_LAST_CASE							254	// Тип корпуса DUT

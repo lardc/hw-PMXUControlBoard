@@ -156,6 +156,10 @@ Int32U ZcRD_CommutationCheck()
 
 	LL_SPI_ReadArray(SensorRegs, NUM_REGS_SENSORS_SPI2);
 
+	DataTable[REG_SENSOR_SPI2_BYTE0] = (float)SensorRegs[0];
+	DataTable[REG_SENSOR_SPI2_BYTE1] = (float)SensorRegs[1];
+	DataTable[REG_SENSOR_SPI2_BYTE2] = (float)SensorRegs[2];
+
 	for(Int16U i = 0; i < SensorsStateLength; ++i)
 	{
 		if(!ZcRD_IsSensorMatching(&SensorsState[i], SensorRegs))
