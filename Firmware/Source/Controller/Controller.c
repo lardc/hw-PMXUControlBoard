@@ -410,6 +410,7 @@ void CONTROL_SafetyCheck()
 	{
 		SafetyFlushPending = false;
 
+		CONTROL_SetDeviceSubState(CP_None);
 		LL_SafetyForceRelaysOff(true);
 		COMM_SwitchToPE();
 		LastActionID = ACT_COMM_PE;
