@@ -237,6 +237,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
+				DataTable[REG_OP_RESULT] = OPRESULT_NONE;
+
 				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
 					CONTROL_FinishedWithProblem(PROBLEM_INCORRECT_DUT);
@@ -299,6 +301,8 @@ void CONTROL_CheckContactorsProcess()
 					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				}
+				else
+					DataTable[REG_OP_RESULT] = OPRESULT_OK;
 			}
 			break;
 
@@ -309,7 +313,10 @@ void CONTROL_CheckContactorsProcess()
 
 		case CP_CheckTimed:
 			if(CONTROL_CheckContactors())
+			{
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 				CONTROL_SetDeviceSubState(CP_IdleCheck);
+			}
 			else if(CONTROL_TimeCounter >= Timeout)
 			{
 				CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
