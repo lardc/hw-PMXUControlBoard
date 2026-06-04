@@ -130,3 +130,42 @@ static void ZcRD_ShiftAndLatch(Int8U CS, Int8U FirstReg, Int8U RegCount)
 	LL_SPI_LatchBoard(CS);
 }
 // ----------------------------------------
+
+static bool ZcRD_GetSensorBit(const Int8U* SensorRegs, Int8U RegNum, Int8U BitMask)
+{
+	return (SensorRegs[RegNum] & BitMask) != 0;
+}
+// ----------------------------------------
+
+static bool ZcRD_IsSensorMatching(const ContactorSensorState* Sensor, const Int8U* SensorRegs)
+{
+	bool CloseBit = ZcRD_GetSensorBit(SensorRegs, Sensor->SensorRegNumClose, Sensor->SensorBitClose);
+	bool OpenBit = ZcRD_GetSensorBit(SensorRegs, Sensor->SensorRegNumOpen, Sensor->SensorBitOpen);
+
+	if(Sensor->IsClosed)
+		return CloseBit && !OpenBit;
+
+	return !CloseBit && OpenBit;
+}
+// ----------------------------------------
+
+Int32U ZcRD_CommutationCheck()
+{
+	Int8U SensorRegs[NUM_REGS_SENSORS_SPI2];
+	Int32U Mask = 0;
+
+	LL_SPI_ReadArray(SensorRegs, NUM_REGS_SENSORS_SPI2);
+
+	DataTable[REG_SENSOR_SPI2_BYTE0] = (float)SensorRegs[0];
+	DataTable[REG_SENSOR_SPI2_BYTE1] = (float)SensorRegs[1];
+	DataTable[REG_SENSOR_SPI2_BYTE2] = (float)SensorRegs[2];
+
+	for(Int16U i = 0; i < SensorsStateLength; ++i)
+	{
+		if(!ZcRD_IsSensorMatching(&SensorsState[i], SensorRegs))
+			Mask |= (Int32U)(1UL << SensorsState[i].Index);
+	}
+
+	return Mask;
+}
+// ----------------------------------------

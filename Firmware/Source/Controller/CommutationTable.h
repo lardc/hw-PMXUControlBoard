@@ -19,6 +19,8 @@
 
 #define CT_SAVE_TIMEOUT				1800000 // Значение в мс (30 мин)
 
+#define NUM_REGS_SENSORS_SPI2		3		// Байт SPI2 
+
 // Types
 typedef struct __ContactorSensorState
 {

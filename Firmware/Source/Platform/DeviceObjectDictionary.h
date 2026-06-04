@@ -75,7 +75,11 @@
 
 #define REG_PRESSURE							200	// Давление, Бар
 #define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
-#define REG_FAILED_CONTACTOR					202	// Номер контактора/реле, в котором обнаружен отказ
+#define REG_FAILED_CONTACTOR					202	// Битовая маска контакторов ПЦ в неверном положении (бит = Index)
+
+#define REG_SENSOR_SPI2_BYTE0					203	// Сырой байт 0 сдвигового регистра SPI2 (датчики ПЦ)
+#define REG_SENSOR_SPI2_BYTE1					204	// Сырой байт 1 SPI2
+#define REG_SENSOR_SPI2_BYTE2					205	// Сырой байт 2 SPI2
 
 #define REG_LAST_CMD							252	// Код последней коммутации
 #define REG_LAST_POS							253	// Позиция DUT на момент последней коммутации
@@ -96,7 +100,7 @@
 //  Fault and disable codes
 #define DF_NONE									0
 #define DF_SELFT_TEST							1	// Проблема с реле/контактором во время самотестирования
-#define DF_CONTACTOR_FAULT						2	// Проблема с контактором, номер неисправного контактора в регистре REG_FAILED_CONTACTOR
+#define DF_CONTACTOR_FAULT						2	// Проблема с контактором, маска неисправных в REG_FAILED_CONTACTOR
 #define DF_LOW_PRESSURE							3	// Низкое давление в пневмосистеме
 
 // Problem

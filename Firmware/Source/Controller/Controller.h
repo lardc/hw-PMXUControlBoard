@@ -22,16 +22,19 @@ typedef enum __DeviceState
 	DS_InProcess		= 7
 } DeviceState;
 
-typedef enum __DeviceSubState
+typedef enum __ContactorProcess
 {
-	DSS_None = 0
-} DeviceSubState;
+	CP_None 			= 0,
+	CP_IdleCheck 		= 1,
+	CP_CheckSetTimer	= 2,
+	CP_CheckTimed		= 3
+} ContactorProcess;
 
 // Variables
 //
 extern volatile Int64U CONTROL_TimeCounter;
 extern volatile DeviceState CONTROL_State;
-extern volatile DeviceSubState CONTROL_SubState;
+extern volatile ContactorProcess CONTROL_ContactorState;
 extern Int64U CONTROL_LEDTimeout;
 extern bool FPledForcedLight;
 extern volatile Int16U CONTROL_DiagCounter;
@@ -45,8 +48,8 @@ void CONTROL_Idle();
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_FinishedWithProblem(Int16U Problem);
 void CONTROL_SafetyIrqTick();
-void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
+void CONTROL_SetDeviceState(DeviceState NewState, ContactorProcess NewSubState);
+void CONTROL_SetDeviceSubState(ContactorProcess NewSubState);
 void CONTROL_ResetToDefaultState();
 bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_LogicProcess();

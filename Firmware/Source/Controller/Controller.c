@@ -25,7 +25,7 @@ typedef void (*FUNC_AsyncDelegate)();
 // Variables
 //
 volatile DeviceState CONTROL_State = DS_None;
-volatile DeviceSubState CONTROL_SubState = DSS_None;
+volatile ContactorProcess CONTROL_ContactorState = CP_None;
 static Boolean CycleActive = false;
 static Boolean RequestSaveToFlash = FALSE;
 volatile Int64U CONTROL_TimeCounter = 0;
@@ -33,7 +33,6 @@ Int16U LastActionID = ACT_COMM_PE;
 Int16U LastDUTposition = DUT_POS1;
 ModuleTypes LastDevCase = Module_None;
 bool FPledForcedLight = false;
-static bool PrevSafetyTrig = false;
 static volatile bool SafetyFlushPending = false;
 volatile Int16U CONTROL_DiagCounter = 0;
 //
@@ -117,7 +116,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	COMM_SwitchToPE();
 	LL_SafetyForceRelaysOff(true);
 	LastActionID = ACT_COMM_PE;
-	CONTROL_SetDeviceState(DS_Fault, DSS_None);
+	CONTROL_SetDeviceState(DS_Fault, CP_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 }
 //------------------------------------------
@@ -130,19 +129,19 @@ void CONTROL_FinishedWithProblem(Int16U Problem)
 }
 //------------------------------------------
 
-void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState)
+void CONTROL_SetDeviceState(DeviceState NewState, ContactorProcess NewSubState)
 {
 	CONTROL_State = NewState;
 	DataTable[REG_DEV_STATE] = NewState;
 
-	CONTROL_SubState = NewSubState;
+	CONTROL_ContactorState = NewSubState;
 	DataTable[REG_SUB_STATE] = NewSubState;
 }
 //------------------------------------------
 
-void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
+void CONTROL_SetDeviceSubState(ContactorProcess NewSubState)
 {
-	CONTROL_SubState = NewSubState;
+	CONTROL_ContactorState = NewSubState;
 	DataTable[REG_SUB_STATE] = NewSubState;
 }
 //------------------------------------------
@@ -150,7 +149,7 @@ void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
 void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
-	CONTROL_SetDeviceState(DS_None, DSS_None);
+	CONTROL_SetDeviceState(DS_None, CP_None);
 }
 //------------------------------------------
 
@@ -180,7 +179,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
 				LL_SafetyForceRelaysOff(false);
-				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+				CONTROL_SetDeviceState(DS_Enabled, CP_None);
 			}
 			else if(CONTROL_State != DS_Enabled)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -193,7 +192,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				LL_SetStateFPLed(false);
 				LastActionID = ACT_COMM_PE;
 
-				CONTROL_SetDeviceState(DS_None, DSS_None);
+				CONTROL_SetDeviceState(DS_None, CP_None);
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -204,7 +203,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				COMM_SwitchToPE();
 				LL_SafetyForceRelaysOff(false);
-				CONTROL_SetDeviceState(DS_None, DSS_None);
+				CONTROL_SetDeviceState(DS_None, CP_None);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
 			break;
@@ -215,7 +214,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_SET_ACTIVE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
-				CONTROL_SetDeviceState(DS_SafetyActive, DSS_None);
+				CONTROL_SetDeviceState(DS_SafetyActive, CP_None);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
@@ -224,7 +223,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
 				LL_SetStateFPLed(false);
-				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+				CONTROL_SetDeviceState(DS_Enabled, CP_None);
 			}
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
@@ -238,6 +237,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_COMM_NO_PE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive)
 			{
+				DataTable[REG_OP_RESULT] = OPRESULT_NONE;
+
 				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
 					CONTROL_FinishedWithProblem(PROBLEM_INCORRECT_DUT);
@@ -251,14 +252,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_SaveLastRequest(ActionID);
 				LastDUTposition = DataTable[REG_DUT_POSITION];
 				LastDevCase = COMM_CalcModuleType();
-
-				if(CONTROL_CheckContactors(LastActionID, LastDUTposition))
-					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
-				else
-				{
-					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-				}
+				CONTROL_SetDeviceState(CONTROL_State, CP_CheckSetTimer);
 			}
 			else if(CONTROL_State == DS_None)
 				*pUserError = ERR_DEVICE_NOT_READY;
@@ -296,13 +290,42 @@ void CONTROL_LogicProcess()
 
 void CONTROL_CheckContactorsProcess()
 {
-	if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
+	static Int64U Timeout = 0;
+	switch(CONTROL_ContactorState)
 	{
-		if(!CONTROL_CheckContactors(LastActionID, LastDUTposition))
-		{
-			CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		}
+		case CP_IdleCheck:
+			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
+			{
+				if(!CONTROL_CheckContactors())
+				{
+					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				}
+				else
+					DataTable[REG_OP_RESULT] = OPRESULT_OK;
+			}
+			break;
+
+		case CP_CheckSetTimer:
+			Timeout = CONTROL_TimeCounter + TIME_CONTACTOR_TIMEOUT;
+			CONTROL_SetDeviceSubState(CP_CheckTimed);
+			break;
+
+		case CP_CheckTimed:
+			if(CONTROL_CheckContactors())
+			{
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
+				CONTROL_SetDeviceSubState(CP_IdleCheck);
+			}
+			else if(CONTROL_TimeCounter >= Timeout)
+			{
+				CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			}
+			break;
+
+		default:
+			break;
 	}
 }
 //-----------------------------------------------
@@ -385,6 +408,7 @@ void CONTROL_SafetyCheck()
 	{
 		SafetyFlushPending = false;
 
+		CONTROL_SetDeviceSubState(CP_None);
 		LL_SafetyForceRelaysOff(true);
 		COMM_SwitchToPE();
 		LastActionID = ACT_COMM_PE;
@@ -392,7 +416,7 @@ void CONTROL_SafetyCheck()
 		if(DataTable[REG_SAFETY_ACTIVE])
 		{
 			if(CONTROL_State == DS_SafetyActive)
-				CONTROL_SetDeviceState(DS_SafetyTrig, DSS_None);
+				CONTROL_SetDeviceState(DS_SafetyTrig, CP_None);
 
 			FPledForcedLight = true;
 		}
@@ -402,10 +426,14 @@ void CONTROL_SafetyCheck()
 
 void CONTROL_SafetyIrqTick()
 {
+	static bool PrevSafetyTrig = false;
 	bool SafetyTrig = LL_IsSafetyTrig();
 
 	if(SafetyTrig && !PrevSafetyTrig)
+	{
 		SafetyFlushPending = true;
+		LL_SafetyForceRelaysOff(true);
+	}
 
 	PrevSafetyTrig = SafetyTrig;
 }
@@ -413,6 +441,8 @@ void CONTROL_SafetyIrqTick()
 
 bool CONTROL_CheckContactors()
 {
-	return false;
+	Int32U Mask = ZcRD_CommutationCheck();
+	DataTable[REG_FAILED_CONTACTOR] = Mask;
+	return Mask == 0;
 }
 //-----------------------------------------------
