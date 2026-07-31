@@ -62,6 +62,6 @@ void DBACT_ReadSPI2Raw()
 
 void DBACT_GetPressureADCVoltage()
 {
-	DataTable[REG_DBG] = Conv_PressureADCVtoBar();
+	DataTable[REG_DBG] = LL_MeasurePressureADCVoltage();
 }
 //-----------------------
