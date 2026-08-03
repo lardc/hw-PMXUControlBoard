@@ -41,6 +41,10 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			DBACT_GetPressureADCVoltage();
 			break;
 
+		case ACT_DBG_SPI_RST:
+			ZcRD_RegisterReset();
+			break;
+
 		default:
 			return false;
 	}

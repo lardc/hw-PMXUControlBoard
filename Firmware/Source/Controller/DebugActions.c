@@ -38,7 +38,10 @@ void DBACT_SftEnablePulse()
 
 void DBACT_WriteSPI1ContactorsRaw()
 {
-
+	// Чтение номера таблицы коммутации из отладочного регистра
+	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
+	// Коммутация выбранной комбинации
+	ZcRD_RegisterFlushWrite();
 }
 //-----------------------
 
@@ -56,7 +59,7 @@ void DBACT_ResetSPI1Commutations()
 
 void DBACT_ReadSPI2Raw()
 {
-
+	ZcRD_CommutationCheck();
 }
 //-----------------------
 

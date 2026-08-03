@@ -14,6 +14,7 @@
 #define ACT_DBG_READ_MAGNET_SEN					26	// Проверка считывания датчиков положения ПЦ
 #define ACT_DBG_MEAS_PRESSURE					27	// Измерение значения напряжения на входе АЦП датчика давления в мВ
 #define ACT_DBG_SFT_ENABLE						28	// Импульс GPIO_SFT_ENABLE (high-Z 1 с, затем OE разрешён)
+#define ACT_DBG_SPI_RST							29	// Сброс сдвиговых регистров
 
 #define ACT_SET_ACTIVE							100	// Команда активации контура безопасности
 #define ACT_SET_INACTIVE						101	// Команда деактивации контура безопасности
