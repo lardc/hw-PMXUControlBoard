@@ -36,7 +36,7 @@ void DBACT_SftEnablePulse()
 }
 //-----------------------
 
-void DBACT_WriteSPI1ContactorsRaw()
+void DBACT_WriteSPI1()
 {
 	// Чтение номера таблицы коммутации из отладочного регистра
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
@@ -45,15 +45,9 @@ void DBACT_WriteSPI1ContactorsRaw()
 }
 //-----------------------
 
-void DBACT_WriteSPI1RelaysRaw()
+void DBACT_ResetSPI1()
 {
-
-}
-//-----------------------
-
-void DBACT_ResetSPI1Commutations()
-{
-
+	ZcRD_RegisterReset();
 }
 //-----------------------
 
