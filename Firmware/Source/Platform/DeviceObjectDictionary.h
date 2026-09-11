@@ -9,11 +9,12 @@
 
 #define ACT_DBG_IND								21	// Проверка работы индикатора на передней панели
 #define ACT_DBG_SFT_IN							22	// Сохранить состояние GPIO_SFT_IN в REG_DBG
-#define ACT_DBG_WRITE_CONT						24	// Проверка работы коммутации контакторов
-#define ACT_DBG_WRITE_REL						25	// Проверка работы коммутации ВВ реле
+#define ACT_DBG_WRITE_SPI1						24	// Проверка работы коммутации контакторов и реле
+// 25
 #define ACT_DBG_READ_MAGNET_SEN					26	// Проверка считывания датчиков положения ПЦ
-#define ACT_DBG_MEAS_PRESSURE					27	// Измерение значения напряжения на входе АЦП датчика давления
+#define ACT_DBG_MEAS_PRESSURE					27	// Измерение значения напряжения на входе АЦП датчика давления в мВ
 #define ACT_DBG_SFT_ENABLE						28	// Импульс GPIO_SFT_ENABLE (high-Z 1 с, затем OE разрешён)
+#define ACT_DBG_SPI_RST							29	// Сброс сдвиговых регистров
 
 #define ACT_SET_ACTIVE							100	// Команда активации контура безопасности
 #define ACT_SET_INACTIVE						101	// Команда деактивации контура безопасности
