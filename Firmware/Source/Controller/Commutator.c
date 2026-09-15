@@ -114,7 +114,6 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIXV_HB:
 			case CERT_MIXM_HB:
 			case CERT_MIHM_SS:
-			case BES_23_IGTU_HB:
 			case MIRA_HB:
 				return true;
 			default:
@@ -145,7 +144,6 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIXM_HB:
 			case MIXV_HB:
 			case CERT_MIXM_HB:
-			case BES_23_IGTU_HB:
 			case MIRA_HB:
 				return true;
 			default:
