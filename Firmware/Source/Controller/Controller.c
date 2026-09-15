@@ -232,6 +232,11 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_SET_INACTIVE:
+			if(LL_IsSafetyTrig())
+			{
+				*pUserError = ERR_OPERATION_BLOCKED;
+				break;
+			}
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
 				LL_SafetyForceRelaysOff(false);
