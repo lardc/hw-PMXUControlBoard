@@ -103,6 +103,18 @@ void CONTROL_Idle()
 
 void CONTROL_SaveLastRequest(Int16U ActionID)
 {
+	switch(ActionID)
+	{
+		case ACT_COMM_PE:
+		case ACT_COMM_ICES_OR_IRRM:
+		case ACT_COMM_VCESAT:
+		case ACT_COMM_VF:
+		case ACT_COMM_NO_PE:
+			break;
+		default:
+			return;
+	}
+
 	DataTable[REG_LAST_CMD] = ActionID;
 	DataTable[REG_LAST_POS] = DataTable[REG_DUT_POSITION];
 	DataTable[REG_LAST_CASE] = DataTable[REG_DUT_CASE];
@@ -243,8 +255,9 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
+					LastActionID = ActionID;
+					CONTROL_SaveLastRequest(ActionID);
 					CONTROL_FinishedWithProblem(PROBLEM_INCORRECT_DUT);
-					LastActionID = ACT_COMM_PE;
 					break;
 				}
 

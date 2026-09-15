@@ -65,11 +65,11 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 	switch(ActionID)
 	{
 		case ACT_COMM_PE:
+		case ACT_COMM_NO_PE:
 			return true;  // допустимо без проверки корпуса
 
-		case ACT_COMM_NO_PE:
 		case ACT_COMM_VCESAT:
-			return COMM_ValidateIGBT(Position,ModuleType);
+			return COMM_ValidateIGBT(Position, ModuleType);
 
 		case ACT_COMM_VF:
 		case ACT_COMM_ICES_OR_IRRM:
@@ -81,7 +81,6 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 }
 // ----------------------------------------
 
-
 bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 {
 	if(Position == DUT_POS1)
@@ -90,6 +89,7 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 		{
 			case MIAA_CE:
 			case MIA2_CE:
+			case MIAA_HB:
 			case MIA2_HB:
 			case MIF2_HB:
 			case MIH2_HB:
@@ -97,7 +97,6 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIA2_LC:
 			case MIF2_LC:
 			case MIH2_LC:
-			case MIAA_HB:
 			case MIAA_LC:
 			case MIDA_HB:
 			case MIFA_HB:
@@ -113,8 +112,9 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIXM_HB:
 			case MIXM_LR_LRD:
 			case MIXV_HB:
-			case CERT_MIHM_SS:
 			case CERT_MIXM_HB:
+			case CERT_MIHM_SS:
+			case BES_23_IGTU_HB:
 			case MIRA_HB:
 				return true;
 			default:
@@ -127,6 +127,7 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 		{
 			case MIAA_CE:
 			case MIA2_CE:
+			case MIAA_HB:
 			case MIA2_HB:
 			case MIF2_HB:
 			case MIH2_HB:
@@ -134,7 +135,6 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIA2_HC:
 			case MIF2_HC:
 			case MIH2_HC:
-			case MIAA_HB:
 			case MIAA_HC:
 			case MIDA_HB:
 			case MIFA_HB:
@@ -145,6 +145,7 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIXM_HB:
 			case MIXV_HB:
 			case CERT_MIXM_HB:
+			case BES_23_IGTU_HB:
 			case MIRA_HB:
 				return true;
 			default:
@@ -161,21 +162,21 @@ bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module)
 	{
 		switch(Module)
 		{
-			case MDA2_DD:
-			case MDD2_DD:
-			case MDF2_DD:
 			case MDAA_DD:
 			case MDDA_DD:
 			case MDFA_DD:
 			case MDSM_SD:
 			case MDSV_SD:
+			case MIA2_HC:
+			case MIF2_HC:
+			case MIH2_HC:
+			case MDA2_DD:
+			case MDD2_DD:
+			case MDF2_DD:
 			case MIAA_HC:
 			case MIFA_HC:
 			case MDFA_SD:
 			case MDF2_SD:
-			case MIA2_HC:
-			case MIF2_HC:
-			case MIH2_HC:
 			case MIHA_HC:
 				return true;
 			default:
