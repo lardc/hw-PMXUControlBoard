@@ -26,10 +26,12 @@
 // Variables
 //
 static uint8_t CurrentOutputValues[NUM_REGS_TOTAL] = {0};
+static uint8_t PrevCurrentOutputValues[NUM_REGS_TOTAL] = {0};
 
 // Functions prototypes
 //
 static void ZcRD_ShiftAndLatch(Int8U CS, Int8U FirstReg, Int8U RegCount);
+static void ZcRD_FlushBoard(Int8U CS, Int8U FirstReg, Int8U RegCount);
 static Int8U ZcRD_GetRegNum(Int8U ID);
 static Int8U ZcRD_GetBitmask(Int8U ID);
 
@@ -95,27 +97,25 @@ void ZcRD_OutputValuesReset()
 
 void ZcRD_RegisterFlushWrite()
 {
-	static uint8_t PrevCurrentOutputValues[NUM_REGS_TOTAL] = {0};
-
 	// Аппаратный SPI1, два независимых CS — каждая ветка выгружается отдельной транзакцией.
 	// SFT_ENABLE во время штатной выгрузки не трогаем: выход сдвигового регистра меняется
 	// только в момент защёлки (CS-импульс). OE управляется аппаратно контуром безопасности.
-	ZcRD_ShiftAndLatch(ZCRD_CS_CONTACTORS, ZCRD_CONTACTORS_REG_FIRST, ZCRD_CONTACTORS_REG_COUNT);
-	ZcRD_ShiftAndLatch(ZCRD_CS_RELAYS, ZCRD_RELAYS_REG_FIRST, ZCRD_RELAYS_REG_COUNT);
+	ZcRD_FlushBoard(ZCRD_CS_CONTACTORS, ZCRD_CONTACTORS_REG_FIRST, ZCRD_CONTACTORS_REG_COUNT);
+	ZcRD_FlushBoard(ZCRD_CS_RELAYS, ZCRD_RELAYS_REG_FIRST, ZCRD_RELAYS_REG_COUNT);
+	DELAY_US(COMM_DELAY_MS * 1000L);
+}
+// ----------------------------------------
 
-	// Учёт ресурса: инкремент счётчика при каждом изменении состояния бита.
-	for(Int16U i = 0; i < COMMUTATION_TABLE_SIZE; ++i)
-	{
-		Int8U RegNum = ZcRD_GetRegNum(i);
-		Int8U BitMask = ZcRD_GetBitmask(i);
+void ZcRD_RegisterFlushWriteContactors()
+{
+	ZcRD_FlushBoard(ZCRD_CS_CONTACTORS, ZCRD_CONTACTORS_REG_FIRST, ZCRD_CONTACTORS_REG_COUNT);
+	DELAY_US(COMM_DELAY_MS * 1000L);
+}
+// ----------------------------------------
 
-		if((PrevCurrentOutputValues[RegNum] & BitMask) != (CurrentOutputValues[RegNum] & BitMask)
-				&& (PrevCurrentOutputValues[RegNum] & BitMask) == 0)
-			CycleCounters[i]++;
-	}
-
-	for(Int16U i = 0; i < NUM_REGS_TOTAL; ++i)
-		PrevCurrentOutputValues[i] = CurrentOutputValues[i];
+void ZcRD_RegisterFlushWriteRelays()
+{
+	ZcRD_FlushBoard(ZCRD_CS_RELAYS, ZCRD_RELAYS_REG_FIRST, ZCRD_RELAYS_REG_COUNT);
 	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
@@ -128,6 +128,29 @@ static void ZcRD_ShiftAndLatch(Int8U CS, Int8U FirstReg, Int8U RegCount)
 		LL_SPI_WriteByte(CurrentOutputValues[i]);
 
 	LL_SPI_LatchBoard(CS);
+}
+// ----------------------------------------
+
+static void ZcRD_FlushBoard(Int8U CS, Int8U FirstReg, Int8U RegCount)
+{
+	Int16U BitFirst = (Int16U)FirstReg * 8;
+	Int16U BitLast = (Int16U)(FirstReg + RegCount) * 8;
+
+	ZcRD_ShiftAndLatch(CS, FirstReg, RegCount);
+
+	// Учёт ресурса: инкремент счётчика при переходе бита 0→1 только в выгруженной ветке.
+	for(Int16U i = BitFirst; i < BitLast && i < COMMUTATION_TABLE_SIZE; ++i)
+	{
+		Int8U RegNum = ZcRD_GetRegNum(i);
+		Int8U BitMask = ZcRD_GetBitmask(i);
+
+		if((PrevCurrentOutputValues[RegNum] & BitMask) != (CurrentOutputValues[RegNum] & BitMask)
+				&& (PrevCurrentOutputValues[RegNum] & BitMask) == 0)
+			CycleCounters[i]++;
+	}
+
+	for(Int8U i = FirstReg; i < FirstReg + RegCount; ++i)
+		PrevCurrentOutputValues[i] = CurrentOutputValues[i];
 }
 // ----------------------------------------
 

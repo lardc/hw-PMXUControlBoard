@@ -36,12 +36,19 @@ void DBACT_SftEnablePulse()
 }
 //-----------------------
 
-void DBACT_WriteSPI1()
+void DBACT_WriteSPI1Cont()
 {
-	// Чтение номера таблицы коммутации из отладочного регистра
+	// Индекс из REG_DBG → compose, защёлка только платы контакторов (SS_CONT)
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
-	// Коммутация выбранной комбинации
-	ZcRD_RegisterFlushWrite();
+	ZcRD_RegisterFlushWriteContactors();
+}
+//-----------------------
+
+void DBACT_WriteSPI1Rel()
+{
+	// Индекс из REG_DBG → compose, защёлка только платы ВВ реле (SS_REL)
+	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
+	ZcRD_RegisterFlushWriteRelays();
 }
 //-----------------------
 

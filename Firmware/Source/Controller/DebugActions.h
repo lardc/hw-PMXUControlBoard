@@ -10,7 +10,8 @@
 void DBACT_PulseIndication();
 void DBACT_ReadSftIn();
 void DBACT_SftEnablePulse();
-void DBACT_WriteSPI1();
+void DBACT_WriteSPI1Cont();
+void DBACT_WriteSPI1Rel();
 void DBACT_ResetSPI1();
 void DBACT_ReadSPI2Raw();
 void DBACT_GetPressureADCVoltage();

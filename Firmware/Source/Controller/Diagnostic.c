@@ -25,8 +25,12 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			DBACT_SftEnablePulse();
 			break;
 
-		case ACT_DBG_WRITE_SPI1:
-			DBACT_WriteSPI1();
+		case ACT_DBG_WRITE_CONT:
+			DBACT_WriteSPI1Cont();
+			break;
+
+		case ACT_DBG_WRITE_REL:
+			DBACT_WriteSPI1Rel();
 			break;
 
 		case ACT_DBG_READ_MAGNET_SEN:
