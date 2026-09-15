@@ -222,6 +222,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_SET_INACTIVE:
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
+				LL_SafetyForceRelaysOff(false);
+				FPledForcedLight = false;
 				LL_SetStateFPLed(false);
 				CONTROL_SetDeviceState(DS_Enabled, CP_None);
 			}
@@ -413,11 +415,9 @@ void CONTROL_SafetyCheck()
 		COMM_SwitchToPE();
 		LastActionID = ACT_COMM_PE;
 
-		if(DataTable[REG_SAFETY_ACTIVE])
+		if(DataTable[REG_SAFETY_ACTIVE] && CONTROL_State == DS_SafetyActive)
 		{
-			if(CONTROL_State == DS_SafetyActive)
-				CONTROL_SetDeviceState(DS_SafetyTrig, CP_None);
-
+			CONTROL_SetDeviceState(DS_SafetyTrig, CP_None);
 			FPledForcedLight = true;
 		}
 	}

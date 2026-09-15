@@ -12,7 +12,7 @@
 #define ACT_DBG_WRITE_CONT						24	// Проверка работы коммутации контакторов
 #define ACT_DBG_WRITE_REL						25	// Проверка работы коммутации ВВ реле
 #define ACT_DBG_READ_MAGNET_SEN					26	// Проверка считывания датчиков положения ПЦ
-#define ACT_DBG_MEAS_PRESSURE					27	// Измерение значения напряжения на входе АЦП датчика давления в мВ
+#define ACT_DBG_MEAS_PRESSURE					27	// Напряжение на входе АЦП датчика давления → REG_DBG, мВ
 #define ACT_DBG_SFT_ENABLE						28	// Импульс GPIO_SFT_ENABLE (high-Z 1 с, затем OE разрешён)
 #define ACT_DBG_SPI_RST							29	// Сброс сдвиговых регистров
 
@@ -44,9 +44,9 @@
 // Регистры
 // Сохраняемые регистры
 #define REG_CONTACTORS_COMM_DELAY_MS			1	// Задержка ожидания коммутации контакторов
-#define REG_PRESSURE_ADC_OFFSET					2	// Смещение калибровки давления (Bar)
-#define REG_PRESSURE_ADC_K						3	// Коэфф. пересчёта напряжения на датчике (мВ) в Bar
-#define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
+#define REG_PRESSURE_ADC_OFFSET					2	// Смещение калибровки давления b, бар
+#define REG_PRESSURE_ADC_K						3	// Коэфф. k: напряжение на датчике (В) → бар
+#define REG_PRESSURE_THRESHOLD					4	// Порог рабочего давления, бар
 #define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
 #define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
 #define REG_LAMP_CTRL							7	// Разрешение работы внешнего индикатора
@@ -74,7 +74,7 @@
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
 #define REG_ST_STATE							199	// Регистр состояния самотестирования
 
-#define REG_PRESSURE							200	// Давление, Бар
+#define REG_PRESSURE							200	// Давление, бар
 #define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
 #define REG_FAILED_CONTACTOR					202	// Битовая маска контакторов ПЦ в неверном положении (бит = Index)
 

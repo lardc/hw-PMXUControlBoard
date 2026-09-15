@@ -16,7 +16,7 @@
 #define REG_PRESSURE_ADC_OFFSET_DFLT	(-2.2032f)	// бар
 //
 #define REG_PRESSURE_ADC_K_MAX			10.0f
-#define REG_PRESSURE_ADC_K_DFLT			2.4598f		// (мВ → бaр)
+#define REG_PRESSURE_ADC_K_DFLT			2.4598f		// бар/В
 //
 #define REG_PRESSURE_THRESHOLD_MAX		10.0
 #define REG_PRESSURE_THRESHOLD_DFLT		3.0

@@ -37,8 +37,8 @@ void Conv_SPIHexToArray(volatile uint8_t* SPI_Data, uint8_t Data_Length, uint64_
 
 float Conv_PressureADCVtoBar()
 {
-	float voltageMv = LL_MeasurePressureADCVoltage() * ADC_PRESSURE_INPUT_GAIN;
+	float voltageV = LL_MeasurePressureADCVoltage() * ADC_PRESSURE_INPUT_GAIN / 1000.0f;
 
-	return voltageMv * DataTable[REG_PRESSURE_ADC_K] + DataTable[REG_PRESSURE_ADC_OFFSET];
+	return voltageV * DataTable[REG_PRESSURE_ADC_K] + DataTable[REG_PRESSURE_ADC_OFFSET];
 }
 //-----------------------------
