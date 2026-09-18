@@ -102,21 +102,18 @@ void ZcRD_RegisterFlushWrite()
 	// только в момент защёлки (CS-импульс). OE управляется аппаратно контуром безопасности.
 	ZcRD_FlushBoard(ZCRD_CS_CONTACTORS, ZCRD_CONTACTORS_REG_FIRST, ZCRD_CONTACTORS_REG_COUNT);
 	ZcRD_FlushBoard(ZCRD_CS_RELAYS, ZCRD_RELAYS_REG_FIRST, ZCRD_RELAYS_REG_COUNT);
-	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
 
 void ZcRD_RegisterFlushWriteContactors()
 {
 	ZcRD_FlushBoard(ZCRD_CS_CONTACTORS, ZCRD_CONTACTORS_REG_FIRST, ZCRD_CONTACTORS_REG_COUNT);
-	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
 
 void ZcRD_RegisterFlushWriteRelays()
 {
 	ZcRD_FlushBoard(ZCRD_CS_RELAYS, ZCRD_RELAYS_REG_FIRST, ZCRD_RELAYS_REG_COUNT);
-	DELAY_US(COMM_DELAY_MS * 1000L);
 }
 // ----------------------------------------
 

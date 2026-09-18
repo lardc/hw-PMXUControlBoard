@@ -20,18 +20,11 @@ CommutationState COMM_State = COMM_Def;
 // Forward declarations
 //
 static void COMM_DischargeBeforeIcesOrIrrm();
-static Int16U COMM_GetCommDelayMs();
 bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module);
 bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module);
 
 // Functions
 //
-static Int16U COMM_GetCommDelayMs()
-{
-	Int16U delay = (Int16U)DataTable[REG_CONTACTORS_COMM_DELAY_MS];
-	return delay ? delay : (Int16U)COMM_DELAY_MS;
-}
-// ----------------------------------------
 
 Int32U COMM_CalcModuleType()
 {
@@ -434,7 +427,6 @@ void COMM_Commutate(Int16U ActionID)
 			break;
 	}
 
-	DELAY_MS(COMM_GetCommDelayMs());
 	FPledForcedLight = false;
 }
 // ----------------------------------------

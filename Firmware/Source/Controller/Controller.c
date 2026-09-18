@@ -124,6 +124,9 @@ void CONTROL_SaveLastRequest(Int16U ActionID)
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
+	if(CONTROL_State == DS_Fault)
+		return;
+
 	CONTROL_SaveLastRequest(LastActionID);
 	COMM_SwitchToPE();
 	LL_SafetyForceRelaysOff(true);
@@ -327,7 +330,7 @@ void CONTROL_CheckContactorsProcess()
 			break;
 
 		case CP_CheckSetTimer:
-			Timeout = CONTROL_TimeCounter + TIME_CONTACTOR_TIMEOUT;
+			Timeout = CONTROL_TimeCounter + DataTable[REG_CONTACTORS_COMM_DELAY_MS];
 			CONTROL_SetDeviceSubState(CP_CheckTimed);
 			break;
 
@@ -411,7 +414,7 @@ void CONTROL_PressureCheck()
 {
 	DataTable[REG_PRESSURE] = Conv_PressureADCVtoBar();
 
-	if(CONTROL_State != DS_None)
+	if(CONTROL_State != DS_None && CONTROL_State != DS_Fault)
 	{
 		if(DataTable[REG_PRESSURE] < DataTable[REG_PRESSURE_THRESHOLD])
 		{
