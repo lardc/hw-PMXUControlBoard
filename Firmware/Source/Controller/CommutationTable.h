@@ -38,27 +38,27 @@ extern ContactorSensorState SensorsState[];
 extern const Int16U SensorsStateLength;
 
 // PE relays
-#define PWR_L_TO_PE					0
-#define PWR_C_TO_PE					0
-#define PWR_H_TO_PE					0
+#define PWR_L_TO_PE					27
+#define PWR_C_TO_PE					28
+#define PWR_H_TO_PE					29
 
 // LCTU relays
-#define LCTU_PLUS_TO_PWR_H			0
-#define LCTU_PLUS_TO_PWR_C			0
-#define LCTU_PLUS_TO_PWR_L			0
+#define LCTU_PLUS_TO_PWR_H			16
+#define LCTU_PLUS_TO_PWR_C			30
+#define LCTU_PLUS_TO_PWR_L			17
 
-#define LCTU_MINUS_TO_PWR_H			0
-#define LCTU_MINUS_TO_PWR_C			0
-#define LCTU_MINUS_TO_PWR_L			0
+#define LCTU_MINUS_TO_PWR_H			19
+#define LCTU_MINUS_TO_PWR_C			31
+#define LCTU_MINUS_TO_PWR_L			18
 
 // LCSU contactors
 #define LCSU_PLUS_TO_PWR_H			0
-#define LCSU_PLUS_TO_PWR_C			0
-#define LCSU_PLUS_TO_PWR_L			0
+#define LCSU_PLUS_TO_PWR_C			2
+#define LCSU_PLUS_TO_PWR_L			4
 
-#define LCSU_MINUS_TO_PWR_H			0
-#define LCSU_MINUS_TO_PWR_C			0
-#define LCSU_MINUS_TO_PWR_L			0
+#define LCSU_MINUS_TO_PWR_H			1
+#define LCSU_MINUS_TO_PWR_C			3
+#define LCSU_MINUS_TO_PWR_L			5
 
 // Disconnect PE
 static const Int8U __CT_DISCON_PE[] = {PWR_L_TO_PE, PWR_C_TO_PE, PWR_H_TO_PE};

@@ -29,6 +29,10 @@
 void ZcRD_RegisterReset();
 // Write cache to physical register
 void ZcRD_RegisterFlushWrite();
+// Write only contactors board (GPIO_SPI1_SS_CONT)
+void ZcRD_RegisterFlushWriteContactors();
+// Write only relays board (GPIO_SPI1_SS_REL)
+void ZcRD_RegisterFlushWriteRelays();
 // Compose cached values
 void ZcRD_OutputValuesCompose(Int16U TableID, Boolean TurnOn);
 void ZcRD_OutputValuesComposeArray(const Int8U* Array, Int8U ArrayLength);

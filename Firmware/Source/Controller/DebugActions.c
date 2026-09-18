@@ -36,32 +36,36 @@ void DBACT_SftEnablePulse()
 }
 //-----------------------
 
-void DBACT_WriteSPI1ContactorsRaw()
+void DBACT_WriteSPI1Cont()
 {
-
+	// Индекс из REG_DBG → compose, защёлка только платы контакторов (SS_CONT)
+	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
+	ZcRD_RegisterFlushWriteContactors();
 }
 //-----------------------
 
-void DBACT_WriteSPI1RelaysRaw()
+void DBACT_WriteSPI1Rel()
 {
-
+	// Индекс из REG_DBG → compose, защёлка только платы ВВ реле (SS_REL)
+	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
+	ZcRD_RegisterFlushWriteRelays();
 }
 //-----------------------
 
-void DBACT_ResetSPI1Commutations()
+void DBACT_ResetSPI1()
 {
-
+	ZcRD_RegisterReset();
 }
 //-----------------------
 
 void DBACT_ReadSPI2Raw()
 {
-
+	ZcRD_CommutationCheck();
 }
 //-----------------------
 
 void DBACT_GetPressureADCVoltage()
 {
-	DataTable[REG_DBG] = Conv_PressureADCVtoBar();
+	DataTable[REG_DBG] = LL_MeasurePressureADCVoltage();
 }
 //-----------------------

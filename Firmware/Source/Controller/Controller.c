@@ -103,6 +103,18 @@ void CONTROL_Idle()
 
 void CONTROL_SaveLastRequest(Int16U ActionID)
 {
+	switch(ActionID)
+	{
+		case ACT_COMM_PE:
+		case ACT_COMM_ICES_OR_IRRM:
+		case ACT_COMM_VCESAT:
+		case ACT_COMM_VF:
+		case ACT_COMM_NO_PE:
+			break;
+		default:
+			return;
+	}
+
 	DataTable[REG_LAST_CMD] = ActionID;
 	DataTable[REG_LAST_POS] = DataTable[REG_DUT_POSITION];
 	DataTable[REG_LAST_CASE] = DataTable[REG_DUT_CASE];
@@ -112,6 +124,9 @@ void CONTROL_SaveLastRequest(Int16U ActionID)
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
+	if(CONTROL_State == DS_Fault)
+		return;
+
 	CONTROL_SaveLastRequest(LastActionID);
 	COMM_SwitchToPE();
 	LL_SafetyForceRelaysOff(true);
@@ -157,7 +172,7 @@ void CONTROL_InitStoragePointers()
 {
 	Int16U idx = 0;
 
-	for (Int16U i = 0; i < NUM_REGS_TOTAL; ++i)
+	for (Int16U i = 0; i < COMMUTATION_TABLE_SIZE; ++i)
 		STF_AssignCounterPointer(i, (Int32U)&CycleCounters[i]);
 
 	STF_AssignPointer(idx++, (Int32U)&CONTROL_State);
@@ -220,8 +235,15 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_SET_INACTIVE:
+			if(LL_IsSafetyTrig())
+			{
+				*pUserError = ERR_OPERATION_BLOCKED;
+				break;
+			}
 			if(CONTROL_State == DS_Enabled || CONTROL_State == DS_SafetyActive || CONTROL_State == DS_SafetyTrig)
 			{
+				LL_SafetyForceRelaysOff(false);
+				FPledForcedLight = false;
 				LL_SetStateFPLed(false);
 				CONTROL_SetDeviceState(DS_Enabled, CP_None);
 			}
@@ -241,8 +263,9 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 				if(!COMM_ValidateRequest(ActionID, (Int16U)DataTable[REG_DUT_POSITION]))
 				{
+					LastActionID = ActionID;
+					CONTROL_SaveLastRequest(ActionID);
 					CONTROL_FinishedWithProblem(PROBLEM_INCORRECT_DUT);
-					LastActionID = ACT_COMM_PE;
 					break;
 				}
 
@@ -307,7 +330,7 @@ void CONTROL_CheckContactorsProcess()
 			break;
 
 		case CP_CheckSetTimer:
-			Timeout = CONTROL_TimeCounter + TIME_CONTACTOR_TIMEOUT;
+			Timeout = CONTROL_TimeCounter + DataTable[REG_CONTACTORS_COMM_DELAY_MS];
 			CONTROL_SetDeviceSubState(CP_CheckTimed);
 			break;
 
@@ -391,7 +414,7 @@ void CONTROL_PressureCheck()
 {
 	DataTable[REG_PRESSURE] = Conv_PressureADCVtoBar();
 
-	if(CONTROL_State != DS_None)
+	if(CONTROL_State != DS_None && CONTROL_State != DS_Fault)
 	{
 		if(DataTable[REG_PRESSURE] < DataTable[REG_PRESSURE_THRESHOLD])
 		{
@@ -413,11 +436,9 @@ void CONTROL_SafetyCheck()
 		COMM_SwitchToPE();
 		LastActionID = ACT_COMM_PE;
 
-		if(DataTable[REG_SAFETY_ACTIVE])
+		if(DataTable[REG_SAFETY_ACTIVE] && CONTROL_State == DS_SafetyActive)
 		{
-			if(CONTROL_State == DS_SafetyActive)
-				CONTROL_SetDeviceState(DS_SafetyTrig, CP_None);
-
+			CONTROL_SetDeviceState(DS_SafetyTrig, CP_None);
 			FPledForcedLight = true;
 		}
 	}

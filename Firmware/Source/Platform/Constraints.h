@@ -5,6 +5,7 @@
 #include "stdinc.h"
 #include "DataTable.h"
 #include "Global.h"
+#include "CommutationTable.h"
 
 //Definitions
 //
@@ -16,16 +17,10 @@
 #define REG_PRESSURE_ADC_OFFSET_DFLT	(-2.2032f)	// бар
 //
 #define REG_PRESSURE_ADC_K_MAX			10.0f
-#define REG_PRESSURE_ADC_K_DFLT			2.4598f		// (мВ → бaр)
+#define REG_PRESSURE_ADC_K_DFLT			2.4598f		// бар/В
 //
 #define REG_PRESSURE_THRESHOLD_MAX		10.0
 #define REG_PRESSURE_THRESHOLD_DFLT		3.0
-//
-#define REG_DFLT_COMM_DELAY_MS_MAX		5000
-#define REG_DFLT_COMM_DELAY_MS_DFLT		500
-//
-#define REG_MAX_CONT_COMMUTATIONS_MAX	50000
-#define REG_MAX_CONT_COMMUTATIONS_DFLT	1000
 //
 #define DUT_POS1						1
 #define DUT_POS2						2

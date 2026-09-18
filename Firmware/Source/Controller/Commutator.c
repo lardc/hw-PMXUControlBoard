@@ -20,18 +20,11 @@ CommutationState COMM_State = COMM_Def;
 // Forward declarations
 //
 static void COMM_DischargeBeforeIcesOrIrrm();
-static Int16U COMM_GetCommDelayMs();
 bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module);
 bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module);
 
 // Functions
 //
-static Int16U COMM_GetCommDelayMs()
-{
-	Int16U delay = (Int16U)DataTable[REG_CONTACTORS_COMM_DELAY_MS];
-	return delay ? delay : (Int16U)COMM_DELAY_MS;
-}
-// ----------------------------------------
 
 Int32U COMM_CalcModuleType()
 {
@@ -65,11 +58,11 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 	switch(ActionID)
 	{
 		case ACT_COMM_PE:
+		case ACT_COMM_NO_PE:
 			return true;  // допустимо без проверки корпуса
 
-		case ACT_COMM_NO_PE:
 		case ACT_COMM_VCESAT:
-			return COMM_ValidateIGBT(Position,ModuleType);
+			return COMM_ValidateIGBT(Position, ModuleType);
 
 		case ACT_COMM_VF:
 		case ACT_COMM_ICES_OR_IRRM:
@@ -81,7 +74,6 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 }
 // ----------------------------------------
 
-
 bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 {
 	if(Position == DUT_POS1)
@@ -89,7 +81,15 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 		switch(Module)
 		{
 			case MIAA_CE:
+			case MIA2_CE:
 			case MIAA_HB:
+			case MIA2_HB:
+			case MIF2_HB:
+			case MIH2_HB:
+			case MID2_HB:
+			case MIA2_LC:
+			case MIF2_LC:
+			case MIH2_LC:
 			case MIAA_LC:
 			case MIDA_HB:
 			case MIFA_HB:
@@ -105,6 +105,9 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MIXM_HB:
 			case MIXM_LR_LRD:
 			case MIXV_HB:
+			case CERT_MIXM_HB:
+			case CERT_MIHM_SS:
+			case MIRA_HB:
 				return true;
 			default:
 				return false;
@@ -115,7 +118,15 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 		switch(Module)
 		{
 			case MIAA_CE:
+			case MIA2_CE:
 			case MIAA_HB:
+			case MIA2_HB:
+			case MIF2_HB:
+			case MIH2_HB:
+			case MID2_HB:
+			case MIA2_HC:
+			case MIF2_HC:
+			case MIH2_HC:
 			case MIAA_HC:
 			case MIDA_HB:
 			case MIFA_HB:
@@ -125,6 +136,8 @@ bool COMM_ValidateIGBT(Int16U Position, ModuleTypes Module)
 			case MISM_DS:
 			case MIXM_HB:
 			case MIXV_HB:
+			case CERT_MIXM_HB:
+			case MIRA_HB:
 				return true;
 			default:
 				return false;
@@ -145,9 +158,16 @@ bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module)
 			case MDFA_DD:
 			case MDSM_SD:
 			case MDSV_SD:
+			case MIA2_HC:
+			case MIF2_HC:
+			case MIH2_HC:
+			case MDA2_DD:
+			case MDD2_DD:
+			case MDF2_DD:
 			case MIAA_HC:
 			case MIFA_HC:
-			case MIFA_SD:
+			case MDFA_SD:
+			case MDF2_SD:
 			case MIHA_HC:
 				return true;
 			default:
@@ -158,6 +178,12 @@ bool COMM_ValidateDiode(Int16U Position, ModuleTypes Module)
 	{
 		switch(Module)
 		{
+			case MIA2_LC:
+			case MIF2_LC:
+			case MIH2_LC:
+			case MDA2_DD:
+			case MDD2_DD:
+			case MDF2_DD:
 			case MDAA_DD:
 			case MDDA_DD:
 			case MDFA_DD:
@@ -206,13 +232,28 @@ void COMM_Commutate(Int16U ActionID)
 			{
 				switch(Module)
 				{
-					case MIFA_SD:
+					case MDFA_SD:
+					case MDF2_SD:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
 							ZcRD_Commutate_macro(CT_ICES_POS1_GROUP_BLUE);
 						else if(ActionID == ACT_COMM_VF)
 							ZcRD_Commutate_macro(CT_UFW_POS1_GROUP_BLUE);
 						break;
 					case MIAA_CE:
+					case MIA2_CE:
+					case MIA2_HB:
+					case MIF2_HB:
+					case MIA2_HC:
+					case MIF2_HC:
+					case MIH2_HC:
+					case MIH2_HB:
+					case MID2_HB:
+					case MIA2_LC:
+					case MIF2_LC:
+					case MIH2_LC:
+					case MDA2_DD:
+					case MDD2_DD:
+					case MDF2_DD:
 					case MIAA_HB:
 					case MIAA_LC:
 					case MIDA_HB:
@@ -237,6 +278,9 @@ void COMM_Commutate(Int16U ActionID)
 					case MIAA_HC:
 					case MIFA_HC:
 					case MIHA_HC:
+					case CERT_MIHM_SS:
+					case CERT_MIXM_HB:
+					case MIRA_HB:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
 							ZcRD_Commutate_macro(CT_ICES_POS1_GROUP_GREEN);
 						else if(ActionID == ACT_COMM_VF)
@@ -251,6 +295,7 @@ void COMM_Commutate(Int16U ActionID)
 				switch(Module)
 				{
 					case MIAA_CE:
+					case MIA2_CE:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
 							ZcRD_Commutate_macro(CT_ICES_POS2_GROUP_ORANGE);
 						else if(ActionID == ACT_COMM_VF)
@@ -264,6 +309,19 @@ void COMM_Commutate(Int16U ActionID)
 						else if(ActionID == ACT_COMM_VF)
 							ZcRD_Commutate_macro(CT_UFW_POS2_GROUP_PURPLE);
 						break;
+					case MIA2_HB:
+					case MIF2_HB:
+					case MIH2_HB:
+					case MID2_HB:
+					case MIA2_HC:
+					case MIF2_HC:
+					case MIH2_HC:
+					case MIA2_LC:
+					case MIF2_LC:
+					case MIH2_LC:
+					case MDA2_DD:
+					case MDD2_DD:
+					case MDF2_DD:
 					case MIAA_HB:
 					case MIAA_HC:
 					case MIDA_HB:
@@ -281,6 +339,7 @@ void COMM_Commutate(Int16U ActionID)
 					case MIFA_LC:
 					case MIHA_LC:
 					case MISM_CH:
+					case CERT_MIXM_HB:
 						if(ActionID == ACT_COMM_ICES_OR_IRRM)
 							ZcRD_Commutate_macro(CT_ICES_POS2_GROUP_BLUE);
 						else if(ActionID == ACT_COMM_VF)
@@ -299,6 +358,14 @@ void COMM_Commutate(Int16U ActionID)
 				switch(Module)
 				{
 					case MIAA_CE:
+					case MIA2_CE:
+					case MIA2_HB:
+					case MIF2_HB:
+					case MIH2_HB:
+					case MID2_HB:
+					case MIA2_LC:
+					case MIF2_LC:
+					case MIH2_LC:
 					case MIAA_HB:
 					case MIAA_LC:
 					case MIDA_HB:
@@ -315,6 +382,9 @@ void COMM_Commutate(Int16U ActionID)
 					case MIXM_HB:
 					case MIXM_LR_LRD:
 					case MIXV_HB:
+					case CERT_MIHM_SS:
+					case CERT_MIXM_HB:
+					case MIRA_HB:
 						ZcRD_Commutate_macro(CT_UCESAT_POS1_GROUP_GREEN);
 						break;
 					default:
@@ -326,8 +396,16 @@ void COMM_Commutate(Int16U ActionID)
 				switch(Module)
 				{
 					case MIAA_CE:
+					case MIA2_CE:
 						ZcRD_Commutate_macro(CT_UCESAT_POS2_GROUP_ORANGE);
 						break;
+					case MIA2_HB:
+					case MIF2_HB:
+					case MIH2_HB:
+					case MIA2_HC:
+					case MIF2_HC:
+					case MIH2_HC:
+					case MID2_HB:
 					case MIAA_HB:
 					case MIAA_HC:
 					case MIDA_HB:
@@ -338,6 +416,8 @@ void COMM_Commutate(Int16U ActionID)
 					case MISM_DS:
 					case MIXM_HB:
 					case MIXV_HB:
+					case CERT_MIXM_HB:
+					case MIRA_HB:
 						ZcRD_Commutate_macro(CT_UCESAT_POS2_GROUP_BLUE);
 						break;
 					default:
@@ -347,7 +427,6 @@ void COMM_Commutate(Int16U ActionID)
 			break;
 	}
 
-	DELAY_MS(COMM_GetCommDelayMs());
 	FPledForcedLight = false;
 }
 // ----------------------------------------
