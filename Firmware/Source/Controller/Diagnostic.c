@@ -26,10 +26,20 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			break;
 
 		case ACT_DBG_WRITE_CONT:
+			if(CONTROL_State != DS_Enabled && CONTROL_State != DS_SafetyActive)
+			{
+				*pUserError = ERR_OPERATION_BLOCKED;
+				break;
+			}
 			DBACT_WriteSPI1Cont();
 			break;
 
 		case ACT_DBG_WRITE_REL:
+			if(CONTROL_State != DS_Enabled && CONTROL_State != DS_SafetyActive)
+			{
+				*pUserError = ERR_OPERATION_BLOCKED;
+				break;
+			}
 			DBACT_WriteSPI1Rel();
 			break;
 

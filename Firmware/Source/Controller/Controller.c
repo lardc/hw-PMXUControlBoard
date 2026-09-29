@@ -275,6 +275,8 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_SaveLastRequest(ActionID);
 				LastDUTposition = DataTable[REG_DUT_POSITION];
 				LastDevCase = COMM_CalcModuleType();
+				if(CONTROL_ContactorState == CP_CheckSetTimer || CONTROL_ContactorState == CP_CheckTimed)
+					*pUserError = ERR_OPERATION_BLOCKED;
 				CONTROL_SetDeviceState(CONTROL_State, CP_CheckSetTimer);
 			}
 			else if(CONTROL_State == DS_None)

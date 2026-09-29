@@ -66,6 +66,8 @@ bool COMM_ValidateRequest(Int16U ActionID, Int16U Position)
 
 		case ACT_COMM_VF:
 		case ACT_COMM_ICES_OR_IRRM:
+			if(ModuleType == MIRA_HB && Position == DUT_POS2)
+				return false;
 			return COMM_ValidateIGBT(Position, ModuleType) || COMM_ValidateDiode(Position, ModuleType);
 
 		default:

@@ -56,7 +56,6 @@
 // Несохраняемые регистры чтения-записи
 #define REG_DUT_POSITION						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
 #define REG_DUT_CASE							129	// Тип корпуса прибора (DUT)
-#define REG_DEV_CASE							REG_DUT_CASE	// legacy-алиас
 #define REG_DUT_SCHEME							130	// Схема подключения внутри корпуса
 
 #define REG_DBG									150	// Отладочный регистр

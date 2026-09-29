@@ -38,6 +38,8 @@ void DBACT_SftEnablePulse()
 
 void DBACT_WriteSPI1Cont()
 {
+	if(DataTable[REG_DBG] >= COMMUTATION_TABLE_SIZE)
+		return;
 	// Индекс из REG_DBG → compose, защёлка только платы контакторов (SS_CONT)
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
 	ZcRD_RegisterFlushWriteContactors();
@@ -46,6 +48,8 @@ void DBACT_WriteSPI1Cont()
 
 void DBACT_WriteSPI1Rel()
 {
+	if(DataTable[REG_DBG] >= COMMUTATION_TABLE_SIZE)
+		return;
 	// Индекс из REG_DBG → compose, защёлка только платы ВВ реле (SS_REL)
 	ZcRD_OutputValuesCompose(DataTable[REG_DBG], TRUE);
 	ZcRD_RegisterFlushWriteRelays();
