@@ -55,6 +55,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>Source/Controller/IGBTModuleTypes.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Logic/IGBTModuleTypes.h</locationURI>
+		</link>
+		<link>
 			<name>Source/Interface/BCCISlave.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Interface/BCCISlave.c</locationURI>

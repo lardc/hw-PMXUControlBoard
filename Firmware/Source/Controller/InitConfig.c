@@ -37,7 +37,7 @@ void INITCFG_ConfigIO()
 	GPIO_SetState(GPIO_FP_LED, false);
 	GPIO_SetState(GPIO_SPI1_SS_CONT, true);
 	GPIO_SetState(GPIO_SPI1_SS_REL, true);
-	GPIO_SetState(GPIO_SFT_ENABLE, true);
+	GPIO_SetState(GPIO_SFT_ENABLE, false);
 	GPIO_SetState(GPIO_SPI2_LD, true);
 	GPIO_SetState(GPIO_SPI2_OE, true);
 

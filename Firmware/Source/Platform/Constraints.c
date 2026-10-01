@@ -16,8 +16,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{REG_PRESSURE_ADC_OFFSET_MIN, REG_PRESSURE_ADC_OFFSET_MAX, REG_PRESSURE_ADC_OFFSET_DFLT},	// 2
 		{0, REG_PRESSURE_ADC_K_MAX, REG_PRESSURE_ADC_K_DFLT},						// 3
 		{0, REG_PRESSURE_THRESHOLD_MAX, REG_PRESSURE_THRESHOLD_DFLT},				// 4
-		{0, REG_DFLT_COMM_DELAY_MS_MAX, REG_DFLT_COMM_DELAY_MS_DFLT},				// 5
-		{0, REG_MAX_CONT_COMMUTATIONS_MAX, REG_MAX_CONT_COMMUTATIONS_DFLT},			// 6
+		{0, 0, 0},																	// 5
+		{0, 0, 0},																	// 6
 		{NO, YES, YES},																// 7
 		{0, 0, 0},																	// 8
 		{NO, YES, YES},																// 9
@@ -115,8 +115,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 101
 		{0, 0, 0},																	// 102
 		{0, 0, 0},																	// 103
-		{0, 0, 0},																	// 104
-		{0, 0, 0},																	// 105
+		{0, COMMUTATION_TABLE_SIZE - 1, 0},																	// 104
+		{0, INT16U_MAX, 0},															// 105
 		{0, 0, 0},																	// 106
 		{0, 0, 0},																	// 107
 		{0, 0, 0},																	// 108

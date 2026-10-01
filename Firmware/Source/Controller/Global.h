@@ -14,17 +14,15 @@
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
 #define TIME_FP_LED_FAULT_BLINK					250		// Мигание светодиодом в состоянии Fault
-#define COMM_DELAY_MS							500		// Время ожидания комммутации
 #define TIME_FP_LED_ON_STATE					500		// Время свечения внешнего индикатора, мс
 #define SAFETY_DELAY							200		// Время задержки отключения коммутации
 #define TIME_SPI_DELAY_US						5		// Время задержки SPI
-#define TIME_CONTACTOR_TIMEOUT					500		// Длительность проверки состояния пневмоцилиндров перед выставлением fault, мс
 
 // Параметры измерения
-#define ADC_REF_VOLTAGE							3300.0f	// Опорное напряжение АЦП (мВ)
+#define ADC_REF_VOLTAGE							3300.0f	// Опорное напряжение АЦП, мВ
 #define ADC_RESOLUTION							4095	// Разрешение АЦП
-#define ADC_V_CC								150.0f	// Напряжение при замкнутой цепи (мВ)
-// PA0, АЦП1 канал 1: делитель 47k/(47k+10k); восстановление напряжения на датчике
+#define ADC_V_CC								150.0f	// Напряжение при замкнутой цепи, мВ
+
 #define ADC_PRESSURE_INPUT_GAIN					1.213f	// 1 / (47k / (47k + 10k))
 
 #endif //  __GLOBAL_H

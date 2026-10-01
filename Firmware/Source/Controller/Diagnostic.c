@@ -26,11 +26,21 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			break;
 
 		case ACT_DBG_WRITE_CONT:
-			DBACT_WriteSPI1ContactorsRaw();
+			if(CONTROL_State != DS_Enabled && CONTROL_State != DS_SafetyActive)
+			{
+				*pUserError = ERR_OPERATION_BLOCKED;
+				break;
+			}
+			DBACT_WriteSPI1Cont();
 			break;
 
 		case ACT_DBG_WRITE_REL:
-			DBACT_WriteSPI1RelaysRaw();
+			if(CONTROL_State != DS_Enabled && CONTROL_State != DS_SafetyActive)
+			{
+				*pUserError = ERR_OPERATION_BLOCKED;
+				break;
+			}
+			DBACT_WriteSPI1Rel();
 			break;
 
 		case ACT_DBG_READ_MAGNET_SEN:
@@ -39,6 +49,10 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 
 		case ACT_DBG_MEAS_PRESSURE:
 			DBACT_GetPressureADCVoltage();
+			break;
+
+		case ACT_DBG_SPI_RST:
+			DBACT_ResetSPI1();
 			break;
 
 		default:
