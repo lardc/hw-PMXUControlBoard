@@ -21,7 +21,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, YES},																// 7
 		{ST_START_STAGE, ST_STOP_STAGE, ST_STOP_STAGE},								// 8
 		{NO, YES, YES},																// 9
-		{0, 0, 0},																	// 10
+		{0, INT16U_MAX, 0},															// 10
 		{0, 0, 0},																	// 11
 		{0, 0, 0},																	// 12
 		{0, 0, 0},																	// 13

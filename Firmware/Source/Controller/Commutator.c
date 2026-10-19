@@ -8,6 +8,8 @@
 #include "ZcRegistersDriver.h"
 #include "DeviceObjectDictionary.h"
 #include "CommutationTable.h"
+#include "DataTable.h"
+#include "Delay.h"
 #include "Constraints.h"
 
 // Variables
@@ -142,6 +144,7 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 			break;
 	}
 
+	DELAY_MS((Int16U)DataTable[REG_COMM_DELAY_MS]);
 	FPledForcedLight = false;
 }
 // ----------------------------------------
