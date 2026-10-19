@@ -150,8 +150,9 @@ void SELFTEST_Process()
 				COMM_SwitchToPE();
 				DELAY_MS(ST_CONT_DELAY_MS);
 
-
+				LastActionID = ACT_COMM_PE;
 				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
+				CONTROL_SetDeviceSubState(DSS_CommIdleCheck);
 				break;
 
 			default:

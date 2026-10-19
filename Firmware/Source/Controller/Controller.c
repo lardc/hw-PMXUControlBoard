@@ -118,6 +118,7 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_None)
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+				CONTROL_SetDeviceSubState(DSS_CommNone);
 				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
 			}
 			else if(CONTROL_State != DS_Enabled)
@@ -200,7 +201,14 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_SELFTEST:
 			if(CONTROL_State == DS_Enabled)
 			{
+				if(CONTROL_ContactorState == DSS_CommCheckSetTimer || CONTROL_ContactorState == DSS_CommCheckTimed)
+				{
+					*pUserError = ERR_OPERATION_BLOCKED;
+					break;
+				}
+
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+				CONTROL_SetDeviceSubState(DSS_CommNone);
 				CONTROL_SetDeviceState(DS_InSelfTest, DSS_SelfTest_LCTUP);
 			}
 			else if(CONTROL_State != DS_None)
@@ -225,6 +233,9 @@ void CONTROL_LogicProcess()
 void CONTROL_CheckContactorsProcess()
 {
 	static Int64U Timeout = 0;
+
+	if(CONTROL_State == DS_InSelfTest || CONTROL_State == DS_Fault || CONTROL_State == DS_None)
+		return;
 
 	switch(CONTROL_ContactorState)
 	{

@@ -78,6 +78,7 @@ extern volatile Int64U CONTROL_TimeCounter;
 extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern volatile ContactorProcess CONTROL_ContactorState;
+extern Int16U LastActionID;
 extern Int64U CONTROL_LEDTimeout;
 extern bool FPledForcedLight;
 
