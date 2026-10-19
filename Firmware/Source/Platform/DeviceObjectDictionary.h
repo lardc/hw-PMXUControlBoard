@@ -61,11 +61,11 @@
 #define REG_OP_RESULT							197	// Регистр результата операции
 #define REG_SELF_TEST_OP_RESULT					198	// Регистр результата самотестирования
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
-#define REG_ST_STATE							199	// Регистр состояния самотестирования
 
 #define REG_PRESSURE							200	// Давление, Бар
 #define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
 #define REG_FAILED_CONTACTOR					202	// Номер контактора/реле, в котором обнаружен отказ
+#define REG_ST_STATE							203	// Регистр состояния самотестирования
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
