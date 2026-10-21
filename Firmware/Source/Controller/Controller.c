@@ -196,15 +196,16 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				else
 				{
 					Int64U Timeout = CONTROL_TimeCounter + DataTable[REG_CONTACTORS_COMM_DELAY_MS];
-					while(CONTROL_TimeCounter <= Timeout)
+					while(CONTROL_TimeCounter < Timeout)
 					{
+						CONTROL_UpdateWatchDog();
 						if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 						{
 							CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 							break;
 						}
 					}
-					if(CONTROL_TimeCounter > Timeout)
+					if(CONTROL_TimeCounter >= Timeout)
 					{
 						CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
 						DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
