@@ -37,14 +37,6 @@ typedef enum __DeviceSubState
 	DSS_SelfTest_Finish		= 9
 } DeviceSubState;
 
-typedef enum __ContactorProcess
-{
-	DSS_CommNone			= 0,
-	DSS_CommIdleCheck		= 1,
-	DSS_CommCheckSetTimer	= 2,
-	DSS_CommCheckTimed		= 3
-} ContactorProcess;
-
 typedef enum __DevType
 {
 	SC_Type_A2 = 1001,
@@ -77,7 +69,6 @@ typedef enum __DevType
 extern volatile Int64U CONTROL_TimeCounter;
 extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
-extern volatile ContactorProcess CONTROL_ContactorState;
 extern Int16U LastActionID;
 extern Int64U CONTROL_LEDTimeout;
 extern bool FPledForcedLight;
@@ -89,7 +80,7 @@ void CONTROL_Idle();
 void CONTROL_SaveTestResult();
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_SetDeviceSubState(ContactorProcess NewSubState);
+void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_ResetToDefaultState();
 bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_LogicProcess();

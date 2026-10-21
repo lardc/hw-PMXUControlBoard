@@ -152,7 +152,6 @@ void SELFTEST_Process()
 
 				LastActionID = ACT_COMM_PE;
 				CONTROL_SetDeviceState(DS_Enabled, DSS_None);
-				CONTROL_SetDeviceSubState(DSS_CommIdleCheck);
 				break;
 
 			default:
