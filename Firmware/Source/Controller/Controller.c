@@ -179,15 +179,39 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				LastDUTposition = DataTable[REG_DUT_POSITION];
 				LastDevCase = DataTable[REG_DEV_CASE];
 
-				if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
-					CONTROL_SetDeviceState(CONTROL_State, DSS_None);
+				if(DataTable[REG_COMM_DELAY_MS])
+				{
+					DELAY_MS((Int16U)DataTable[REG_COMM_DELAY_MS]);
+					if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
+						CONTROL_SetDeviceState(CONTROL_State, DSS_None);
+					else
+					{
+						CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+						DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+						LastActionID = ACT_COMM_PE;
+
+						COMM_SwitchToPE();
+					}
+				}
 				else
 				{
-					CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-					LastActionID = ACT_COMM_PE;
+					Int64U Timeout = CONTROL_TimeCounter + DataTable[REG_CONTACTORS_COMM_DELAY_MS];
+					while(CONTROL_TimeCounter <= Timeout)
+					{
+						if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
+						{
+							CONTROL_SetDeviceState(CONTROL_State, DSS_None);
+							break;
+						}
+					}
+					if(CONTROL_TimeCounter > Timeout)
+					{
+						CONTROL_SwitchToFault(DF_CONTACTOR_FAULT);
+						DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+						LastActionID = ACT_COMM_PE;
 
-					COMM_SwitchToPE();
+						COMM_SwitchToPE();
+					}
 				}
 			}
 			else if(CONTROL_State == DS_None)

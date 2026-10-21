@@ -144,7 +144,6 @@ void COMM_Commutate(Int16U ActionID, Int16U DUTPosition, DevType DevCase)
 			break;
 	}
 
-	DELAY_MS((Int16U)DataTable[REG_COMM_DELAY_MS]);
 	FPledForcedLight = false;
 }
 // ----------------------------------------
