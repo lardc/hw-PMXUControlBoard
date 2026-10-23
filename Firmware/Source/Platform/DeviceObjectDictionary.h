@@ -36,15 +36,18 @@
 
 // Регистры
 // Сохраняемые регистры
-#define REG_CONTACTORS_COMM_DELAY_MS			1	// Задержка ожидания коммутации контакторов
+// 0
+#define REG_CONTACTORS_COMM_TIMEOUT_MS			1	// Таймаут ожидания коммутации контакторов
 #define REG_PRESSURE_ADC_OFFSET					2	// Смещение оцифрованного напряжения АЦП (в мВ)
 #define REG_PRESSURE_ADC_K						3	// Коэффициент пересчёта напряжения АЦП (в мВ) в Бар
 #define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
-#define REG_DFLT_COMM_DELAY_MS					5	// Задержка перед сбросом коммутации в дефолт при ошибках блока (раскоммутацией силовых блоков и подключением PE линий)
+// 5
 #define REG_MAX_CONT_COMMUTATIONS				6	// Максимальное число коммутаций контакторов до проверки контактных сопротивлений
 #define REG_LAMP_CTRL							7	// Разрешение работы внешнего индикатора
 #define REG_ST_STOP_STAGE						8	// Номер стадии окончания самотестирования
 #define REG_SAFETY_ACTIVE						9	// Активация безопасности
+#define REG_COMM_FIXED_DELAY_MS					10	// Задержка после коммутации при работе с фиксированной задержкой, мс
+#define REG_COMM_SEN_EXT_DELAY_MS				11	// Дополнительная задержка после коммутации при работе по датчикам, мс
 
 // Несохраняемые регистры чтения-записи
 #define REG_DUT_POSITION						128	// Флаг измерения верхнего ключа (по умолчанию нижний)
@@ -61,11 +64,11 @@
 #define REG_OP_RESULT							197	// Регистр результата операции
 #define REG_SELF_TEST_OP_RESULT					198	// Регистр результата самотестирования
 #define REG_SUB_STATE							199	// Регистр вспомогательного состояния
-#define REG_ST_STATE							199	// Регистр состояния самотестирования
 
 #define REG_PRESSURE							200	// Давление, Бар
 #define REG_FAILED_COMMUTATION					201	// Номер коммутации, где обнаружен отказ
 #define REG_FAILED_CONTACTOR					202	// Номер контактора/реле, в котором обнаружен отказ
+#define REG_ST_STATE							203	// Регистр состояния самотестирования
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID					256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID					257	// Device CAN master node ID (if presented)
