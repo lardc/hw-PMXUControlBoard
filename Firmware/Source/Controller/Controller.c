@@ -179,9 +179,9 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				LastDUTposition = DataTable[REG_DUT_POSITION];
 				LastDevCase = DataTable[REG_DEV_CASE];
 
-				if(DataTable[REG_COMM_DELAY_MS])
+				if(DataTable[REG_COMM_FIXED_DELAY_MS])
 				{
-					DELAY_MS((Int16U)DataTable[REG_COMM_DELAY_MS]);
+					DELAY_MS((Int16U)DataTable[REG_COMM_FIXED_DELAY_MS]);
 					if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 						CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 					else
@@ -195,12 +195,13 @@ bool CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				}
 				else
 				{
-					Int64U Timeout = CONTROL_TimeCounter + DataTable[REG_CONTACTORS_COMM_DELAY_MS];
+					Int64U Timeout = CONTROL_TimeCounter + DataTable[REG_CONTACTORS_COMM_TIMEOUT_MS];
 					while(CONTROL_TimeCounter < Timeout)
 					{
 						CONTROL_UpdateWatchDog();
 						if(CONTROL_CheckContactors(LastDevCase, LastActionID, LastDUTposition))
 						{
+							DELAY_MS((Int16U)DataTable[REG_COMM_SEN_EXT_DELAY_MS]);
 							CONTROL_SetDeviceState(CONTROL_State, DSS_None);
 							break;
 						}

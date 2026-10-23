@@ -12,17 +12,17 @@
 // Constants
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 0
-		{0, CONTACTORS_COMM_DELAY_MS_MAX, CONTACTORS_COMM_DELAY_MS_DFLT},			// 1
+		{0, CONTACTORS_COMM_TIMEOUT_MS_MAX, CONTACTORS_COMM_TIMEOUT_MS_DFLT},			// 1
 		{INT16S_MIN, INT16S_MAX, REG_PRESSURE_ADC_OFFSET_DFLT}, 					// 2
 		{0, REG_PRESSURE_ADC_K_MAX, REG_PRESSURE_ADC_K_DFLT},						// 3
 		{0, REG_PRESSURE_THRESHOLD_MAX, REG_PRESSURE_THRESHOLD_DFLT},				// 4
-		{0, REG_DFLT_COMM_DELAY_MS_MAX, REG_DFLT_COMM_DELAY_MS_DFLT},				// 5
+		{0, 0, 0},																	// 5
 		{0, REG_MAX_CONT_COMMUTATIONS_MAX, REG_MAX_CONT_COMMUTATIONS_DFLT},			// 6
 		{NO, YES, YES},																// 7
 		{ST_START_STAGE, ST_STOP_STAGE, ST_STOP_STAGE},								// 8
 		{NO, YES, YES},																// 9
-		{0, INT16U_MAX, 0},															// 10
-		{0, 0, 0},																	// 11
+		{0, CONTACTORS_COMM_DELAY_MS_MAX, 0},										// 10
+		{0, CONTACTORS_COMM_DELAY_MS_MAX, 0},										// 11
 		{0, 0, 0},																	// 12
 		{0, 0, 0},																	// 13
 		{0, 0, 0},																	// 14
