@@ -37,7 +37,7 @@
 // Регистры
 // Сохраняемые регистры
 // 0
-#define REG_CONTACTORS_COMM_TIMEOUT_MS			1	// Задержка ожидания коммутации контакторов
+#define REG_CONTACTORS_COMM_TIMEOUT_MS			1	// Таймаут ожидания коммутации контакторов
 #define REG_PRESSURE_ADC_OFFSET					2	// Смещение оцифрованного напряжения АЦП (в мВ)
 #define REG_PRESSURE_ADC_K						3	// Коэффициент пересчёта напряжения АЦП (в мВ) в Бар
 #define REG_PRESSURE_THRESHOLD					4	// Граничное значение рабочего давления в Бар
